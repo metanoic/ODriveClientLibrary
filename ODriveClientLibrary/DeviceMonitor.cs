@@ -1,14 +1,12 @@
 ﻿namespace ODrive
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reactive.Linq;
+    using ODrive.Utilities;
     using LibUsbDotNet;
     using LibUsbDotNet.DeviceNotify;
-    using LibUsbDotNet.Main;
-    using global::ODrive.Utilities;
     using ReactiveUI;
 
     /// <summary>

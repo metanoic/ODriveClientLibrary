@@ -1,7 +1,7 @@
 ﻿namespace ODrive
 {
     using System;
-    using global::ODrive.Utilities;
+    using ODrive.Utilities;
 
     internal class Response
     {
