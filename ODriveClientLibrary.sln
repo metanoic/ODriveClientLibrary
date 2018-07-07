@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveClientLibrary", "ODriveClientLibrary\ODriveClientLibrary.csproj", "{78938806-D647-41CF-A5CD-FFD5D1A2A2BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveClientLibrary", "ODriveClientLibrary\ODriveClientLibrary.csproj", "{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{EF12F7AC-CAE2-45D1-8D5C-37FCD810AACE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.DeviceMonitor", "Demo.DeviceMonitor\Demo.DeviceMonitor.csproj", "{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,19 +13,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{78938806-D647-41CF-A5CD-FFD5D1A2A2BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78938806-D647-41CF-A5CD-FFD5D1A2A2BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78938806-D647-41CF-A5CD-FFD5D1A2A2BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78938806-D647-41CF-A5CD-FFD5D1A2A2BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EF12F7AC-CAE2-45D1-8D5C-37FCD810AACE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF12F7AC-CAE2-45D1-8D5C-37FCD810AACE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EF12F7AC-CAE2-45D1-8D5C-37FCD810AACE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EF12F7AC-CAE2-45D1-8D5C-37FCD810AACE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A8116EA6-672E-4061-9AC9-A616BD2CF84F}
+		SolutionGuid = {BD4F59A2-6775-46C8-86B4-B3B3B005C235}
 	EndGlobalSection
 EndGlobal

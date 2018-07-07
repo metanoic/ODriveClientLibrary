@@ -1,2 +1,2 @@
 # ODriveClientLibrary
-A cross-platform library for interacting with the ODriveRobotics motor controller.
+A library for communicating with the ODrive motor controller via USB
