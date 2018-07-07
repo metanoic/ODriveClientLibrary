@@ -84,7 +84,6 @@
     <Compile Include="Connection.cs" />
     <Compile Include="DeviceMonitor.cs" />
     <Compile Include="Request.cs" />
-    <Compile Include="RequestStatus.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="Utilities\CRC.cs" />
     <Compile Include="Utilities\WireBuffer.cs" />
