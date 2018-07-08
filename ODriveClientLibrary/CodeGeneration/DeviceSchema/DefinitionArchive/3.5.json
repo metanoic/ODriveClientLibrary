@@ -1,0 +1,1757 @@
+[
+  {
+    "name": "",
+    "id": 0,
+    "type": "json",
+    "access": "r"
+  },
+  {
+    "name": "vbus_voltage",
+    "id": 1,
+    "type": "float",
+    "access": "r"
+  },
+  {
+    "name": "serial_number",
+    "id": 2,
+    "type": "uint64",
+    "access": "r"
+  },
+  {
+    "name": "hw_version_major",
+    "id": 3,
+    "type": "uint8",
+    "access": "r"
+  },
+  {
+    "name": "hw_version_minor",
+    "id": 4,
+    "type": "uint8",
+    "access": "r"
+  },
+  {
+    "name": "hw_version_variant",
+    "id": 5,
+    "type": "uint8",
+    "access": "r"
+  },
+  {
+    "name": "fw_version_major",
+    "id": 6,
+    "type": "uint8",
+    "access": "r"
+  },
+  {
+    "name": "fw_version_minor",
+    "id": 7,
+    "type": "uint8",
+    "access": "r"
+  },
+  {
+    "name": "fw_version_revision",
+    "id": 8,
+    "type": "uint8",
+    "access": "r"
+  },
+  {
+    "name": "fw_version_unreleased",
+    "id": 9,
+    "type": "uint8",
+    "access": "r"
+  },
+  {
+    "name": "user_config_loaded",
+    "id": 10,
+    "type": "bool",
+    "access": "r"
+  },
+  {
+    "name": "brake_resistor_armed",
+    "id": 11,
+    "type": "bool",
+    "access": "r"
+  },
+  {
+    "name": "system_stats",
+    "type": "object",
+    "members": [
+      {
+        "name": "uptime",
+        "id": 12,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "min_heap_space",
+        "id": 13,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "min_stack_space_axis0",
+        "id": 14,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "min_stack_space_axis1",
+        "id": 15,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "min_stack_space_comms",
+        "id": 16,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "min_stack_space_usb",
+        "id": 17,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "min_stack_space_uart",
+        "id": 18,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "min_stack_space_usb_irq",
+        "id": 19,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "min_stack_space_startup",
+        "id": 20,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "usb",
+        "type": "object",
+        "members": [
+          {
+            "name": "rx_cnt",
+            "id": 21,
+            "type": "uint32",
+            "access": "r"
+          },
+          {
+            "name": "tx_cnt",
+            "id": 22,
+            "type": "uint32",
+            "access": "r"
+          },
+          {
+            "name": "tx_overrun_cnt",
+            "id": 23,
+            "type": "uint32",
+            "access": "r"
+          }
+        ]
+      },
+      {
+        "name": "i2c",
+        "type": "object",
+        "members": [
+          {
+            "name": "addr",
+            "id": 24,
+            "type": "uint8",
+            "access": "r"
+          },
+          {
+            "name": "addr_match_cnt",
+            "id": 25,
+            "type": "uint32",
+            "access": "r"
+          },
+          {
+            "name": "rx_cnt",
+            "id": 26,
+            "type": "uint32",
+            "access": "r"
+          },
+          {
+            "name": "error_cnt",
+            "id": 27,
+            "type": "uint32",
+            "access": "r"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "config",
+    "type": "object",
+    "members": [
+      {
+        "name": "brake_resistance",
+        "id": 28,
+        "type": "float",
+        "access": "rw"
+      },
+      {
+        "name": "enable_uart",
+        "id": 29,
+        "type": "bool",
+        "access": "rw"
+      },
+      {
+        "name": "enable_i2c_instead_of_can",
+        "id": 30,
+        "type": "bool",
+        "access": "rw"
+      },
+      {
+        "name": "enable_ascii_protocol_on_usb",
+        "id": 31,
+        "type": "bool",
+        "access": "rw"
+      },
+      {
+        "name": "dc_bus_undervoltage_trip_level",
+        "id": 32,
+        "type": "float",
+        "access": "rw"
+      },
+      {
+        "name": "dc_bus_overvoltage_trip_level",
+        "id": 33,
+        "type": "float",
+        "access": "rw"
+      }
+    ]
+  },
+  {
+    "name": "axis0",
+    "type": "object",
+    "members": [
+      {
+        "name": "error",
+        "id": 34,
+        "type": "uint16",
+        "access": "rw"
+      },
+      {
+        "name": "enable_step_dir",
+        "id": 35,
+        "type": "bool",
+        "access": "rw"
+      },
+      {
+        "name": "current_state",
+        "id": 36,
+        "type": "uint8",
+        "access": "r"
+      },
+      {
+        "name": "requested_state",
+        "id": 37,
+        "type": "uint8",
+        "access": "rw"
+      },
+      {
+        "name": "loop_counter",
+        "id": 38,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "config",
+        "type": "object",
+        "members": [
+          {
+            "name": "startup_motor_calibration",
+            "id": 39,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "startup_encoder_index_search",
+            "id": 40,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "startup_encoder_offset_calibration",
+            "id": 41,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "startup_closed_loop_control",
+            "id": 42,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "startup_sensorless_control",
+            "id": 43,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "enable_step_dir",
+            "id": 44,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "counts_per_step",
+            "id": 45,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "ramp_up_time",
+            "id": 46,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "ramp_up_distance",
+            "id": 47,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "spin_up_current",
+            "id": 48,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "spin_up_acceleration",
+            "id": 49,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "spin_up_target_vel",
+            "id": 50,
+            "type": "float",
+            "access": "rw"
+          }
+        ]
+      },
+      {
+        "name": "motor",
+        "type": "object",
+        "members": [
+          {
+            "name": "error",
+            "id": 51,
+            "type": "uint16",
+            "access": "rw"
+          },
+          {
+            "name": "armed_state",
+            "id": 52,
+            "type": "uint8",
+            "access": "r"
+          },
+          {
+            "name": "is_calibrated",
+            "id": 53,
+            "type": "bool",
+            "access": "r"
+          },
+          {
+            "name": "current_meas_phB",
+            "id": 54,
+            "type": "float",
+            "access": "r"
+          },
+          {
+            "name": "current_meas_phC",
+            "id": 55,
+            "type": "float",
+            "access": "r"
+          },
+          {
+            "name": "DC_calib_phB",
+            "id": 56,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "DC_calib_phC",
+            "id": 57,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "phase_current_rev_gain",
+            "id": 58,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "current_control",
+            "type": "object",
+            "members": [
+              {
+                "name": "p_gain",
+                "id": 59,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "i_gain",
+                "id": 60,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "v_current_control_integral_d",
+                "id": 61,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "v_current_control_integral_q",
+                "id": 62,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "Ibus",
+                "id": 63,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "final_v_alpha",
+                "id": 64,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "final_v_beta",
+                "id": 65,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "Iq_setpoint",
+                "id": 66,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "Iq_measured",
+                "id": 67,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "max_allowed_current",
+                "id": 68,
+                "type": "float",
+                "access": "rw"
+              }
+            ]
+          },
+          {
+            "name": "gate_driver",
+            "type": "object",
+            "members": [
+              {
+                "name": "drv_fault",
+                "id": 69,
+                "type": "uint16",
+                "access": "r"
+              }
+            ]
+          },
+          {
+            "name": "timing_log",
+            "type": "object",
+            "members": [
+              {
+                "name": "TIMING_LOG_GENERAL",
+                "id": 70,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_ADC_CB_I",
+                "id": 71,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_ADC_CB_DC",
+                "id": 72,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_MEAS_R",
+                "id": 73,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_MEAS_L",
+                "id": 74,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_ENC_CALIB",
+                "id": 75,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_IDX_SEARCH",
+                "id": 76,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_FOC_VOLTAGE",
+                "id": 77,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_FOC_CURRENT",
+                "id": 78,
+                "type": "uint16",
+                "access": "r"
+              }
+            ]
+          },
+          {
+            "name": "config",
+            "type": "object",
+            "members": [
+              {
+                "name": "pre_calibrated",
+                "id": 79,
+                "type": "bool",
+                "access": "rw"
+              },
+              {
+                "name": "pole_pairs",
+                "id": 80,
+                "type": "int32",
+                "access": "rw"
+              },
+              {
+                "name": "calibration_current",
+                "id": 81,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "resistance_calib_max_voltage",
+                "id": 82,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "phase_inductance",
+                "id": 83,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "phase_resistance",
+                "id": 84,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "direction",
+                "id": 85,
+                "type": "int32",
+                "access": "rw"
+              },
+              {
+                "name": "motor_type",
+                "id": 86,
+                "type": "uint8",
+                "access": "rw"
+              },
+              {
+                "name": "current_lim",
+                "id": 87,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "requested_current_range",
+                "id": 88,
+                "type": "float",
+                "access": "rw"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "controller",
+        "type": "object",
+        "members": [
+          {
+            "name": "pos_setpoint",
+            "id": 89,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "vel_setpoint",
+            "id": 90,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "vel_integrator_current",
+            "id": 91,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "current_setpoint",
+            "id": 92,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "config",
+            "type": "object",
+            "members": [
+              {
+                "name": "control_mode",
+                "id": 93,
+                "type": "uint8",
+                "access": "rw"
+              },
+              {
+                "name": "pos_gain",
+                "id": 94,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "vel_gain",
+                "id": 95,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "vel_integrator_gain",
+                "id": 96,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "vel_limit",
+                "id": 97,
+                "type": "float",
+                "access": "rw"
+              }
+            ]
+          },
+          {
+            "name": "set_pos_setpoint",
+            "id": 98,
+            "type": "function",
+            "inputs": [
+              {
+                "name": "pos_setpoint",
+                "id": 99,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "vel_feed_forward",
+                "id": 100,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "current_feed_forward",
+                "id": 101,
+                "type": "float",
+                "access": "rw"
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "name": "set_vel_setpoint",
+            "id": 102,
+            "type": "function",
+            "inputs": [
+              {
+                "name": "vel_setpoint",
+                "id": 103,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "current_feed_forward",
+                "id": 104,
+                "type": "float",
+                "access": "rw"
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "name": "set_current_setpoint",
+            "id": 105,
+            "type": "function",
+            "inputs": [
+              {
+                "name": "current_setpoint",
+                "id": 106,
+                "type": "float",
+                "access": "rw"
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "name": "start_anticogging_calibration",
+            "id": 107,
+            "type": "function",
+            "inputs": [],
+            "outputs": []
+          }
+        ]
+      },
+      {
+        "name": "encoder",
+        "type": "object",
+        "members": [
+          {
+            "name": "error",
+            "id": 108,
+            "type": "uint8",
+            "access": "rw"
+          },
+          {
+            "name": "is_ready",
+            "id": 109,
+            "type": "bool",
+            "access": "r"
+          },
+          {
+            "name": "index_found",
+            "id": 110,
+            "type": "bool",
+            "access": "r"
+          },
+          {
+            "name": "shadow_count",
+            "id": 111,
+            "type": "int32",
+            "access": "rw"
+          },
+          {
+            "name": "count_in_cpr",
+            "id": 112,
+            "type": "int32",
+            "access": "rw"
+          },
+          {
+            "name": "offset",
+            "id": 113,
+            "type": "int32",
+            "access": "rw"
+          },
+          {
+            "name": "interpolation",
+            "id": 114,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "phase",
+            "id": 115,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pos_estimate",
+            "id": 116,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pos_cpr",
+            "id": 117,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "hall_state",
+            "id": 118,
+            "type": "uint8",
+            "access": "rw"
+          },
+          {
+            "name": "pll_vel",
+            "id": 119,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_kp",
+            "id": 120,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_ki",
+            "id": 121,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "config",
+            "type": "object",
+            "members": [
+              {
+                "name": "mode",
+                "id": 122,
+                "type": "uint8",
+                "access": "rw"
+              },
+              {
+                "name": "use_index",
+                "id": 123,
+                "type": "bool",
+                "access": "rw"
+              },
+              {
+                "name": "pre_calibrated",
+                "id": 124,
+                "type": "bool",
+                "access": "rw"
+              },
+              {
+                "name": "idx_search_speed",
+                "id": 125,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "cpr",
+                "id": 126,
+                "type": "int32",
+                "access": "rw"
+              },
+              {
+                "name": "offset",
+                "id": 127,
+                "type": "int32",
+                "access": "rw"
+              },
+              {
+                "name": "offset_float",
+                "id": 128,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "calib_range",
+                "id": 129,
+                "type": "float",
+                "access": "rw"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sensorless_estimator",
+        "type": "object",
+        "members": [
+          {
+            "name": "error",
+            "id": 130,
+            "type": "uint8",
+            "access": "rw"
+          },
+          {
+            "name": "phase",
+            "id": 131,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_pos",
+            "id": 132,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_vel",
+            "id": 133,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_kp",
+            "id": 134,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_ki",
+            "id": 135,
+            "type": "float",
+            "access": "rw"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "axis1",
+    "type": "object",
+    "members": [
+      {
+        "name": "error",
+        "id": 136,
+        "type": "uint16",
+        "access": "rw"
+      },
+      {
+        "name": "enable_step_dir",
+        "id": 137,
+        "type": "bool",
+        "access": "rw"
+      },
+      {
+        "name": "current_state",
+        "id": 138,
+        "type": "uint8",
+        "access": "r"
+      },
+      {
+        "name": "requested_state",
+        "id": 139,
+        "type": "uint8",
+        "access": "rw"
+      },
+      {
+        "name": "loop_counter",
+        "id": 140,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "config",
+        "type": "object",
+        "members": [
+          {
+            "name": "startup_motor_calibration",
+            "id": 141,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "startup_encoder_index_search",
+            "id": 142,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "startup_encoder_offset_calibration",
+            "id": 143,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "startup_closed_loop_control",
+            "id": 144,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "startup_sensorless_control",
+            "id": 145,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "enable_step_dir",
+            "id": 146,
+            "type": "bool",
+            "access": "rw"
+          },
+          {
+            "name": "counts_per_step",
+            "id": 147,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "ramp_up_time",
+            "id": 148,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "ramp_up_distance",
+            "id": 149,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "spin_up_current",
+            "id": 150,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "spin_up_acceleration",
+            "id": 151,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "spin_up_target_vel",
+            "id": 152,
+            "type": "float",
+            "access": "rw"
+          }
+        ]
+      },
+      {
+        "name": "motor",
+        "type": "object",
+        "members": [
+          {
+            "name": "error",
+            "id": 153,
+            "type": "uint16",
+            "access": "rw"
+          },
+          {
+            "name": "armed_state",
+            "id": 154,
+            "type": "uint8",
+            "access": "r"
+          },
+          {
+            "name": "is_calibrated",
+            "id": 155,
+            "type": "bool",
+            "access": "r"
+          },
+          {
+            "name": "current_meas_phB",
+            "id": 156,
+            "type": "float",
+            "access": "r"
+          },
+          {
+            "name": "current_meas_phC",
+            "id": 157,
+            "type": "float",
+            "access": "r"
+          },
+          {
+            "name": "DC_calib_phB",
+            "id": 158,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "DC_calib_phC",
+            "id": 159,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "phase_current_rev_gain",
+            "id": 160,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "current_control",
+            "type": "object",
+            "members": [
+              {
+                "name": "p_gain",
+                "id": 161,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "i_gain",
+                "id": 162,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "v_current_control_integral_d",
+                "id": 163,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "v_current_control_integral_q",
+                "id": 164,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "Ibus",
+                "id": 165,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "final_v_alpha",
+                "id": 166,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "final_v_beta",
+                "id": 167,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "Iq_setpoint",
+                "id": 168,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "Iq_measured",
+                "id": 169,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "max_allowed_current",
+                "id": 170,
+                "type": "float",
+                "access": "rw"
+              }
+            ]
+          },
+          {
+            "name": "gate_driver",
+            "type": "object",
+            "members": [
+              {
+                "name": "drv_fault",
+                "id": 171,
+                "type": "uint16",
+                "access": "r"
+              }
+            ]
+          },
+          {
+            "name": "timing_log",
+            "type": "object",
+            "members": [
+              {
+                "name": "TIMING_LOG_GENERAL",
+                "id": 172,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_ADC_CB_I",
+                "id": 173,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_ADC_CB_DC",
+                "id": 174,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_MEAS_R",
+                "id": 175,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_MEAS_L",
+                "id": 176,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_ENC_CALIB",
+                "id": 177,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_IDX_SEARCH",
+                "id": 178,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_FOC_VOLTAGE",
+                "id": 179,
+                "type": "uint16",
+                "access": "r"
+              },
+              {
+                "name": "TIMING_LOG_FOC_CURRENT",
+                "id": 180,
+                "type": "uint16",
+                "access": "r"
+              }
+            ]
+          },
+          {
+            "name": "config",
+            "type": "object",
+            "members": [
+              {
+                "name": "pre_calibrated",
+                "id": 181,
+                "type": "bool",
+                "access": "rw"
+              },
+              {
+                "name": "pole_pairs",
+                "id": 182,
+                "type": "int32",
+                "access": "rw"
+              },
+              {
+                "name": "calibration_current",
+                "id": 183,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "resistance_calib_max_voltage",
+                "id": 184,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "phase_inductance",
+                "id": 185,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "phase_resistance",
+                "id": 186,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "direction",
+                "id": 187,
+                "type": "int32",
+                "access": "rw"
+              },
+              {
+                "name": "motor_type",
+                "id": 188,
+                "type": "uint8",
+                "access": "rw"
+              },
+              {
+                "name": "current_lim",
+                "id": 189,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "requested_current_range",
+                "id": 190,
+                "type": "float",
+                "access": "rw"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "controller",
+        "type": "object",
+        "members": [
+          {
+            "name": "pos_setpoint",
+            "id": 191,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "vel_setpoint",
+            "id": 192,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "vel_integrator_current",
+            "id": 193,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "current_setpoint",
+            "id": 194,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "config",
+            "type": "object",
+            "members": [
+              {
+                "name": "control_mode",
+                "id": 195,
+                "type": "uint8",
+                "access": "rw"
+              },
+              {
+                "name": "pos_gain",
+                "id": 196,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "vel_gain",
+                "id": 197,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "vel_integrator_gain",
+                "id": 198,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "vel_limit",
+                "id": 199,
+                "type": "float",
+                "access": "rw"
+              }
+            ]
+          },
+          {
+            "name": "set_pos_setpoint",
+            "id": 200,
+            "type": "function",
+            "inputs": [
+              {
+                "name": "pos_setpoint",
+                "id": 201,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "vel_feed_forward",
+                "id": 202,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "current_feed_forward",
+                "id": 203,
+                "type": "float",
+                "access": "rw"
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "name": "set_vel_setpoint",
+            "id": 204,
+            "type": "function",
+            "inputs": [
+              {
+                "name": "vel_setpoint",
+                "id": 205,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "current_feed_forward",
+                "id": 206,
+                "type": "float",
+                "access": "rw"
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "name": "set_current_setpoint",
+            "id": 207,
+            "type": "function",
+            "inputs": [
+              {
+                "name": "current_setpoint",
+                "id": 208,
+                "type": "float",
+                "access": "rw"
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "name": "start_anticogging_calibration",
+            "id": 209,
+            "type": "function",
+            "inputs": [],
+            "outputs": []
+          }
+        ]
+      },
+      {
+        "name": "encoder",
+        "type": "object",
+        "members": [
+          {
+            "name": "error",
+            "id": 210,
+            "type": "uint8",
+            "access": "rw"
+          },
+          {
+            "name": "is_ready",
+            "id": 211,
+            "type": "bool",
+            "access": "r"
+          },
+          {
+            "name": "index_found",
+            "id": 212,
+            "type": "bool",
+            "access": "r"
+          },
+          {
+            "name": "shadow_count",
+            "id": 213,
+            "type": "int32",
+            "access": "rw"
+          },
+          {
+            "name": "count_in_cpr",
+            "id": 214,
+            "type": "int32",
+            "access": "rw"
+          },
+          {
+            "name": "offset",
+            "id": 215,
+            "type": "int32",
+            "access": "rw"
+          },
+          {
+            "name": "interpolation",
+            "id": 216,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "phase",
+            "id": 217,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pos_estimate",
+            "id": 218,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pos_cpr",
+            "id": 219,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "hall_state",
+            "id": 220,
+            "type": "uint8",
+            "access": "rw"
+          },
+          {
+            "name": "pll_vel",
+            "id": 221,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_kp",
+            "id": 222,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_ki",
+            "id": 223,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "config",
+            "type": "object",
+            "members": [
+              {
+                "name": "mode",
+                "id": 224,
+                "type": "uint8",
+                "access": "rw"
+              },
+              {
+                "name": "use_index",
+                "id": 225,
+                "type": "bool",
+                "access": "rw"
+              },
+              {
+                "name": "pre_calibrated",
+                "id": 226,
+                "type": "bool",
+                "access": "rw"
+              },
+              {
+                "name": "idx_search_speed",
+                "id": 227,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "cpr",
+                "id": 228,
+                "type": "int32",
+                "access": "rw"
+              },
+              {
+                "name": "offset",
+                "id": 229,
+                "type": "int32",
+                "access": "rw"
+              },
+              {
+                "name": "offset_float",
+                "id": 230,
+                "type": "float",
+                "access": "rw"
+              },
+              {
+                "name": "calib_range",
+                "id": 231,
+                "type": "float",
+                "access": "rw"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sensorless_estimator",
+        "type": "object",
+        "members": [
+          {
+            "name": "error",
+            "id": 232,
+            "type": "uint8",
+            "access": "rw"
+          },
+          {
+            "name": "phase",
+            "id": 233,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_pos",
+            "id": 234,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_vel",
+            "id": 235,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_kp",
+            "id": 236,
+            "type": "float",
+            "access": "rw"
+          },
+          {
+            "name": "pll_ki",
+            "id": 237,
+            "type": "float",
+            "access": "rw"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "can",
+    "type": "object",
+    "members": [
+      {
+        "name": "node_id",
+        "id": 238,
+        "type": "uint8",
+        "access": "r"
+      },
+      {
+        "name": "TxMailboxCompleteCallbackCnt",
+        "id": 239,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "TxMailboxAbortCallbackCnt",
+        "id": 240,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "received_msg_cnt",
+        "id": 241,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "received_ack",
+        "id": 242,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "unexpected_errors",
+        "id": 243,
+        "type": "uint32",
+        "access": "r"
+      },
+      {
+        "name": "unhandled_messages",
+        "id": 244,
+        "type": "uint32",
+        "access": "r"
+      }
+    ]
+  },
+  {
+    "name": "test_property",
+    "id": 245,
+    "type": "uint32",
+    "access": "rw"
+  },
+  {
+    "name": "test_function",
+    "id": 246,
+    "type": "function",
+    "inputs": [
+      {
+        "name": "delta",
+        "id": 247,
+        "type": "int32",
+        "access": "rw"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "result",
+        "id": 248,
+        "type": "int32",
+        "access": "rw"
+      }
+    ]
+  },
+  {
+    "name": "get_oscilloscope_val",
+    "id": 249,
+    "type": "function",
+    "inputs": [
+      {
+        "name": "index",
+        "id": 250,
+        "type": "uint32",
+        "access": "rw"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "result",
+        "id": 251,
+        "type": "float",
+        "access": "rw"
+      }
+    ]
+  },
+  {
+    "name": "get_adc_voltage",
+    "id": 252,
+    "type": "function",
+    "inputs": [
+      {
+        "name": "gpio",
+        "id": 253,
+        "type": "uint32",
+        "access": "rw"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "result",
+        "id": 254,
+        "type": "float",
+        "access": "rw"
+      }
+    ]
+  },
+  {
+    "name": "save_configuration",
+    "id": 255,
+    "type": "function",
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "name": "erase_configuration",
+    "id": 256,
+    "type": "function",
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "name": "reboot",
+    "id": 257,
+    "type": "function",
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "name": "enter_dfu_mode",
+    "id": 258,
+    "type": "function",
+    "inputs": [],
+    "outputs": []
+  }
+]
