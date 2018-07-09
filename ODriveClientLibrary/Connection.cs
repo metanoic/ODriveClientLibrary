@@ -16,8 +16,6 @@
         private readonly Dictionary<ushort, Request> pendingRequests = new Dictionary<ushort, Request>();
         private readonly Dictionary<ushort, Response> queuedResponses = new Dictionary<ushort, Response>();
 
-        // See https://github.com/madcowswe/ODrive/blob/b6aca99d6f7fe033a5554ed847eb8331a69ea235/docs/interfaces.md#usb
-        // Ordered by preference.  Firmware 3.4 and prior only expose 0x81 and 0x01.
         private readonly UsbDevice usbDevice;
 
         private UsbInterfaceInfo readInterfaceInfo;
