@@ -19,7 +19,7 @@
             {
                 PrintDeviceInfos(deviceMonitor.AvailableDevices.ToList());
             });
-            ODrive.DeviceGenerator.SchemaParser.Test();
+
             deviceMonitor.AvailableDevices.ItemChanged.Subscribe(evt =>
             {
                 PrintDeviceInfos(deviceMonitor.AvailableDevices.ToList());
