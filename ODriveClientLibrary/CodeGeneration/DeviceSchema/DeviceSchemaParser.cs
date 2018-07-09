@@ -8,14 +8,14 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal static class Parser
+    internal static class DeviceSchemaParser
     {
-        public static IDeviceMember ParseMember(JObject inputNode)
+        public static IDeviceMember ParseMember(DeviceObject parentObject, JObject inputNode)
         {
             switch (inputNode.Value<string>("type"))
             {
                 case "object":
-                    return DeviceObject.CreateFrom(inputNode);
+                    return DeviceObject.CreateFrom(parentObject, inputNode);
                 case "function":
                     return DeviceFunction.CreateFrom(inputNode);
                 default:
@@ -23,10 +23,10 @@
             }
         }
 
-        public static DeviceObject Parse(string jsonInput)
+        public static DeviceObject Parse(string rootObjectName, string jsonInput)
         {
             dynamic nodes = JArray.Parse(jsonInput);
-            return DeviceObject.CreateFrom(null, "Root", nodes);
+            return DeviceObject.CreateFrom(null, null, rootObjectName, nodes);
         }
     }
 }

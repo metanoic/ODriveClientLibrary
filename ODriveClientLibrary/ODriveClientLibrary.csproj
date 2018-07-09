@@ -197,13 +197,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicDeviceInfo.cs" />
+    <Compile Include="CodeGeneration\CodeSchema\CodeClass.cs" />
+    <Compile Include="CodeGeneration\CodeSchema\CodeFunction.cs" />
+    <Compile Include="CodeGeneration\CodeSchema\CodeProperty.cs" />
     <Compile Include="CodeGeneration\DeviceSchema\DeviceEnums.cs" />
     <Compile Include="CodeGeneration\DeviceSchema\DeviceFunction.cs" />
     <Compile Include="CodeGeneration\DeviceSchema\DeviceObject.cs" />
     <Compile Include="CodeGeneration\DeviceSchema\DeviceProperty.cs" />
     <Compile Include="CodeGeneration\DeviceSchema\DevicePropertyTypeAttribute.cs" />
     <Compile Include="CodeGeneration\DeviceSchema\IDeviceMember.cs" />
-    <Compile Include="CodeGeneration\DeviceSchema\Parser.cs" />
+    <Compile Include="CodeGeneration\DeviceSchema\DeviceSchemaParser.cs" />
+    <Compile Include="CodeGeneration\Helpers.cs" />
+    <Compile Include="CodeGeneration\SchemaParser.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="DeviceMonitor.cs" />

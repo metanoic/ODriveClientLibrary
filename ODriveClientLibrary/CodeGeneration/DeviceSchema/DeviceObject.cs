@@ -8,12 +8,14 @@
         public int? ID { get; private set; }
         public string Name { get; private set; }
         public DataType Type { get; private set; }
-        public IEnumerable<IDeviceMember> Members { get; private set; }
+        public DeviceObject Parent { get; private set; }
+        public IReadOnlyList<IDeviceMember> Members { get; private set; }
 
-        public static DeviceObject CreateFrom(int? id, string name, JArray inputNodes)
+        public static DeviceObject CreateFrom(DeviceObject parent, int? id, string name, JArray inputNodes)
         {
             var deviceObject = new DeviceObject();
 
+            deviceObject.Parent = parent;
             deviceObject.ID = id;
             deviceObject.Name = name;
             deviceObject.Type = DataType.Object;
@@ -28,7 +30,7 @@
                     continue;
                 }
 
-                var deviceMember = Parser.ParseMember(node);
+                var deviceMember = DeviceSchemaParser.ParseMember(deviceObject, node);
                 memberList.Add(deviceMember);
             }
 
@@ -37,17 +39,17 @@
             return deviceObject;
         }
 
-        public static DeviceObject CreateFrom(string name, JObject inputNode)
+        public static DeviceObject CreateFrom(DeviceObject parent, string name, JObject inputNode)
         {
             int? id = inputNode.Value<int?>("id");
             var members = inputNode.Value<JArray>("members");
-            return CreateFrom(id, name, members);
+            return CreateFrom(parent, id, name, members);
         }
 
-        public static DeviceObject CreateFrom(JObject inputNode)
+        public static DeviceObject CreateFrom(DeviceObject parent, JObject inputNode)
         {
             string name = inputNode.Value<string>("name");
-            return CreateFrom(name, inputNode);
+            return CreateFrom(parent, name, inputNode);
         }
     }
 }
