@@ -9,16 +9,16 @@ namespace ODrive
 {
     public abstract class RemoteObject : ReactiveObject
     {
-        private Connection Connection;
+        protected Device device;
 
-        public RemoteObject(Connection connection)
+        public RemoteObject(Device device)
         {
-            Connection = connection;
+            this.device = device;
         }
 
-        protected T FetchEndpointSync<T>(ushort endpointID, T? newValue = null) where T : struct
+        public RemoteObject()
         {
-            return Task.Run(async () => await Connection.FetchEndpointScalar<T>(endpointID, newValue)).Result;
+
         }
     }
 }

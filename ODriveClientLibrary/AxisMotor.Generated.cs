@@ -5,12 +5,12 @@ namespace ODrive
 
     public partial class AxisMotor : RemoteObject
     {
-        public AxisMotor(Connection connection): base(connection)
+        public AxisMotor(Device device): base(device)
         {
-            CurrentControl = new MotorCurrentControl(connection);
-            GateDriver = new MotorGateDriver(connection);
-            TimingLog = new MotorTimingLog(connection);
-            Config = new MotorConfig(connection);
+            CurrentControl = new MotorCurrentControl(device);
+            GateDriver = new MotorGateDriver(device);
+            TimingLog = new MotorTimingLog(device);
+            Config = new MotorConfig(device);
         }
 
         public MotorCurrentControl CurrentControl
@@ -42,14 +42,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<ushort>(51);
+                var result = device.FetchEndpointSync<ushort>(51);
                 this.RaiseAndSetIfChanged(ref error, result);
                 return error;
             }
 
             private set
             {
-                FetchEndpointSync<ushort>(51, value);
+                device.FetchEndpointSync<ushort>(51, value);
                 this.RaiseAndSetIfChanged(ref error, value);
             }
         }
@@ -59,7 +59,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(52);
+                var result = device.FetchEndpointSync<byte>(52);
                 this.RaiseAndSetIfChanged(ref armedState, result);
                 return armedState;
             }
@@ -70,7 +70,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<bool>(53);
+                var result = device.FetchEndpointSync<bool>(53);
                 this.RaiseAndSetIfChanged(ref isCalibrated, result);
                 return isCalibrated;
             }
@@ -81,7 +81,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(54);
+                var result = device.FetchEndpointSync<float>(54);
                 this.RaiseAndSetIfChanged(ref currentMeasPhB, result);
                 return currentMeasPhB;
             }
@@ -92,7 +92,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(55);
+                var result = device.FetchEndpointSync<float>(55);
                 this.RaiseAndSetIfChanged(ref currentMeasPhC, result);
                 return currentMeasPhC;
             }
@@ -103,14 +103,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(56);
+                var result = device.FetchEndpointSync<float>(56);
                 this.RaiseAndSetIfChanged(ref dCCalibPhB, result);
                 return dCCalibPhB;
             }
 
             private set
             {
-                FetchEndpointSync<float>(56, value);
+                device.FetchEndpointSync<float>(56, value);
                 this.RaiseAndSetIfChanged(ref dCCalibPhB, value);
             }
         }
@@ -120,14 +120,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(57);
+                var result = device.FetchEndpointSync<float>(57);
                 this.RaiseAndSetIfChanged(ref dCCalibPhC, result);
                 return dCCalibPhC;
             }
 
             private set
             {
-                FetchEndpointSync<float>(57, value);
+                device.FetchEndpointSync<float>(57, value);
                 this.RaiseAndSetIfChanged(ref dCCalibPhC, value);
             }
         }
@@ -137,14 +137,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(58);
+                var result = device.FetchEndpointSync<float>(58);
                 this.RaiseAndSetIfChanged(ref phaseCurrentRevGain, result);
                 return phaseCurrentRevGain;
             }
 
             private set
             {
-                FetchEndpointSync<float>(58, value);
+                device.FetchEndpointSync<float>(58, value);
                 this.RaiseAndSetIfChanged(ref phaseCurrentRevGain, value);
             }
         }

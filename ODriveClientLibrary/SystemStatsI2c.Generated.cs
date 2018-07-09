@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class SystemStatsI2c : RemoteObject
     {
-        public SystemStatsI2c(Connection connection): base(connection)
+        public SystemStatsI2c(Device device): base(device)
         {
         }
 
@@ -14,7 +14,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(24);
+                var result = device.FetchEndpointSync<byte>(24);
                 this.RaiseAndSetIfChanged(ref addr, result);
                 return addr;
             }
@@ -25,7 +25,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(25);
+                var result = device.FetchEndpointSync<uint>(25);
                 this.RaiseAndSetIfChanged(ref addrMatchCnt, result);
                 return addrMatchCnt;
             }
@@ -36,7 +36,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(26);
+                var result = device.FetchEndpointSync<uint>(26);
                 this.RaiseAndSetIfChanged(ref rxCnt, result);
                 return rxCnt;
             }
@@ -47,7 +47,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(27);
+                var result = device.FetchEndpointSync<uint>(27);
                 this.RaiseAndSetIfChanged(ref errorCnt, result);
                 return errorCnt;
             }

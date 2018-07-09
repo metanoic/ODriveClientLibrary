@@ -43,7 +43,7 @@
             foreach (var argument in Arguments)
             {
                 methodStatements.Add(ParseStatement(
-                    $"FetchEndpointSync<{argument.Type}>({argument.EndpointID}, {Helpers.ToCamelCase(argument.Name)});"
+                    $"device.FetchEndpointSync<{argument.Type}>({argument.EndpointID}, {Helpers.ToCamelCase(argument.Name)});"
                 ));
 
                 methodDeclaration = methodDeclaration.AddParameterListParameters(
@@ -55,13 +55,13 @@
             if (ReturnType != null)
             {
                 methodStatements.Add(ParseStatement(
-                    $"return FetchEndpointSync<{ReturnType}>({EndpointID});"
+                    $"return device.FetchEndpointSync<{ReturnType}>({EndpointID});"
                 ));
             }
             else
             {
                 methodStatements.Add(ParseStatement(
-                   $"FetchEndpointSync<byte>({EndpointID});"
+                   $"device.FetchEndpointSync<byte>({EndpointID});"
                ));
             }
 

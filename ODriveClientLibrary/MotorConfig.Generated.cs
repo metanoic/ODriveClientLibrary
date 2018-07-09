@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class MotorConfig : RemoteObject
     {
-        public MotorConfig(Connection connection): base(connection)
+        public MotorConfig(Device device): base(device)
         {
         }
 
@@ -14,14 +14,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<bool>(79);
+                var result = device.FetchEndpointSync<bool>(79);
                 this.RaiseAndSetIfChanged(ref preCalibrated, result);
                 return preCalibrated;
             }
 
             private set
             {
-                FetchEndpointSync<bool>(79, value);
+                device.FetchEndpointSync<bool>(79, value);
                 this.RaiseAndSetIfChanged(ref preCalibrated, value);
             }
         }
@@ -31,14 +31,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<int>(80);
+                var result = device.FetchEndpointSync<int>(80);
                 this.RaiseAndSetIfChanged(ref polePairs, result);
                 return polePairs;
             }
 
             private set
             {
-                FetchEndpointSync<int>(80, value);
+                device.FetchEndpointSync<int>(80, value);
                 this.RaiseAndSetIfChanged(ref polePairs, value);
             }
         }
@@ -48,14 +48,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(81);
+                var result = device.FetchEndpointSync<float>(81);
                 this.RaiseAndSetIfChanged(ref calibrationCurrent, result);
                 return calibrationCurrent;
             }
 
             private set
             {
-                FetchEndpointSync<float>(81, value);
+                device.FetchEndpointSync<float>(81, value);
                 this.RaiseAndSetIfChanged(ref calibrationCurrent, value);
             }
         }
@@ -65,14 +65,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(82);
+                var result = device.FetchEndpointSync<float>(82);
                 this.RaiseAndSetIfChanged(ref resistanceCalibMaxVoltage, result);
                 return resistanceCalibMaxVoltage;
             }
 
             private set
             {
-                FetchEndpointSync<float>(82, value);
+                device.FetchEndpointSync<float>(82, value);
                 this.RaiseAndSetIfChanged(ref resistanceCalibMaxVoltage, value);
             }
         }
@@ -82,14 +82,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(83);
+                var result = device.FetchEndpointSync<float>(83);
                 this.RaiseAndSetIfChanged(ref phaseInductance, result);
                 return phaseInductance;
             }
 
             private set
             {
-                FetchEndpointSync<float>(83, value);
+                device.FetchEndpointSync<float>(83, value);
                 this.RaiseAndSetIfChanged(ref phaseInductance, value);
             }
         }
@@ -99,14 +99,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(84);
+                var result = device.FetchEndpointSync<float>(84);
                 this.RaiseAndSetIfChanged(ref phaseResistance, result);
                 return phaseResistance;
             }
 
             private set
             {
-                FetchEndpointSync<float>(84, value);
+                device.FetchEndpointSync<float>(84, value);
                 this.RaiseAndSetIfChanged(ref phaseResistance, value);
             }
         }
@@ -116,14 +116,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<int>(85);
+                var result = device.FetchEndpointSync<int>(85);
                 this.RaiseAndSetIfChanged(ref direction, result);
                 return direction;
             }
 
             private set
             {
-                FetchEndpointSync<int>(85, value);
+                device.FetchEndpointSync<int>(85, value);
                 this.RaiseAndSetIfChanged(ref direction, value);
             }
         }
@@ -133,14 +133,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(86);
+                var result = device.FetchEndpointSync<byte>(86);
                 this.RaiseAndSetIfChanged(ref motorType, result);
                 return motorType;
             }
 
             private set
             {
-                FetchEndpointSync<byte>(86, value);
+                device.FetchEndpointSync<byte>(86, value);
                 this.RaiseAndSetIfChanged(ref motorType, value);
             }
         }
@@ -150,14 +150,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(87);
+                var result = device.FetchEndpointSync<float>(87);
                 this.RaiseAndSetIfChanged(ref currentLim, result);
                 return currentLim;
             }
 
             private set
             {
-                FetchEndpointSync<float>(87, value);
+                device.FetchEndpointSync<float>(87, value);
                 this.RaiseAndSetIfChanged(ref currentLim, value);
             }
         }
@@ -167,14 +167,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(88);
+                var result = device.FetchEndpointSync<float>(88);
                 this.RaiseAndSetIfChanged(ref requestedCurrentRange, result);
                 return requestedCurrentRange;
             }
 
             private set
             {
-                FetchEndpointSync<float>(88, value);
+                device.FetchEndpointSync<float>(88, value);
                 this.RaiseAndSetIfChanged(ref requestedCurrentRange, value);
             }
         }

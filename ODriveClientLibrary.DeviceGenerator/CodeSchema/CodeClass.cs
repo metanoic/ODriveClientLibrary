@@ -57,16 +57,31 @@
 
             foreach (var objectProperty in ObjectProperties)
             {
-                constructorStatements.Add(ParseStatement($"{objectProperty.Name} = new {objectProperty.Type}(connection);"));
+                if (ClassName == "Device")
+                {
+                    constructorStatements.Add(ParseStatement($"{objectProperty.Name} = new {objectProperty.Type}(this);"));
+                }
+                else
+                {
+                    constructorStatements.Add(ParseStatement($"{objectProperty.Name} = new {objectProperty.Type}(device);"));
+                }
             }
 
             var classConstructor = ConstructorDeclaration(Identifier(ClassName))
-                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
-                .WithParameterList(
-                    ParameterList(SingletonSeparatedList(Parameter(Identifier("connection")).WithType(IdentifierName("Connection")))))
-                .WithInitializer(
-                    ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, ArgumentList(SingletonSeparatedList(Argument(IdentifierName("connection"))))))
                 .WithBody(Block(constructorStatements));
+
+            if (ClassName != "Device")
+            {
+                classConstructor = classConstructor.WithParameterList(
+                    ParameterList(SingletonSeparatedList(Parameter(Identifier("device")).WithType(IdentifierName("Device")))))
+                .WithInitializer(
+                    ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, ArgumentList(SingletonSeparatedList(Argument(IdentifierName("device"))))))
+                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
+            }
+            else
+            {
+                classConstructor = classConstructor.WithModifiers(TokenList(Token(SyntaxKind.InternalKeyword)));
+            }
 
 
             var classDeclaration = ClassDeclaration(ClassName)

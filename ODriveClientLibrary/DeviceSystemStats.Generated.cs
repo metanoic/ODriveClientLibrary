@@ -5,10 +5,10 @@ namespace ODrive
 
     public partial class DeviceSystemStats : RemoteObject
     {
-        public DeviceSystemStats(Connection connection): base(connection)
+        public DeviceSystemStats(Device device): base(device)
         {
-            Usb = new SystemStatsUsb(connection);
-            I2c = new SystemStatsI2c(connection);
+            Usb = new SystemStatsUsb(device);
+            I2c = new SystemStatsI2c(device);
         }
 
         public SystemStatsUsb Usb
@@ -28,7 +28,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(12);
+                var result = device.FetchEndpointSync<uint>(12);
                 this.RaiseAndSetIfChanged(ref uptime, result);
                 return uptime;
             }
@@ -39,7 +39,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(13);
+                var result = device.FetchEndpointSync<uint>(13);
                 this.RaiseAndSetIfChanged(ref minHeapSpace, result);
                 return minHeapSpace;
             }
@@ -50,7 +50,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(14);
+                var result = device.FetchEndpointSync<uint>(14);
                 this.RaiseAndSetIfChanged(ref minStackSpaceAxis0, result);
                 return minStackSpaceAxis0;
             }
@@ -61,7 +61,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(15);
+                var result = device.FetchEndpointSync<uint>(15);
                 this.RaiseAndSetIfChanged(ref minStackSpaceAxis1, result);
                 return minStackSpaceAxis1;
             }
@@ -72,7 +72,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(16);
+                var result = device.FetchEndpointSync<uint>(16);
                 this.RaiseAndSetIfChanged(ref minStackSpaceComms, result);
                 return minStackSpaceComms;
             }
@@ -83,7 +83,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(17);
+                var result = device.FetchEndpointSync<uint>(17);
                 this.RaiseAndSetIfChanged(ref minStackSpaceUsb, result);
                 return minStackSpaceUsb;
             }
@@ -94,7 +94,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(18);
+                var result = device.FetchEndpointSync<uint>(18);
                 this.RaiseAndSetIfChanged(ref minStackSpaceUart, result);
                 return minStackSpaceUart;
             }
@@ -105,7 +105,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(19);
+                var result = device.FetchEndpointSync<uint>(19);
                 this.RaiseAndSetIfChanged(ref minStackSpaceUsbIrq, result);
                 return minStackSpaceUsbIrq;
             }
@@ -116,7 +116,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(20);
+                var result = device.FetchEndpointSync<uint>(20);
                 this.RaiseAndSetIfChanged(ref minStackSpaceStartup, result);
                 return minStackSpaceStartup;
             }

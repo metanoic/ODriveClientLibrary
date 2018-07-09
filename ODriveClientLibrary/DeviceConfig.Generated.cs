@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class DeviceConfig : RemoteObject
     {
-        public DeviceConfig(Connection connection): base(connection)
+        public DeviceConfig(Device device): base(device)
         {
         }
 
@@ -14,14 +14,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(28);
+                var result = device.FetchEndpointSync<float>(28);
                 this.RaiseAndSetIfChanged(ref brakeResistance, result);
                 return brakeResistance;
             }
 
             private set
             {
-                FetchEndpointSync<float>(28, value);
+                device.FetchEndpointSync<float>(28, value);
                 this.RaiseAndSetIfChanged(ref brakeResistance, value);
             }
         }
@@ -31,14 +31,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<bool>(29);
+                var result = device.FetchEndpointSync<bool>(29);
                 this.RaiseAndSetIfChanged(ref enableUart, result);
                 return enableUart;
             }
 
             private set
             {
-                FetchEndpointSync<bool>(29, value);
+                device.FetchEndpointSync<bool>(29, value);
                 this.RaiseAndSetIfChanged(ref enableUart, value);
             }
         }
@@ -48,14 +48,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<bool>(30);
+                var result = device.FetchEndpointSync<bool>(30);
                 this.RaiseAndSetIfChanged(ref enableI2cInsteadOfCan, result);
                 return enableI2cInsteadOfCan;
             }
 
             private set
             {
-                FetchEndpointSync<bool>(30, value);
+                device.FetchEndpointSync<bool>(30, value);
                 this.RaiseAndSetIfChanged(ref enableI2cInsteadOfCan, value);
             }
         }
@@ -65,14 +65,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<bool>(31);
+                var result = device.FetchEndpointSync<bool>(31);
                 this.RaiseAndSetIfChanged(ref enableAsciiProtocolOnUsb, result);
                 return enableAsciiProtocolOnUsb;
             }
 
             private set
             {
-                FetchEndpointSync<bool>(31, value);
+                device.FetchEndpointSync<bool>(31, value);
                 this.RaiseAndSetIfChanged(ref enableAsciiProtocolOnUsb, value);
             }
         }
@@ -82,14 +82,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(32);
+                var result = device.FetchEndpointSync<float>(32);
                 this.RaiseAndSetIfChanged(ref dcBusUndervoltageTripLevel, result);
                 return dcBusUndervoltageTripLevel;
             }
 
             private set
             {
-                FetchEndpointSync<float>(32, value);
+                device.FetchEndpointSync<float>(32, value);
                 this.RaiseAndSetIfChanged(ref dcBusUndervoltageTripLevel, value);
             }
         }
@@ -99,14 +99,14 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(33);
+                var result = device.FetchEndpointSync<float>(33);
                 this.RaiseAndSetIfChanged(ref dcBusOvervoltageTripLevel, result);
                 return dcBusOvervoltageTripLevel;
             }
 
             private set
             {
-                FetchEndpointSync<float>(33, value);
+                device.FetchEndpointSync<float>(33, value);
                 this.RaiseAndSetIfChanged(ref dcBusOvervoltageTripLevel, value);
             }
         }

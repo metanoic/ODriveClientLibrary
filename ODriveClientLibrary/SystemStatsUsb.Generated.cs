@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class SystemStatsUsb : RemoteObject
     {
-        public SystemStatsUsb(Connection connection): base(connection)
+        public SystemStatsUsb(Device device): base(device)
         {
         }
 
@@ -14,7 +14,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(21);
+                var result = device.FetchEndpointSync<uint>(21);
                 this.RaiseAndSetIfChanged(ref rxCnt, result);
                 return rxCnt;
             }
@@ -25,7 +25,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(22);
+                var result = device.FetchEndpointSync<uint>(22);
                 this.RaiseAndSetIfChanged(ref txCnt, result);
                 return txCnt;
             }
@@ -36,7 +36,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<uint>(23);
+                var result = device.FetchEndpointSync<uint>(23);
                 this.RaiseAndSetIfChanged(ref txOverrunCnt, result);
                 return txOverrunCnt;
             }

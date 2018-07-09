@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class MotorGateDriver : RemoteObject
     {
-        public MotorGateDriver(Connection connection): base(connection)
+        public MotorGateDriver(Device device): base(device)
         {
         }
 
@@ -14,7 +14,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<ushort>(69);
+                var result = device.FetchEndpointSync<ushort>(69);
                 this.RaiseAndSetIfChanged(ref drvFault, result);
                 return drvFault;
             }

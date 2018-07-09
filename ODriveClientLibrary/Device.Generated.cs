@@ -5,13 +5,13 @@ namespace ODrive
 
     public partial class Device : RemoteObject
     {
-        public Device(Connection connection): base(connection)
+        internal Device()
         {
-            SystemStats = new DeviceSystemStats(connection);
-            Config = new DeviceConfig(connection);
-            Axis0 = new DeviceAxis(connection);
-            Axis1 = new DeviceAxis(connection);
-            Can = new DeviceCan(connection);
+            SystemStats = new DeviceSystemStats(this);
+            Config = new DeviceConfig(this);
+            Axis0 = new DeviceAxis(this);
+            Axis1 = new DeviceAxis(this);
+            Can = new DeviceCan(this);
         }
 
         public DeviceSystemStats SystemStats
@@ -49,7 +49,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<float>(1);
+                var result = device.FetchEndpointSync<float>(1);
                 this.RaiseAndSetIfChanged(ref vbusVoltage, result);
                 return vbusVoltage;
             }
@@ -60,7 +60,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<ulong>(2);
+                var result = device.FetchEndpointSync<ulong>(2);
                 this.RaiseAndSetIfChanged(ref serialNumber, result);
                 return serialNumber;
             }
@@ -71,7 +71,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(3);
+                var result = device.FetchEndpointSync<byte>(3);
                 this.RaiseAndSetIfChanged(ref hwVersionMajor, result);
                 return hwVersionMajor;
             }
@@ -82,7 +82,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(4);
+                var result = device.FetchEndpointSync<byte>(4);
                 this.RaiseAndSetIfChanged(ref hwVersionMinor, result);
                 return hwVersionMinor;
             }
@@ -93,7 +93,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(5);
+                var result = device.FetchEndpointSync<byte>(5);
                 this.RaiseAndSetIfChanged(ref hwVersionVariant, result);
                 return hwVersionVariant;
             }
@@ -104,7 +104,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(6);
+                var result = device.FetchEndpointSync<byte>(6);
                 this.RaiseAndSetIfChanged(ref fwVersionMajor, result);
                 return fwVersionMajor;
             }
@@ -115,7 +115,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(7);
+                var result = device.FetchEndpointSync<byte>(7);
                 this.RaiseAndSetIfChanged(ref fwVersionMinor, result);
                 return fwVersionMinor;
             }
@@ -126,7 +126,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(8);
+                var result = device.FetchEndpointSync<byte>(8);
                 this.RaiseAndSetIfChanged(ref fwVersionRevision, result);
                 return fwVersionRevision;
             }
@@ -137,7 +137,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<byte>(9);
+                var result = device.FetchEndpointSync<byte>(9);
                 this.RaiseAndSetIfChanged(ref fwVersionUnreleased, result);
                 return fwVersionUnreleased;
             }
@@ -148,7 +148,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<bool>(10);
+                var result = device.FetchEndpointSync<bool>(10);
                 this.RaiseAndSetIfChanged(ref userConfigLoaded, result);
                 return userConfigLoaded;
             }
@@ -159,7 +159,7 @@ namespace ODrive
         {
             get
             {
-                var result = FetchEndpointSync<bool>(11);
+                var result = device.FetchEndpointSync<bool>(11);
                 this.RaiseAndSetIfChanged(ref brakeResistorArmed, result);
                 return brakeResistorArmed;
             }
@@ -167,34 +167,34 @@ namespace ODrive
 
         public float GetOscilloscopeVal(uint index)
         {
-            FetchEndpointSync<uint>(250, index);
-            return FetchEndpointSync<float>(249);
+            device.FetchEndpointSync<uint>(250, index);
+            return device.FetchEndpointSync<float>(249);
         }
 
         public float GetAdcVoltage(uint gpio)
         {
-            FetchEndpointSync<uint>(253, gpio);
-            return FetchEndpointSync<float>(252);
+            device.FetchEndpointSync<uint>(253, gpio);
+            return device.FetchEndpointSync<float>(252);
         }
 
         public void SaveConfiguration()
         {
-            FetchEndpointSync<byte>(255);
+            device.FetchEndpointSync<byte>(255);
         }
 
         public void EraseConfiguration()
         {
-            FetchEndpointSync<byte>(256);
+            device.FetchEndpointSync<byte>(256);
         }
 
         public void Reboot()
         {
-            FetchEndpointSync<byte>(257);
+            device.FetchEndpointSync<byte>(257);
         }
 
         public void EnterDfuMode()
         {
-            FetchEndpointSync<byte>(258);
+            device.FetchEndpointSync<byte>(258);
         }
     }
 }

@@ -63,7 +63,7 @@
                     AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, Block(
                         List(new[] {
                             ParseStatement(
-                                $"var result = FetchEndpointSync<{Type}>({EndpointID});"
+                                $"var result = device.FetchEndpointSync<{Type}>({EndpointID});"
                             ),
                             ParseStatement(
                                 $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, result);"
@@ -81,7 +81,7 @@
                     AccessorDeclaration(SyntaxKind.SetAccessorDeclaration, Block(
                         List(new[] {
                             ParseStatement(
-                                $"FetchEndpointSync<{Type}>({EndpointID}, value);"
+                                $"device.FetchEndpointSync<{Type}>({EndpointID}, value);"
                             ),
                             ParseStatement(
                                 $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, value);"

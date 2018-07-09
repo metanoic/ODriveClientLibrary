@@ -9,6 +9,7 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Threading.Tasks" #>
 <#@ import namespace="ODrive" #>
 <#@ import namespace="ODrive.DeviceGenerator" #>
 <#@ import namespace="ODrive.Utilities"#>
@@ -16,6 +17,8 @@
 <#@ include file=".\Manager.ttinclude" #>
 <#
 
+	bool useLiveSchema = false;
+	// Replace the serial number with your board's and set useLiveSchema = true to generate code for your device's version
 	string deviceSerialNumber = "366233683037";
 	
 	var deviceMonitor = DeviceMonitor.Instance;
@@ -32,10 +35,15 @@
 
 	var templateManager = Manager.Create(Host, GenerationEnvironment);
 
-	//var board = new Board(foundDeviceInfo);
-
-	//var schemaJSON = Task.Run<string>(async () => await board.FetchEndpointSchemaAsync()).Result;
-	var schemaJSON = System.IO.File.ReadAllText(Host.ResolvePath("..\\ODriveClientLibrary.DeviceGenerator\\DeviceSchema\\DefinitionArchive\\3.5.json"));
+	string schemaJSON = string.Empty;
+	if (useLiveSchema) {
+		var oDrive = new Device(foundDeviceInfo);
+		schemaJSON = Task.Run<string>(async () => await oDrive.FetchSchema()).Result;
+	} 
+	else 
+	{
+		schemaJSON = System.IO.File.ReadAllText(Host.ResolvePath("..\\ODriveClientLibrary.DeviceGenerator\\DeviceSchema\\DefinitionArchive\\3.5.json"));
+	}
 
 	var classFiles = SchemaParser.Parse(schemaJSON);
 
