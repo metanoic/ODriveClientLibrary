@@ -10,7 +10,7 @@ After the files have been generated, build the project.  The `Demo.ReadSetProper
 
 ## API
 ### DeviceMonitor
-The `DeviceMonitor` class is a singleton whose instance can be accessed via its `Instance` property.  The purpose of this class is to provide the ability to detect when your ODrive board has been connected or disconnected from the computer.
+The `DeviceMonitor` class is a singleton whose instance can be accessed via its `Instance` property.  The purpose of this class is to provide the ability to detect when your ODrive board has been connected or disconnected from the computer and subsequenty choose which board to connect to.
 
 The class monitors all USB notifications and pays attention specifically to any USB device that matches the conditions defined by `DeviceMonitor.Instance..DeviceAvailabilityPredicate`.  Any connected device matching that predicate will be added to the `DeviceMonitor.Instance.AvailableDevices` list, and will be removed from that list if it is disconnected.
 
