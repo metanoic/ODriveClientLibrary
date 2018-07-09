@@ -32,7 +32,7 @@
             uniqueDeviceObjects.Insert(0, rootDeviceObject);
 
             var codeClasses = uniqueDeviceObjects.Select(deviceObject => CodeClass.CreateFrom(deviceObject)).ToList();
-
+            codeClasses.ForEach(x => x.Generate());
             return codeClasses;
         }
 

@@ -38,5 +38,14 @@
 
             return result;
         }
+
+        public static string ToCamelCase(string input)
+        {
+            if (!string.IsNullOrEmpty(input) && input.Length > 1)
+            {
+                return Char.ToLowerInvariant(input[0]) + input.Substring(1);
+            }
+            return input;
+        }
     }
 }

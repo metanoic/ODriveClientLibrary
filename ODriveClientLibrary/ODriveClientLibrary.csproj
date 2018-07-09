@@ -211,7 +211,9 @@
     <Compile Include="CodeGeneration\SchemaParser.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Connection.cs" />
+    <Compile Include="Device.cs" />
     <Compile Include="DeviceMonitor.cs" />
+    <Compile Include="RemoteObject.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="Utilities\CRC.cs" />

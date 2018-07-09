@@ -1,6 +1,9 @@
 ﻿namespace ODrive.CodeGeneration.CodeSchema
 {
     using System;
+    using System.Collections.Generic;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using ODrive.CodeGeneration.DeviceSchema;
 
     internal class CodeProperty
@@ -16,7 +19,7 @@
 
             codeProperty.EndpointID = deviceProperty.ID;
             codeProperty.Name = Helpers.ToPascalCase(deviceProperty.Name);
-            codeProperty.Type = typeof(String).Name;
+            codeProperty.Type = typeof(ushort).Name;
             codeProperty.CanSet = deviceProperty.Access.HasFlag(AccessMode.CanWrite);
 
             return codeProperty;
@@ -30,6 +33,61 @@
             codeProperty.Type = CodeClass.GetObjectClassName(deviceObject.Parent);
 
             return codeProperty;
+        }
+
+        public IEnumerable<MemberDeclarationSyntax> GenerateScalar()
+        {
+            var fieldDeclaration = SyntaxFactory.FieldDeclaration(
+                SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName(Type),
+                SyntaxFactory.SeparatedList(new[] {
+                    SyntaxFactory.VariableDeclarator(
+                        SyntaxFactory.Identifier(
+                            Helpers.ToCamelCase(Name)
+                        )
+                    )
+                })
+            )).AddModifiers(
+                SyntaxFactory.Token(SyntaxKind.PrivateKeyword
+            ));
+
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(Type), Name)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                .AddAccessorListAccessors(
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, SyntaxFactory.Block(
+                        SyntaxFactory.List(new[] {
+                            SyntaxFactory.ParseStatement(
+                                $"var result = FetchEndpointSync<{Type}>({EndpointID});"
+                            ),
+                            SyntaxFactory.ParseStatement(
+                                $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, result);"
+                            ),
+                            SyntaxFactory.ParseStatement(
+                                $"return {Helpers.ToCamelCase(Name)};"
+                            )
+                        })
+                    ))
+                );
+
+            if (CanSet)
+            {
+                propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(
+                    SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration, SyntaxFactory.Block(
+                        SyntaxFactory.List(new[] {
+                            SyntaxFactory.ParseStatement(
+                                $"FetchEndpointSync<{Type}>({EndpointID}, value);"
+                            ),
+                            SyntaxFactory.ParseStatement(
+                                $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, value);"
+                            )
+                        })
+                    )).AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                );
+            }
+
+            return new List<MemberDeclarationSyntax>() {
+                fieldDeclaration,
+                propertyDeclaration
+            };
         }
     }
 }
