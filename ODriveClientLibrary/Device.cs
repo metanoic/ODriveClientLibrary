@@ -13,6 +13,10 @@
         private UsbDevice usbDevice;
         private Connection deviceConnection;
 
+        // TODO: Assign the json definition CRC value to this property during generation
+        // and then check the device's CRC at runtime and error if they don't match.
+        public ushort GeneratedForCRC { get; private set; }
+
         public Device(BasicDeviceInfo deviceInfo) : this()
         {
             this.deviceInfo = deviceInfo;
@@ -35,6 +39,11 @@
             // You can assign the CRC immediately and bypass the Schema fetch
             // deviceConnection.JsonCRC = 9455;
             deviceConnection.EndpointJSON = FetchSchemaSync();
+
+            ////if (deviceConnection.JsonCRC != GeneratedForCRC)
+            ////{
+            ////    throw new Exception("Device schema does not match the schema this library was generated against");
+            ////}
         }
 
         public async Task<string> FetchSchema()
