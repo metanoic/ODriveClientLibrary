@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveClientLibrary", "ODriveClientLibrary\ODriveClientLibrary.csproj", "{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.DeviceMonitor", "Demo.DeviceMonitor\Demo.DeviceMonitor.csproj", "{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveClientLibrary.DeviceGenerator", "ODriveClientLibrary.DeviceGenerator\ODriveClientLibrary.DeviceGenerator.csproj", "{D12BC650-454A-478D-B53C-8B36F126BA1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.ReadSetProperties", "Demo.ReadSetProperties\Demo.ReadSetProperties.csproj", "{48C9AAD1-4981-448E-9117-CD092683CF0B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{010CF0EC-1BFC-4556-97CB-53E61B23AFE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D12BC650-454A-478D-B53C-8B36F126BA1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12BC650-454A-478D-B53C-8B36F126BA1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D12BC650-454A-478D-B53C-8B36F126BA1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D12BC650-454A-478D-B53C-8B36F126BA1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BD4F59A2-6775-46C8-86B4-B3B3B005C235}
+	EndGlobalSection
+EndGlobal

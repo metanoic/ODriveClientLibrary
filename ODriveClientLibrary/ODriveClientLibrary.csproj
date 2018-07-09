@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ODrive</RootNamespace>
+    <AssemblyName>ODriveClientLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="LibUsbDotNet, Version=2.2.8.104, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibUsbDotNet.2.2.8\lib\LibUsbDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="ReactiveUI, Version=8.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveUI.8.2.1\lib\net461\ReactiveUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.4.0.0\lib\net461\Splat.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Primitives.4.3.0\lib\net45\System.Drawing.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Reactive.Core, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Core.3.1.1\lib\net46\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Interfaces.3.1.1\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Linq.3.1.1\lib\net46\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.PlatformServices.3.1.1\lib\net46\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Threading, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Windows.Threading.3.1.1\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Axis0Config.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis0Controller.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis0Encoder.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis0Motor.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis0SensorlessEstimator.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis1Config.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis1Controller.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis1Encoder.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis1Motor.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Axis1SensorlessEstimator.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Enums\AxisStateEnum.cs" />
+    <Compile Include="BasicDeviceInfo.cs" />
+    <Compile Include="Config.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Connection.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="ControllerConfig.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Device.cs" />
+    <Compile Include="Device.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceAxis0.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceAxis1.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceCan.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceConfig.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceMonitor.cs" />
+    <Compile Include="DeviceSystemStats.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EncoderConfig.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Enums\AxisErrorCodeEnum.cs" />
+    <Compile Include="Enums\ControlModeEnum.cs" />
+    <Compile Include="Enums\EncoderErrorCodeEnum.cs" />
+    <Compile Include="Enums\MotorArmedStateEnum.cs" />
+    <Compile Include="Enums\MotorErrorCodeEnum.cs" />
+    <Compile Include="MotorConfig.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotorCurrentControl.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotorGateDriver.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MotorTimingLog.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RemoteObject.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Request.cs" />
+    <Compile Include="Response.cs" />
+    <Compile Include="SystemStatsI2c.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SystemStatsUsb.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\CRC.cs" />
+    <Compile Include="Utilities\WireBuffer.cs" />
+    <Compile Include="Utilities\PredicateBuilder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\ThreadSafeCounter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Manager.ttinclude" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GenerateDevice.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenerateDevice.txt</LastGenOutput>
+    </Content>
+    <Content Include="GenerateDevice.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
