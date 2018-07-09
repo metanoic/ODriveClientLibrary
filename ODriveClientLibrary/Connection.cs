@@ -122,7 +122,6 @@
                 else
                 {
                     totalBytesReceived += (uint)data.Length;
-                    Console.WriteLine(totalBytesReceived);
                 }
 
                 cumulativeResponse = ConcatByteArrays(cumulativeResponse, data);
