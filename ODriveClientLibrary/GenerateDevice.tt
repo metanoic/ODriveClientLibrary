@@ -1,0 +1,58 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(ProjectDir)\bin\Debug\LibUsbDotNet.dll" #>
+<#@ assembly name="$(ProjectDir)\bin\Debug\ReactiveUI.dll" #>
+<#@ assembly name="$(ProjectDir)\bin\Debug\Splat.dll" #>
+<#@ assembly name="$(ProjectDir)\bin\Debug\ODriveClientLibrary.dll" #>
+<#@ assembly name="$(SolutionDir)\ODriveClientLibrary.DeviceGenerator\bin\Debug\ODriveClientLibrary.DeviceGenerator.dll" #>
+<#@ import namespace="ReactiveUI" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Threading.Tasks" #>
+<#@ import namespace="ODrive" #>
+<#@ import namespace="ODrive.DeviceGenerator" #>
+<#@ import namespace="ODrive.Utilities"#>
+<#@ output extension=".txt" #>
+<#@ include file=".\Manager.ttinclude" #>
+<#
+
+	bool useLiveSchema = false;
+	// Replace the serial number with your board's and set useLiveSchema = true to generate code for your device's version
+	string deviceSerialNumber = "366233683037";
+	
+	var deviceMonitor = DeviceMonitor.Instance;
+
+	deviceMonitor.DeviceAvailabilityPredicate = PredicateBuilder.True<BasicDeviceInfo>()
+		.And(deviceInfo => deviceInfo.SerialNumber == deviceSerialNumber)
+        .And(deviceInfo => deviceInfo.IsConnected);
+
+	var foundDeviceInfo = deviceMonitor.AvailableDevices.FirstOrDefault();
+
+	if (foundDeviceInfo == null) {
+		throw new Exception("Could not find any ODrive boards with SerialNumber: {deviceSerialNumber}");
+    }
+
+	var templateManager = Manager.Create(Host, GenerationEnvironment);
+
+	string schemaJSON = string.Empty;
+	if (useLiveSchema) {
+		var oDrive = new Device(foundDeviceInfo);
+		schemaJSON = Task.Run<string>(async () => await oDrive.FetchSchema()).Result;
+	} 
+	else 
+	{
+		schemaJSON = System.IO.File.ReadAllText(Host.ResolvePath("..\\ODriveClientLibrary.DeviceGenerator\\DeviceSchema\\DefinitionArchive\\3.5.json"));
+	}
+
+	var classFiles = SchemaParser.Parse(schemaJSON);
+
+	foreach (var classFile in classFiles) 
+	{
+		templateManager.StartNewFile(classFile.FileName);
+		Write(classFile.Source);
+		templateManager.EndBlock();
+	}
+
+	templateManager.Process(true);
+#>
