@@ -5,9 +5,9 @@ namespace ODrive
 
     public partial class Axis1Controller : RemoteObject
     {
-        public Axis1Controller(Device device): base(device)
+        public Axis1Controller(Device ODriveDevice): base(ODriveDevice)
         {
-            Config = new ControllerConfig(device);
+            Config = new ControllerConfig(ODriveDevice);
         }
 
         public ControllerConfig Config
@@ -21,15 +21,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(191);
+                var result = ODriveDevice.FetchEndpointSync<float>(191);
                 this.RaiseAndSetIfChanged(ref posSetpoint, result);
                 return posSetpoint;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(191, value);
-                this.RaiseAndSetIfChanged(ref posSetpoint, value);
+                ODriveDevice.FetchEndpointSync<float>(191, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref posSetpoint, value);
             }
         }
 
@@ -38,15 +38,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(192);
+                var result = ODriveDevice.FetchEndpointSync<float>(192);
                 this.RaiseAndSetIfChanged(ref velSetpoint, result);
                 return velSetpoint;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(192, value);
-                this.RaiseAndSetIfChanged(ref velSetpoint, value);
+                ODriveDevice.FetchEndpointSync<float>(192, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref velSetpoint, value);
             }
         }
 
@@ -55,15 +55,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(193);
+                var result = ODriveDevice.FetchEndpointSync<float>(193);
                 this.RaiseAndSetIfChanged(ref velIntegratorCurrent, result);
                 return velIntegratorCurrent;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(193, value);
-                this.RaiseAndSetIfChanged(ref velIntegratorCurrent, value);
+                ODriveDevice.FetchEndpointSync<float>(193, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref velIntegratorCurrent, value);
             }
         }
 
@@ -72,42 +72,42 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(194);
+                var result = ODriveDevice.FetchEndpointSync<float>(194);
                 this.RaiseAndSetIfChanged(ref currentSetpoint, result);
                 return currentSetpoint;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(194, value);
-                this.RaiseAndSetIfChanged(ref currentSetpoint, value);
+                ODriveDevice.FetchEndpointSync<float>(194, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref currentSetpoint, value);
             }
         }
 
         public void SetPosSetpoint(float pos_setpoint, float vel_feed_forward, float current_feed_forward)
         {
-            device.FetchEndpointSync<float>(201, pos_setpoint);
-            device.FetchEndpointSync<float>(202, vel_feed_forward);
-            device.FetchEndpointSync<float>(203, current_feed_forward);
-            device.FetchEndpointSync<byte>(200);
+            ODriveDevice.FetchEndpointSync<float>(201, pos_setpoint);
+            ODriveDevice.FetchEndpointSync<float>(202, vel_feed_forward);
+            ODriveDevice.FetchEndpointSync<float>(203, current_feed_forward);
+            ODriveDevice.FetchEndpointSync<byte>(200);
         }
 
         public void SetVelSetpoint(float vel_setpoint, float current_feed_forward)
         {
-            device.FetchEndpointSync<float>(205, vel_setpoint);
-            device.FetchEndpointSync<float>(206, current_feed_forward);
-            device.FetchEndpointSync<byte>(204);
+            ODriveDevice.FetchEndpointSync<float>(205, vel_setpoint);
+            ODriveDevice.FetchEndpointSync<float>(206, current_feed_forward);
+            ODriveDevice.FetchEndpointSync<byte>(204);
         }
 
         public void SetCurrentSetpoint(float current_setpoint)
         {
-            device.FetchEndpointSync<float>(208, current_setpoint);
-            device.FetchEndpointSync<byte>(207);
+            ODriveDevice.FetchEndpointSync<float>(208, current_setpoint);
+            ODriveDevice.FetchEndpointSync<byte>(207);
         }
 
         public void StartAnticoggingCalibration()
         {
-            device.FetchEndpointSync<byte>(209);
+            ODriveDevice.FetchEndpointSync<byte>(209);
         }
     }
 }

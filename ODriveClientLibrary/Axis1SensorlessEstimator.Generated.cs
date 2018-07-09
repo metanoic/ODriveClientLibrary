@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class Axis1SensorlessEstimator : RemoteObject
     {
-        public Axis1SensorlessEstimator(Device device): base(device)
+        public Axis1SensorlessEstimator(Device ODriveDevice): base(ODriveDevice)
         {
         }
 
@@ -14,15 +14,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<byte>(232);
+                var result = ODriveDevice.FetchEndpointSync<byte>(232);
                 this.RaiseAndSetIfChanged(ref error, result);
                 return error;
             }
 
             set
             {
-                device.FetchEndpointSync<byte>(232, value);
-                this.RaiseAndSetIfChanged(ref error, value);
+                ODriveDevice.FetchEndpointSync<byte>(232, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref error, value);
             }
         }
 
@@ -31,15 +31,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(233);
+                var result = ODriveDevice.FetchEndpointSync<float>(233);
                 this.RaiseAndSetIfChanged(ref phase, result);
                 return phase;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(233, value);
-                this.RaiseAndSetIfChanged(ref phase, value);
+                ODriveDevice.FetchEndpointSync<float>(233, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref phase, value);
             }
         }
 
@@ -48,15 +48,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(234);
+                var result = ODriveDevice.FetchEndpointSync<float>(234);
                 this.RaiseAndSetIfChanged(ref pllPos, result);
                 return pllPos;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(234, value);
-                this.RaiseAndSetIfChanged(ref pllPos, value);
+                ODriveDevice.FetchEndpointSync<float>(234, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref pllPos, value);
             }
         }
 
@@ -65,15 +65,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(235);
+                var result = ODriveDevice.FetchEndpointSync<float>(235);
                 this.RaiseAndSetIfChanged(ref pllVel, result);
                 return pllVel;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(235, value);
-                this.RaiseAndSetIfChanged(ref pllVel, value);
+                ODriveDevice.FetchEndpointSync<float>(235, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref pllVel, value);
             }
         }
 
@@ -82,15 +82,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(236);
+                var result = ODriveDevice.FetchEndpointSync<float>(236);
                 this.RaiseAndSetIfChanged(ref pllKp, result);
                 return pllKp;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(236, value);
-                this.RaiseAndSetIfChanged(ref pllKp, value);
+                ODriveDevice.FetchEndpointSync<float>(236, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref pllKp, value);
             }
         }
 
@@ -99,15 +99,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(237);
+                var result = ODriveDevice.FetchEndpointSync<float>(237);
                 this.RaiseAndSetIfChanged(ref pllKi, result);
                 return pllKi;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(237, value);
-                this.RaiseAndSetIfChanged(ref pllKi, value);
+                ODriveDevice.FetchEndpointSync<float>(237, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref pllKi, value);
             }
         }
     }

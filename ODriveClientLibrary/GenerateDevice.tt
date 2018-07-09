@@ -19,24 +19,24 @@
 
 	bool useLiveSchema = false;
 	// Replace the serial number with your board's and set useLiveSchema = true to generate code for your device's version
-	string deviceSerialNumber = "366233683037";
+	string deviceSerialNumber = "...";
 	
-	var deviceMonitor = DeviceMonitor.Instance;
-
-	deviceMonitor.DeviceAvailabilityPredicate = PredicateBuilder.True<BasicDeviceInfo>()
-		.And(deviceInfo => deviceInfo.SerialNumber == deviceSerialNumber)
-        .And(deviceInfo => deviceInfo.IsConnected);
-
-	var foundDeviceInfo = deviceMonitor.AvailableDevices.FirstOrDefault();
-
-	if (foundDeviceInfo == null) {
-		throw new Exception("Could not find any ODrive boards with SerialNumber: {deviceSerialNumber}");
-    }
-
-	var templateManager = Manager.Create(Host, GenerationEnvironment);
-
 	string schemaJSON = string.Empty;
+	
 	if (useLiveSchema) {
+		var deviceMonitor = DeviceMonitor.Instance;
+
+		deviceMonitor.DeviceAvailabilityPredicate = PredicateBuilder.True<BasicDeviceInfo>()
+			.And(deviceInfo => deviceInfo.SerialNumber == deviceSerialNumber)
+			.And(deviceInfo => deviceInfo.IsConnected);
+
+
+		var foundDeviceInfo = deviceMonitor.AvailableDevices.FirstOrDefault();
+
+		if (foundDeviceInfo == null) {
+			throw new Exception($"Could not find any ODrive boards with SerialNumber: {deviceSerialNumber}");
+		}
+
 		var oDrive = new Device(foundDeviceInfo);
 		schemaJSON = Task.Run<string>(async () => await oDrive.FetchSchema()).Result;
 	} 
@@ -46,6 +46,8 @@
 	}
 
 	var classFiles = SchemaParser.Parse(schemaJSON);
+
+	var templateManager = Manager.Create(Host, GenerationEnvironment);
 
 	foreach (var classFile in classFiles) 
 	{

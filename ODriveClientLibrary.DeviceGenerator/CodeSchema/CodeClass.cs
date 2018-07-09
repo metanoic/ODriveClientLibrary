@@ -19,10 +19,12 @@
 
         public static CodeClass CreateFrom(DeviceObject deviceObject)
         {
-            var codeClass = new CodeClass();
+            var codeClass = new CodeClass
+            {
+                ClassName = GetObjectClassName(deviceObject),
+                FileName = GetObjectClassName(deviceObject) + ".Generated.cs"
+            };
 
-            codeClass.ClassName = GetObjectClassName(deviceObject);
-            codeClass.FileName = GetObjectClassName(deviceObject) + ".Generated.cs";
             var deviceProperties = deviceObject.Members.Where(x => x is DeviceProperty || x is DeviceObject).ToList();
 
             codeClass.Functions = deviceObject.Members.Where(x => x is DeviceFunction).Select(x => CodeFunction.CreateFrom((DeviceFunction)x)).ToList();
@@ -60,7 +62,7 @@
                 }
                 else
                 {
-                    constructorStatements.Add(ParseStatement($"{objectProperty.Name} = new {objectProperty.Type}(device);"));
+                    constructorStatements.Add(ParseStatement($"{objectProperty.Name} = new {objectProperty.Type}(ODriveDevice);"));
                 }
             }
 
@@ -70,9 +72,9 @@
             if (ClassName != "Device")
             {
                 classConstructor = classConstructor.WithParameterList(
-                    ParameterList(SingletonSeparatedList(Parameter(Identifier("device")).WithType(IdentifierName("Device")))))
+                    ParameterList(SingletonSeparatedList(Parameter(Identifier("ODriveDevice")).WithType(IdentifierName("Device")))))
                 .WithInitializer(
-                    ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, ArgumentList(SingletonSeparatedList(Argument(IdentifierName("device"))))))
+                    ConstructorInitializer(SyntaxKind.BaseConstructorInitializer, ArgumentList(SingletonSeparatedList(Argument(IdentifierName("ODriveDevice"))))))
                 .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
             }
             else

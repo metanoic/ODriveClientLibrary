@@ -4,11 +4,11 @@
 
     public abstract class RemoteObject : ReactiveObject
     {
-        protected Device device { get; set; }
+        protected Device ODriveDevice { get; set; }
 
         public RemoteObject(Device device)
         {
-            this.device = device;
+            this.ODriveDevice = device;
         }
 
         public RemoteObject()

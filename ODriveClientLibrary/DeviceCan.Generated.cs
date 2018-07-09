@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class DeviceCan : RemoteObject
     {
-        public DeviceCan(Device device): base(device)
+        public DeviceCan(Device ODriveDevice): base(ODriveDevice)
         {
         }
 
@@ -14,7 +14,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<byte>(238);
+                var result = ODriveDevice.FetchEndpointSync<byte>(238);
                 this.RaiseAndSetIfChanged(ref nodeId, result);
                 return nodeId;
             }
@@ -25,7 +25,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<uint>(239);
+                var result = ODriveDevice.FetchEndpointSync<uint>(239);
                 this.RaiseAndSetIfChanged(ref txMailboxCompleteCallbackCnt, result);
                 return txMailboxCompleteCallbackCnt;
             }
@@ -36,7 +36,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<uint>(240);
+                var result = ODriveDevice.FetchEndpointSync<uint>(240);
                 this.RaiseAndSetIfChanged(ref txMailboxAbortCallbackCnt, result);
                 return txMailboxAbortCallbackCnt;
             }
@@ -47,7 +47,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<uint>(241);
+                var result = ODriveDevice.FetchEndpointSync<uint>(241);
                 this.RaiseAndSetIfChanged(ref receivedMsgCnt, result);
                 return receivedMsgCnt;
             }
@@ -58,7 +58,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<uint>(242);
+                var result = ODriveDevice.FetchEndpointSync<uint>(242);
                 this.RaiseAndSetIfChanged(ref receivedAck, result);
                 return receivedAck;
             }
@@ -69,7 +69,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<uint>(243);
+                var result = ODriveDevice.FetchEndpointSync<uint>(243);
                 this.RaiseAndSetIfChanged(ref unexpectedErrors, result);
                 return unexpectedErrors;
             }
@@ -80,7 +80,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<uint>(244);
+                var result = ODriveDevice.FetchEndpointSync<uint>(244);
                 this.RaiseAndSetIfChanged(ref unhandledMessages, result);
                 return unhandledMessages;
             }

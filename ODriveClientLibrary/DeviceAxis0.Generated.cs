@@ -5,13 +5,13 @@ namespace ODrive
 
     public partial class DeviceAxis0 : RemoteObject
     {
-        public DeviceAxis0(Device device): base(device)
+        public DeviceAxis0(Device ODriveDevice): base(ODriveDevice)
         {
-            Config = new Axis0Config(device);
-            Motor = new Axis0Motor(device);
-            Controller = new Axis0Controller(device);
-            Encoder = new Axis0Encoder(device);
-            SensorlessEstimator = new Axis0SensorlessEstimator(device);
+            Config = new Axis0Config(ODriveDevice);
+            Motor = new Axis0Motor(ODriveDevice);
+            Controller = new Axis0Controller(ODriveDevice);
+            Encoder = new Axis0Encoder(ODriveDevice);
+            SensorlessEstimator = new Axis0SensorlessEstimator(ODriveDevice);
         }
 
         public Axis0Config Config
@@ -49,15 +49,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(34);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(34);
                 this.RaiseAndSetIfChanged(ref error, result);
                 return error;
             }
 
             set
             {
-                device.FetchEndpointSync<ushort>(34, value);
-                this.RaiseAndSetIfChanged(ref error, value);
+                ODriveDevice.FetchEndpointSync<ushort>(34, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref error, value);
             }
         }
 
@@ -66,15 +66,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(35);
+                var result = ODriveDevice.FetchEndpointSync<bool>(35);
                 this.RaiseAndSetIfChanged(ref enableStepDir, result);
                 return enableStepDir;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(35, value);
-                this.RaiseAndSetIfChanged(ref enableStepDir, value);
+                ODriveDevice.FetchEndpointSync<bool>(35, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref enableStepDir, value);
             }
         }
 
@@ -83,7 +83,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<byte>(36);
+                var result = ODriveDevice.FetchEndpointSync<byte>(36);
                 this.RaiseAndSetIfChanged(ref currentState, result);
                 return currentState;
             }
@@ -94,15 +94,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<byte>(37);
+                var result = ODriveDevice.FetchEndpointSync<byte>(37);
                 this.RaiseAndSetIfChanged(ref requestedState, result);
                 return requestedState;
             }
 
             set
             {
-                device.FetchEndpointSync<byte>(37, value);
-                this.RaiseAndSetIfChanged(ref requestedState, value);
+                ODriveDevice.FetchEndpointSync<byte>(37, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref requestedState, value);
             }
         }
 
@@ -111,7 +111,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<uint>(38);
+                var result = ODriveDevice.FetchEndpointSync<uint>(38);
                 this.RaiseAndSetIfChanged(ref loopCounter, result);
                 return loopCounter;
             }

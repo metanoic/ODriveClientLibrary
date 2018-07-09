@@ -15,22 +15,24 @@
 
         public static CodeProperty CreateFrom(DeviceProperty deviceProperty)
         {
-            var codeProperty = new CodeProperty();
-
-            codeProperty.EndpointID = deviceProperty.ID;
-            codeProperty.Name = Helpers.ToPascalCase(deviceProperty.Name);
-            codeProperty.Type = Helpers.DataTypeToString(deviceProperty.Type);
-            codeProperty.CanSet = deviceProperty.Access.HasFlag(AccessMode.CanWrite);
+            var codeProperty = new CodeProperty
+            {
+                EndpointID = deviceProperty.ID,
+                Name = Helpers.ToPascalCase(deviceProperty.Name),
+                Type = Helpers.DataTypeToString(deviceProperty.Type),
+                CanSet = deviceProperty.Access.HasFlag(AccessMode.CanWrite)
+            };
 
             return codeProperty;
         }
 
         public static CodeProperty CreateFrom(DeviceObject deviceObject)
         {
-            var codeProperty = new CodeProperty();
-
-            codeProperty.Name = Helpers.ToPascalCase(deviceObject.Name);
-            codeProperty.Type = CodeClass.GetObjectClassName(deviceObject);
+            var codeProperty = new CodeProperty
+            {
+                Name = Helpers.ToPascalCase(deviceObject.Name),
+                Type = CodeClass.GetObjectClassName(deviceObject)
+            };
 
             return codeProperty;
         }
@@ -65,7 +67,7 @@
                         List(new[] 
                         {
                             ParseStatement(
-                                $"var result = device.FetchEndpointSync<{Type}>({EndpointID});"
+                                $"var result = ODriveDevice.FetchEndpointSync<{Type}>({EndpointID});"
                             ),
                             ParseStatement(
                                 $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, result);"
@@ -84,10 +86,10 @@
                         List(new[]
                         {
                             ParseStatement(
-                                $"device.FetchEndpointSync<{Type}>({EndpointID}, value);"
+                                $"ODriveDevice.FetchEndpointSync<{Type}>({EndpointID}, value);"
                             ),
                             ParseStatement(
-                                $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, value);"
+                                $"ODriveDevice.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, value);"
                             )
                         })
                     ))

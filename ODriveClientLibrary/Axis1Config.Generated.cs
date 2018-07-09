@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class Axis1Config : RemoteObject
     {
-        public Axis1Config(Device device): base(device)
+        public Axis1Config(Device ODriveDevice): base(ODriveDevice)
         {
         }
 
@@ -14,15 +14,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(141);
+                var result = ODriveDevice.FetchEndpointSync<bool>(141);
                 this.RaiseAndSetIfChanged(ref startupMotorCalibration, result);
                 return startupMotorCalibration;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(141, value);
-                this.RaiseAndSetIfChanged(ref startupMotorCalibration, value);
+                ODriveDevice.FetchEndpointSync<bool>(141, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref startupMotorCalibration, value);
             }
         }
 
@@ -31,15 +31,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(142);
+                var result = ODriveDevice.FetchEndpointSync<bool>(142);
                 this.RaiseAndSetIfChanged(ref startupEncoderIndexSearch, result);
                 return startupEncoderIndexSearch;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(142, value);
-                this.RaiseAndSetIfChanged(ref startupEncoderIndexSearch, value);
+                ODriveDevice.FetchEndpointSync<bool>(142, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref startupEncoderIndexSearch, value);
             }
         }
 
@@ -48,15 +48,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(143);
+                var result = ODriveDevice.FetchEndpointSync<bool>(143);
                 this.RaiseAndSetIfChanged(ref startupEncoderOffsetCalibration, result);
                 return startupEncoderOffsetCalibration;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(143, value);
-                this.RaiseAndSetIfChanged(ref startupEncoderOffsetCalibration, value);
+                ODriveDevice.FetchEndpointSync<bool>(143, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref startupEncoderOffsetCalibration, value);
             }
         }
 
@@ -65,15 +65,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(144);
+                var result = ODriveDevice.FetchEndpointSync<bool>(144);
                 this.RaiseAndSetIfChanged(ref startupClosedLoopControl, result);
                 return startupClosedLoopControl;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(144, value);
-                this.RaiseAndSetIfChanged(ref startupClosedLoopControl, value);
+                ODriveDevice.FetchEndpointSync<bool>(144, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref startupClosedLoopControl, value);
             }
         }
 
@@ -82,15 +82,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(145);
+                var result = ODriveDevice.FetchEndpointSync<bool>(145);
                 this.RaiseAndSetIfChanged(ref startupSensorlessControl, result);
                 return startupSensorlessControl;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(145, value);
-                this.RaiseAndSetIfChanged(ref startupSensorlessControl, value);
+                ODriveDevice.FetchEndpointSync<bool>(145, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref startupSensorlessControl, value);
             }
         }
 
@@ -99,15 +99,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(146);
+                var result = ODriveDevice.FetchEndpointSync<bool>(146);
                 this.RaiseAndSetIfChanged(ref enableStepDir, result);
                 return enableStepDir;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(146, value);
-                this.RaiseAndSetIfChanged(ref enableStepDir, value);
+                ODriveDevice.FetchEndpointSync<bool>(146, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref enableStepDir, value);
             }
         }
 
@@ -116,15 +116,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(147);
+                var result = ODriveDevice.FetchEndpointSync<float>(147);
                 this.RaiseAndSetIfChanged(ref countsPerStep, result);
                 return countsPerStep;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(147, value);
-                this.RaiseAndSetIfChanged(ref countsPerStep, value);
+                ODriveDevice.FetchEndpointSync<float>(147, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref countsPerStep, value);
             }
         }
 
@@ -133,15 +133,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(148);
+                var result = ODriveDevice.FetchEndpointSync<float>(148);
                 this.RaiseAndSetIfChanged(ref rampUpTime, result);
                 return rampUpTime;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(148, value);
-                this.RaiseAndSetIfChanged(ref rampUpTime, value);
+                ODriveDevice.FetchEndpointSync<float>(148, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref rampUpTime, value);
             }
         }
 
@@ -150,15 +150,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(149);
+                var result = ODriveDevice.FetchEndpointSync<float>(149);
                 this.RaiseAndSetIfChanged(ref rampUpDistance, result);
                 return rampUpDistance;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(149, value);
-                this.RaiseAndSetIfChanged(ref rampUpDistance, value);
+                ODriveDevice.FetchEndpointSync<float>(149, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref rampUpDistance, value);
             }
         }
 
@@ -167,15 +167,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(150);
+                var result = ODriveDevice.FetchEndpointSync<float>(150);
                 this.RaiseAndSetIfChanged(ref spinUpCurrent, result);
                 return spinUpCurrent;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(150, value);
-                this.RaiseAndSetIfChanged(ref spinUpCurrent, value);
+                ODriveDevice.FetchEndpointSync<float>(150, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref spinUpCurrent, value);
             }
         }
 
@@ -184,15 +184,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(151);
+                var result = ODriveDevice.FetchEndpointSync<float>(151);
                 this.RaiseAndSetIfChanged(ref spinUpAcceleration, result);
                 return spinUpAcceleration;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(151, value);
-                this.RaiseAndSetIfChanged(ref spinUpAcceleration, value);
+                ODriveDevice.FetchEndpointSync<float>(151, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref spinUpAcceleration, value);
             }
         }
 
@@ -201,15 +201,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(152);
+                var result = ODriveDevice.FetchEndpointSync<float>(152);
                 this.RaiseAndSetIfChanged(ref spinUpTargetVel, result);
                 return spinUpTargetVel;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(152, value);
-                this.RaiseAndSetIfChanged(ref spinUpTargetVel, value);
+                ODriveDevice.FetchEndpointSync<float>(152, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref spinUpTargetVel, value);
             }
         }
     }

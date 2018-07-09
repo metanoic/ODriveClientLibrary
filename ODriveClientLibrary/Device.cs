@@ -12,6 +12,7 @@
 
         private UsbDevice usbDevice;
         private Connection deviceConnection;
+        private CRC<ushort> CRC16 = new CRC<ushort>(16, ODrive.Config.CANONICAL_CRC16_POLYNOMIAL, ODrive.Config.USB_PROTOCOL_VERSION);
 
         // TODO: Assign the json definition CRC value to this property during generation
         // and then check the device's CRC at runtime and error if they don't match.
@@ -23,7 +24,7 @@
             usbDevice = deviceInfo.Device;
 
             // Play nice with generated partial
-            device = this;
+            ODriveDevice = this;
 
             // Open usb read and write endpoints
             deviceConnection = new Connection(usbDevice);

@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class MotorTimingLog : RemoteObject
     {
-        public MotorTimingLog(Device device): base(device)
+        public MotorTimingLog(Device ODriveDevice): base(ODriveDevice)
         {
         }
 
@@ -14,7 +14,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(70);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(70);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGGENERAL, result);
                 return tIMINGLOGGENERAL;
             }
@@ -25,7 +25,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(71);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(71);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGADCCBI, result);
                 return tIMINGLOGADCCBI;
             }
@@ -36,7 +36,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(72);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(72);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGADCCBDC, result);
                 return tIMINGLOGADCCBDC;
             }
@@ -47,7 +47,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(73);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(73);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGMEASR, result);
                 return tIMINGLOGMEASR;
             }
@@ -58,7 +58,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(74);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(74);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGMEASL, result);
                 return tIMINGLOGMEASL;
             }
@@ -69,7 +69,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(75);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(75);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGENCCALIB, result);
                 return tIMINGLOGENCCALIB;
             }
@@ -80,7 +80,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(76);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(76);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGIDXSEARCH, result);
                 return tIMINGLOGIDXSEARCH;
             }
@@ -91,7 +91,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(77);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(77);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGFOCVOLTAGE, result);
                 return tIMINGLOGFOCVOLTAGE;
             }
@@ -102,7 +102,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(78);
+                var result = ODriveDevice.FetchEndpointSync<ushort>(78);
                 this.RaiseAndSetIfChanged(ref tIMINGLOGFOCCURRENT, result);
                 return tIMINGLOGFOCCURRENT;
             }

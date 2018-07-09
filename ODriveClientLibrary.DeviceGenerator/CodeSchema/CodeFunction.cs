@@ -16,10 +16,11 @@
 
         public static CodeFunction CreateFrom(DeviceFunction deviceFunction)
         {
-            var codeFunction = new CodeFunction();
-
-            codeFunction.Name = Helpers.ToPascalCase(deviceFunction.Name);
-            codeFunction.EndpointID = deviceFunction.ID.ToString();
+            var codeFunction = new CodeFunction
+            {
+                Name = Helpers.ToPascalCase(deviceFunction.Name),
+                EndpointID = deviceFunction.ID.ToString()
+            };
 
             var arguments = deviceFunction.Arguments.Concat(deviceFunction.Inputs).ToList();
 
@@ -43,7 +44,7 @@
             foreach (var argument in Arguments)
             {
                 methodStatements.Add(ParseStatement(
-                    $"device.FetchEndpointSync<{argument.Type}>({argument.EndpointID}, {Helpers.ToCamelCase(argument.Name)});"
+                    $"ODriveDevice.FetchEndpointSync<{argument.Type}>({argument.EndpointID}, {Helpers.ToCamelCase(argument.Name)});"
                 ));
 
                 methodDeclaration = methodDeclaration.AddParameterListParameters(
@@ -54,13 +55,13 @@
             if (ReturnType != null)
             {
                 methodStatements.Add(ParseStatement(
-                    $"return device.FetchEndpointSync<{ReturnType}>({EndpointID});"
+                    $"return ODriveDevice.FetchEndpointSync<{ReturnType}>({EndpointID});"
                 ));
             }
             else
             {
                 methodStatements.Add(ParseStatement(
-                   $"device.FetchEndpointSync<byte>({EndpointID});"
+                   $"ODriveDevice.FetchEndpointSync<byte>({EndpointID});"
                ));
             }
 

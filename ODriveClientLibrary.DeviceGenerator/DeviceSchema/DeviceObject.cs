@@ -14,12 +14,13 @@
 
         public static DeviceObject CreateFrom(DeviceObject parent, int? id, string name, JArray inputNodes)
         {
-            var deviceObject = new DeviceObject();
-
-            deviceObject.Parent = parent;
-            deviceObject.ID = id;
-            deviceObject.Name = name;
-            deviceObject.Type = DataType.Object;
+            var deviceObject = new DeviceObject
+            {
+                Parent = parent,
+                ID = id,
+                Name = name,
+                Type = DataType.Object
+            };
 
             var memberList = new List<IDeviceMember>();
 
@@ -67,23 +68,20 @@
 
             foreach (var member in Members)
             {
-                if (member is DeviceObject)
+                if (member is DeviceObject deviceObject)
                 {
-                    var deviceObject = (DeviceObject)member;
                     objectKey += deviceObject.Name;
                     objectKey += Helpers.DataTypeToString(deviceObject.Type);
                     objectKey += "|";
                 }
-                else if (member is DeviceProperty)
+                else if (member is DeviceProperty deviceProperty)
                 {
-                    var deviceProperty = (DeviceProperty)member;
                     objectKey += deviceProperty.Name;
                     objectKey += Helpers.DataTypeToString(deviceProperty.Type);
                     objectKey += "|";
                 }
-                else if (member is DeviceFunction)
+                else if (member is DeviceFunction deviceFunction)
                 {
-                    var deviceFunction = (DeviceFunction)member;
                     objectKey += deviceFunction.Name;
                     objectKey += Helpers.DataTypeToString(deviceFunction.Type);
                     objectKey += "|";

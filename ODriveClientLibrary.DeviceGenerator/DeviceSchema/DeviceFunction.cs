@@ -14,11 +14,12 @@
 
         public static DeviceFunction CreateFrom(int id, string name, JArray argumentNodes, JArray inputNodes, JArray outputNodes)
         {
-            var deviceFunction = new DeviceFunction();
-
-            deviceFunction.ID = id;
-            deviceFunction.Name = name;
-            deviceFunction.Type = DataType.Function;
+            var deviceFunction = new DeviceFunction
+            {
+                ID = id,
+                Name = name,
+                Type = DataType.Function
+            };
 
             var arguments = new List<DeviceProperty>();
             var inputs = new List<DeviceProperty>();

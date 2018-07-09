@@ -10,11 +10,12 @@
 
         public static CodeArgument CreateFrom(DeviceProperty deviceProperty)
         {
-            var codeArgument = new CodeArgument();
-
-            codeArgument.Name = Helpers.ToCamelCase(deviceProperty.Name);
-            codeArgument.Type = Helpers.DataTypeToString(deviceProperty.Type);
-            codeArgument.EndpointID = deviceProperty.ID;
+            var codeArgument = new CodeArgument
+            {
+                Name = Helpers.ToCamelCase(deviceProperty.Name),
+                Type = Helpers.DataTypeToString(deviceProperty.Type),
+                EndpointID = deviceProperty.ID
+            };
 
             return codeArgument;
         }

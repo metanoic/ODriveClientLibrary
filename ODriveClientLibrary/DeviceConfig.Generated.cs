@@ -5,7 +5,7 @@ namespace ODrive
 
     public partial class DeviceConfig : RemoteObject
     {
-        public DeviceConfig(Device device): base(device)
+        public DeviceConfig(Device ODriveDevice): base(ODriveDevice)
         {
         }
 
@@ -14,15 +14,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(28);
+                var result = ODriveDevice.FetchEndpointSync<float>(28);
                 this.RaiseAndSetIfChanged(ref brakeResistance, result);
                 return brakeResistance;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(28, value);
-                this.RaiseAndSetIfChanged(ref brakeResistance, value);
+                ODriveDevice.FetchEndpointSync<float>(28, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref brakeResistance, value);
             }
         }
 
@@ -31,15 +31,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(29);
+                var result = ODriveDevice.FetchEndpointSync<bool>(29);
                 this.RaiseAndSetIfChanged(ref enableUart, result);
                 return enableUart;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(29, value);
-                this.RaiseAndSetIfChanged(ref enableUart, value);
+                ODriveDevice.FetchEndpointSync<bool>(29, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref enableUart, value);
             }
         }
 
@@ -48,15 +48,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(30);
+                var result = ODriveDevice.FetchEndpointSync<bool>(30);
                 this.RaiseAndSetIfChanged(ref enableI2cInsteadOfCan, result);
                 return enableI2cInsteadOfCan;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(30, value);
-                this.RaiseAndSetIfChanged(ref enableI2cInsteadOfCan, value);
+                ODriveDevice.FetchEndpointSync<bool>(30, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref enableI2cInsteadOfCan, value);
             }
         }
 
@@ -65,15 +65,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(31);
+                var result = ODriveDevice.FetchEndpointSync<bool>(31);
                 this.RaiseAndSetIfChanged(ref enableAsciiProtocolOnUsb, result);
                 return enableAsciiProtocolOnUsb;
             }
 
             set
             {
-                device.FetchEndpointSync<bool>(31, value);
-                this.RaiseAndSetIfChanged(ref enableAsciiProtocolOnUsb, value);
+                ODriveDevice.FetchEndpointSync<bool>(31, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref enableAsciiProtocolOnUsb, value);
             }
         }
 
@@ -82,15 +82,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(32);
+                var result = ODriveDevice.FetchEndpointSync<float>(32);
                 this.RaiseAndSetIfChanged(ref dcBusUndervoltageTripLevel, result);
                 return dcBusUndervoltageTripLevel;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(32, value);
-                this.RaiseAndSetIfChanged(ref dcBusUndervoltageTripLevel, value);
+                ODriveDevice.FetchEndpointSync<float>(32, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref dcBusUndervoltageTripLevel, value);
             }
         }
 
@@ -99,15 +99,15 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(33);
+                var result = ODriveDevice.FetchEndpointSync<float>(33);
                 this.RaiseAndSetIfChanged(ref dcBusOvervoltageTripLevel, result);
                 return dcBusOvervoltageTripLevel;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(33, value);
-                this.RaiseAndSetIfChanged(ref dcBusOvervoltageTripLevel, value);
+                ODriveDevice.FetchEndpointSync<float>(33, value);
+                ODriveDevice.RaiseAndSetIfChanged(ref dcBusOvervoltageTripLevel, value);
             }
         }
     }
