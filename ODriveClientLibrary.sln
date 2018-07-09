@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.DeviceMonitor", "Demo.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveClientLibrary.DeviceGenerator", "ODriveClientLibrary.DeviceGenerator\ODriveClientLibrary.DeviceGenerator.csproj", "{D12BC650-454A-478D-B53C-8B36F126BA1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.DeviceGenerator", "Demo.DeviceGenerator\Demo.DeviceGenerator.csproj", "{D626A9B9-648A-4F79-A82D-F122AB986E29}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.ReadSetProperties", "Demo.ReadSetProperties\Demo.ReadSetProperties.csproj", "{48C9AAD1-4981-448E-9117-CD092683CF0B}"
 EndProject
 Global
@@ -31,10 +29,6 @@ Global
 		{D12BC650-454A-478D-B53C-8B36F126BA1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D12BC650-454A-478D-B53C-8B36F126BA1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D12BC650-454A-478D-B53C-8B36F126BA1C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D626A9B9-648A-4F79-A82D-F122AB986E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D626A9B9-648A-4F79-A82D-F122AB986E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D626A9B9-648A-4F79-A82D-F122AB986E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D626A9B9-648A-4F79-A82D-F122AB986E29}.Release|Any CPU.Build.0 = Release|Any CPU
 		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -19,7 +19,7 @@ namespace ODrive
                 return mode;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<byte>(122, value);
                 this.RaiseAndSetIfChanged(ref mode, value);
@@ -36,7 +36,7 @@ namespace ODrive
                 return useIndex;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(123, value);
                 this.RaiseAndSetIfChanged(ref useIndex, value);
@@ -53,7 +53,7 @@ namespace ODrive
                 return preCalibrated;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(124, value);
                 this.RaiseAndSetIfChanged(ref preCalibrated, value);
@@ -70,7 +70,7 @@ namespace ODrive
                 return idxSearchSpeed;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(125, value);
                 this.RaiseAndSetIfChanged(ref idxSearchSpeed, value);
@@ -87,7 +87,7 @@ namespace ODrive
                 return cpr;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<int>(126, value);
                 this.RaiseAndSetIfChanged(ref cpr, value);
@@ -104,7 +104,7 @@ namespace ODrive
                 return offset;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<int>(127, value);
                 this.RaiseAndSetIfChanged(ref offset, value);
@@ -121,7 +121,7 @@ namespace ODrive
                 return offsetFloat;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(128, value);
                 this.RaiseAndSetIfChanged(ref offsetFloat, value);
@@ -138,7 +138,7 @@ namespace ODrive
                 return calibRange;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(129, value);
                 this.RaiseAndSetIfChanged(ref calibRange, value);

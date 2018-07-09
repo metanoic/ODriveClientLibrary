@@ -19,7 +19,7 @@ namespace ODrive
                 return error;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<byte>(130, value);
                 this.RaiseAndSetIfChanged(ref error, value);
@@ -36,7 +36,7 @@ namespace ODrive
                 return phase;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(131, value);
                 this.RaiseAndSetIfChanged(ref phase, value);
@@ -53,7 +53,7 @@ namespace ODrive
                 return pllPos;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(132, value);
                 this.RaiseAndSetIfChanged(ref pllPos, value);
@@ -70,7 +70,7 @@ namespace ODrive
                 return pllVel;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(133, value);
                 this.RaiseAndSetIfChanged(ref pllVel, value);
@@ -87,7 +87,7 @@ namespace ODrive
                 return pllKp;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(134, value);
                 this.RaiseAndSetIfChanged(ref pllKp, value);
@@ -104,7 +104,7 @@ namespace ODrive
                 return pllKi;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(135, value);
                 this.RaiseAndSetIfChanged(ref pllKi, value);

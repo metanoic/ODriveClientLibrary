@@ -54,7 +54,7 @@ namespace ODrive
                 return error;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<ushort>(34, value);
                 this.RaiseAndSetIfChanged(ref error, value);
@@ -71,7 +71,7 @@ namespace ODrive
                 return enableStepDir;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(35, value);
                 this.RaiseAndSetIfChanged(ref enableStepDir, value);
@@ -99,7 +99,7 @@ namespace ODrive
                 return requestedState;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<byte>(37, value);
                 this.RaiseAndSetIfChanged(ref requestedState, value);

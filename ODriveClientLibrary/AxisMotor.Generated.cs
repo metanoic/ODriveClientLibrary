@@ -47,7 +47,7 @@ namespace ODrive
                 return error;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<ushort>(51, value);
                 this.RaiseAndSetIfChanged(ref error, value);
@@ -108,7 +108,7 @@ namespace ODrive
                 return dCCalibPhB;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(56, value);
                 this.RaiseAndSetIfChanged(ref dCCalibPhB, value);
@@ -125,7 +125,7 @@ namespace ODrive
                 return dCCalibPhC;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(57, value);
                 this.RaiseAndSetIfChanged(ref dCCalibPhC, value);
@@ -142,7 +142,7 @@ namespace ODrive
                 return phaseCurrentRevGain;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(58, value);
                 this.RaiseAndSetIfChanged(ref phaseCurrentRevGain, value);

@@ -26,7 +26,7 @@ namespace ODrive
                 return error;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<byte>(108, value);
                 this.RaiseAndSetIfChanged(ref error, value);
@@ -65,7 +65,7 @@ namespace ODrive
                 return shadowCount;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<int>(111, value);
                 this.RaiseAndSetIfChanged(ref shadowCount, value);
@@ -82,7 +82,7 @@ namespace ODrive
                 return countInCpr;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<int>(112, value);
                 this.RaiseAndSetIfChanged(ref countInCpr, value);
@@ -99,7 +99,7 @@ namespace ODrive
                 return offset;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<int>(113, value);
                 this.RaiseAndSetIfChanged(ref offset, value);
@@ -116,7 +116,7 @@ namespace ODrive
                 return interpolation;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(114, value);
                 this.RaiseAndSetIfChanged(ref interpolation, value);
@@ -133,7 +133,7 @@ namespace ODrive
                 return phase;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(115, value);
                 this.RaiseAndSetIfChanged(ref phase, value);
@@ -150,7 +150,7 @@ namespace ODrive
                 return posEstimate;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(116, value);
                 this.RaiseAndSetIfChanged(ref posEstimate, value);
@@ -167,7 +167,7 @@ namespace ODrive
                 return posCpr;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(117, value);
                 this.RaiseAndSetIfChanged(ref posCpr, value);
@@ -184,7 +184,7 @@ namespace ODrive
                 return hallState;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<byte>(118, value);
                 this.RaiseAndSetIfChanged(ref hallState, value);
@@ -201,7 +201,7 @@ namespace ODrive
                 return pllVel;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(119, value);
                 this.RaiseAndSetIfChanged(ref pllVel, value);
@@ -218,7 +218,7 @@ namespace ODrive
                 return pllKp;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(120, value);
                 this.RaiseAndSetIfChanged(ref pllKp, value);
@@ -235,7 +235,7 @@ namespace ODrive
                 return pllKi;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(121, value);
                 this.RaiseAndSetIfChanged(ref pllKi, value);

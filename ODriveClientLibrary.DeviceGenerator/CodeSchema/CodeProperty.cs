@@ -87,7 +87,7 @@
                                 $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, value);"
                             )
                         })
-                    )).AddModifiers(Token(SyntaxKind.PrivateKeyword))
+                    ))
                 );
             }
 

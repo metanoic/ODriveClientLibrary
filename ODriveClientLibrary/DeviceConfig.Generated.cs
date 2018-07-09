@@ -19,7 +19,7 @@ namespace ODrive
                 return brakeResistance;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(28, value);
                 this.RaiseAndSetIfChanged(ref brakeResistance, value);
@@ -36,7 +36,7 @@ namespace ODrive
                 return enableUart;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(29, value);
                 this.RaiseAndSetIfChanged(ref enableUart, value);
@@ -53,7 +53,7 @@ namespace ODrive
                 return enableI2cInsteadOfCan;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(30, value);
                 this.RaiseAndSetIfChanged(ref enableI2cInsteadOfCan, value);
@@ -70,7 +70,7 @@ namespace ODrive
                 return enableAsciiProtocolOnUsb;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(31, value);
                 this.RaiseAndSetIfChanged(ref enableAsciiProtocolOnUsb, value);
@@ -87,7 +87,7 @@ namespace ODrive
                 return dcBusUndervoltageTripLevel;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(32, value);
                 this.RaiseAndSetIfChanged(ref dcBusUndervoltageTripLevel, value);
@@ -104,7 +104,7 @@ namespace ODrive
                 return dcBusOvervoltageTripLevel;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(33, value);
                 this.RaiseAndSetIfChanged(ref dcBusOvervoltageTripLevel, value);

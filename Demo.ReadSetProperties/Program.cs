@@ -15,7 +15,7 @@ namespace Demo.ReadSetProperties
             var deviceMonitor = DeviceMonitor.Instance;
             var oDrive = new Device(deviceMonitor.AvailableDevices.First());
 
-            Console.WriteLine(oDrive.SerialNumber.ToString("X2"));
+            Console.WriteLine(oDrive.Config.BrakeResistance = 1);
 
             while (!Console.KeyAvailable)
             {
