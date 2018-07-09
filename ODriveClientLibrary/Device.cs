@@ -7,8 +7,6 @@
 
     public partial class Device : RemoteObject
     {
-        public const string TARGET_FIRMWARE_VERSION = "4.2.2";
-
         private readonly BasicDeviceInfo deviceInfo;
         private readonly Func<BasicDeviceInfo, bool> deviceIdentifyingPredicate;
 
@@ -51,7 +49,12 @@
             return Task.Run(async () => await FetchSchema()).Result;
         }
 
-        internal T FetchEndpointSync<T>(ushort endpointID, T? newValue = null) where T : struct
+        public async Task<T> FetchEndpoint<T>(ushort endpointID, T? newValue = null) where T : struct
+        {
+            return await deviceConnection.FetchEndpointScalar(endpointID, newValue);
+        }
+
+        public T FetchEndpointSync<T>(ushort endpointID, T? newValue = null) where T : struct
         {
             return Task.Run(async () => await deviceConnection.FetchEndpointScalar(endpointID, newValue)).Result;
         }
