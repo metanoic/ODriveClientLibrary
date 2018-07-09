@@ -27,21 +27,12 @@
 
             deviceObjects.Insert(0, rootDeviceObject);
 
-            var uniqueObjectKeys = deviceObjects.Select(deviceObject => deviceObject.GetObjectKey()).Distinct().ToList();
-            var uniqueDeviceObjects = new List<DeviceObject>();
-
-            foreach (var objectKey in uniqueObjectKeys)
-            {
-                uniqueDeviceObjects.Add(deviceObjects.Find(x => x.GetObjectKey() == objectKey));
-            }
-
-            var codeClasses = uniqueDeviceObjects.Select(deviceObject => CodeClass.CreateFrom(deviceObject)).ToList();
+            var codeClasses = deviceObjects.Select(deviceObject => CodeClass.CreateFrom(deviceObject)).ToList();
 
             codeClasses.ForEach(codeClass => codeClass.Generate());
 
             return codeClasses;
         }
-
 
         public static IEnumerable<T> Flatten<T, R>(this IEnumerable<T> source, Func<T, R> recursion) where R : IEnumerable<T>
         {
@@ -59,6 +50,5 @@
 
             return flattened;
         }
-
     }
 }

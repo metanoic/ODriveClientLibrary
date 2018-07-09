@@ -1,11 +1,6 @@
 ﻿namespace ODrive.DeviceGenerator.CodeSchema
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using ODrive.DeviceGenerator.DeviceSchema;
-    using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
     public class CodeArgument
     {

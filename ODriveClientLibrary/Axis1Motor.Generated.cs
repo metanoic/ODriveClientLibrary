@@ -3,9 +3,9 @@ namespace ODrive
     using System;
     using ReactiveUI;
 
-    public partial class AxisMotor : RemoteObject
+    public partial class Axis1Motor : RemoteObject
     {
-        public AxisMotor(Device device): base(device)
+        public Axis1Motor(Device device): base(device)
         {
             CurrentControl = new MotorCurrentControl(device);
             GateDriver = new MotorGateDriver(device);
@@ -42,14 +42,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<ushort>(51);
+                var result = device.FetchEndpointSync<ushort>(153);
                 this.RaiseAndSetIfChanged(ref error, result);
                 return error;
             }
 
-            private set
+            set
             {
-                device.FetchEndpointSync<ushort>(51, value);
+                device.FetchEndpointSync<ushort>(153, value);
                 this.RaiseAndSetIfChanged(ref error, value);
             }
         }
@@ -59,7 +59,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<byte>(52);
+                var result = device.FetchEndpointSync<byte>(154);
                 this.RaiseAndSetIfChanged(ref armedState, result);
                 return armedState;
             }
@@ -70,7 +70,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<bool>(53);
+                var result = device.FetchEndpointSync<bool>(155);
                 this.RaiseAndSetIfChanged(ref isCalibrated, result);
                 return isCalibrated;
             }
@@ -81,7 +81,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(54);
+                var result = device.FetchEndpointSync<float>(156);
                 this.RaiseAndSetIfChanged(ref currentMeasPhB, result);
                 return currentMeasPhB;
             }
@@ -92,7 +92,7 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(55);
+                var result = device.FetchEndpointSync<float>(157);
                 this.RaiseAndSetIfChanged(ref currentMeasPhC, result);
                 return currentMeasPhC;
             }
@@ -103,14 +103,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(56);
+                var result = device.FetchEndpointSync<float>(158);
                 this.RaiseAndSetIfChanged(ref dCCalibPhB, result);
                 return dCCalibPhB;
             }
 
-            private set
+            set
             {
-                device.FetchEndpointSync<float>(56, value);
+                device.FetchEndpointSync<float>(158, value);
                 this.RaiseAndSetIfChanged(ref dCCalibPhB, value);
             }
         }
@@ -120,14 +120,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(57);
+                var result = device.FetchEndpointSync<float>(159);
                 this.RaiseAndSetIfChanged(ref dCCalibPhC, result);
                 return dCCalibPhC;
             }
 
-            private set
+            set
             {
-                device.FetchEndpointSync<float>(57, value);
+                device.FetchEndpointSync<float>(159, value);
                 this.RaiseAndSetIfChanged(ref dCCalibPhC, value);
             }
         }
@@ -137,14 +137,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(58);
+                var result = device.FetchEndpointSync<float>(160);
                 this.RaiseAndSetIfChanged(ref phaseCurrentRevGain, result);
                 return phaseCurrentRevGain;
             }
 
-            private set
+            set
             {
-                device.FetchEndpointSync<float>(58, value);
+                device.FetchEndpointSync<float>(160, value);
                 this.RaiseAndSetIfChanged(ref phaseCurrentRevGain, value);
             }
         }

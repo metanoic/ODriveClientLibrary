@@ -111,7 +111,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeGenerator.cs" />
     <Compile Include="CodeSchema\CodeArgument.cs" />
     <Compile Include="CodeSchema\CodeClass.cs" />
     <Compile Include="CodeSchema\CodeFunction.cs" />
@@ -138,6 +137,7 @@
     <None Include="DeviceSchema\DefinitionArchive\3.4.json" />
     <None Include="DeviceSchema\DefinitionArchive\3.5.json" />
     <None Include="packages.config" />
+    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

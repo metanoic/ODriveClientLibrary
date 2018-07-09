@@ -3,9 +3,9 @@ namespace ODrive
     using System;
     using ReactiveUI;
 
-    public partial class AxisConfig : RemoteObject
+    public partial class Axis0Config : RemoteObject
     {
-        public AxisConfig(Device device): base(device)
+        public Axis0Config(Device device): base(device)
         {
         }
 
@@ -19,7 +19,7 @@ namespace ODrive
                 return startupMotorCalibration;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(39, value);
                 this.RaiseAndSetIfChanged(ref startupMotorCalibration, value);
@@ -36,7 +36,7 @@ namespace ODrive
                 return startupEncoderIndexSearch;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(40, value);
                 this.RaiseAndSetIfChanged(ref startupEncoderIndexSearch, value);
@@ -53,7 +53,7 @@ namespace ODrive
                 return startupEncoderOffsetCalibration;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(41, value);
                 this.RaiseAndSetIfChanged(ref startupEncoderOffsetCalibration, value);
@@ -70,7 +70,7 @@ namespace ODrive
                 return startupClosedLoopControl;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(42, value);
                 this.RaiseAndSetIfChanged(ref startupClosedLoopControl, value);
@@ -87,7 +87,7 @@ namespace ODrive
                 return startupSensorlessControl;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(43, value);
                 this.RaiseAndSetIfChanged(ref startupSensorlessControl, value);
@@ -104,7 +104,7 @@ namespace ODrive
                 return enableStepDir;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(44, value);
                 this.RaiseAndSetIfChanged(ref enableStepDir, value);
@@ -121,7 +121,7 @@ namespace ODrive
                 return countsPerStep;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(45, value);
                 this.RaiseAndSetIfChanged(ref countsPerStep, value);
@@ -138,7 +138,7 @@ namespace ODrive
                 return rampUpTime;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(46, value);
                 this.RaiseAndSetIfChanged(ref rampUpTime, value);
@@ -155,7 +155,7 @@ namespace ODrive
                 return rampUpDistance;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(47, value);
                 this.RaiseAndSetIfChanged(ref rampUpDistance, value);
@@ -172,7 +172,7 @@ namespace ODrive
                 return spinUpCurrent;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(48, value);
                 this.RaiseAndSetIfChanged(ref spinUpCurrent, value);
@@ -189,7 +189,7 @@ namespace ODrive
                 return spinUpAcceleration;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(49, value);
                 this.RaiseAndSetIfChanged(ref spinUpAcceleration, value);
@@ -206,7 +206,7 @@ namespace ODrive
                 return spinUpTargetVel;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(50, value);
                 this.RaiseAndSetIfChanged(ref spinUpTargetVel, value);

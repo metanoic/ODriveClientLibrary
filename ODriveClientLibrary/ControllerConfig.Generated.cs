@@ -19,7 +19,7 @@ namespace ODrive
                 return controlMode;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<byte>(93, value);
                 this.RaiseAndSetIfChanged(ref controlMode, value);
@@ -36,7 +36,7 @@ namespace ODrive
                 return posGain;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(94, value);
                 this.RaiseAndSetIfChanged(ref posGain, value);
@@ -53,7 +53,7 @@ namespace ODrive
                 return velGain;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(95, value);
                 this.RaiseAndSetIfChanged(ref velGain, value);
@@ -70,7 +70,7 @@ namespace ODrive
                 return velIntegratorGain;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(96, value);
                 this.RaiseAndSetIfChanged(ref velIntegratorGain, value);
@@ -87,7 +87,7 @@ namespace ODrive
                 return velLimit;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(97, value);
                 this.RaiseAndSetIfChanged(ref velLimit, value);

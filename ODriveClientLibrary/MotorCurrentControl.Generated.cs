@@ -19,7 +19,7 @@ namespace ODrive
                 return pGain;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(59, value);
                 this.RaiseAndSetIfChanged(ref pGain, value);
@@ -36,7 +36,7 @@ namespace ODrive
                 return iGain;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(60, value);
                 this.RaiseAndSetIfChanged(ref iGain, value);
@@ -53,7 +53,7 @@ namespace ODrive
                 return vCurrentControlIntegralD;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(61, value);
                 this.RaiseAndSetIfChanged(ref vCurrentControlIntegralD, value);
@@ -70,7 +70,7 @@ namespace ODrive
                 return vCurrentControlIntegralQ;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(62, value);
                 this.RaiseAndSetIfChanged(ref vCurrentControlIntegralQ, value);
@@ -87,7 +87,7 @@ namespace ODrive
                 return ibus;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(63, value);
                 this.RaiseAndSetIfChanged(ref ibus, value);
@@ -104,7 +104,7 @@ namespace ODrive
                 return finalVAlpha;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(64, value);
                 this.RaiseAndSetIfChanged(ref finalVAlpha, value);
@@ -121,7 +121,7 @@ namespace ODrive
                 return finalVBeta;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(65, value);
                 this.RaiseAndSetIfChanged(ref finalVBeta, value);
@@ -138,7 +138,7 @@ namespace ODrive
                 return iqSetpoint;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(66, value);
                 this.RaiseAndSetIfChanged(ref iqSetpoint, value);
@@ -155,7 +155,7 @@ namespace ODrive
                 return iqMeasured;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(67, value);
                 this.RaiseAndSetIfChanged(ref iqMeasured, value);
@@ -172,7 +172,7 @@ namespace ODrive
                 return maxAllowedCurrent;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(68, value);
                 this.RaiseAndSetIfChanged(ref maxAllowedCurrent, value);

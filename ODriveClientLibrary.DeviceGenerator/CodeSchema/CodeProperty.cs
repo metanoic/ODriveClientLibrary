@@ -53,7 +53,8 @@
         public IEnumerable<MemberDeclarationSyntax> GenerateScalar()
         {
             var fieldDeclaration = FieldDeclaration(
-                VariableDeclaration(ParseTypeName(Type),
+                VariableDeclaration(
+                    ParseTypeName(Type),
                 SeparatedList(new[] { VariableDeclarator(Identifier(Helpers.ToCamelCase(Name))) })
             )).AddModifiers(Token(SyntaxKind.PrivateKeyword));
 
@@ -61,7 +62,8 @@
                 .AddModifiers(Token(SyntaxKind.PublicKeyword))
                 .AddAccessorListAccessors(
                     AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, Block(
-                        List(new[] {
+                        List(new[] 
+                        {
                             ParseStatement(
                                 $"var result = device.FetchEndpointSync<{Type}>({EndpointID});"
                             ),
@@ -79,7 +81,8 @@
             {
                 propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(
                     AccessorDeclaration(SyntaxKind.SetAccessorDeclaration, Block(
-                        List(new[] {
+                        List(new[]
+                        {
                             ParseStatement(
                                 $"device.FetchEndpointSync<{Type}>({EndpointID}, value);"
                             ),
@@ -87,11 +90,12 @@
                                 $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, value);"
                             )
                         })
-                    )).AddModifiers(Token(SyntaxKind.PrivateKeyword))
+                    ))
                 );
             }
 
-            return new List<MemberDeclarationSyntax>() {
+            return new List<MemberDeclarationSyntax>()
+            {
                 fieldDeclaration,
                 propertyDeclaration
             };

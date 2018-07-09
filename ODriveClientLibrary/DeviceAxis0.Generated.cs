@@ -3,42 +3,42 @@ namespace ODrive
     using System;
     using ReactiveUI;
 
-    public partial class DeviceAxis : RemoteObject
+    public partial class DeviceAxis0 : RemoteObject
     {
-        public DeviceAxis(Device device): base(device)
+        public DeviceAxis0(Device device): base(device)
         {
-            Config = new AxisConfig(device);
-            Motor = new AxisMotor(device);
-            Controller = new AxisController(device);
-            Encoder = new AxisEncoder(device);
-            SensorlessEstimator = new AxisSensorlessEstimator(device);
+            Config = new Axis0Config(device);
+            Motor = new Axis0Motor(device);
+            Controller = new Axis0Controller(device);
+            Encoder = new Axis0Encoder(device);
+            SensorlessEstimator = new Axis0SensorlessEstimator(device);
         }
 
-        public AxisConfig Config
-        {
-            get;
-            private set;
-        }
-
-        public AxisMotor Motor
+        public Axis0Config Config
         {
             get;
             private set;
         }
 
-        public AxisController Controller
+        public Axis0Motor Motor
         {
             get;
             private set;
         }
 
-        public AxisEncoder Encoder
+        public Axis0Controller Controller
         {
             get;
             private set;
         }
 
-        public AxisSensorlessEstimator SensorlessEstimator
+        public Axis0Encoder Encoder
+        {
+            get;
+            private set;
+        }
+
+        public Axis0SensorlessEstimator SensorlessEstimator
         {
             get;
             private set;
@@ -54,7 +54,7 @@ namespace ODrive
                 return error;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<ushort>(34, value);
                 this.RaiseAndSetIfChanged(ref error, value);
@@ -71,7 +71,7 @@ namespace ODrive
                 return enableStepDir;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(35, value);
                 this.RaiseAndSetIfChanged(ref enableStepDir, value);
@@ -99,7 +99,7 @@ namespace ODrive
                 return requestedState;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<byte>(37, value);
                 this.RaiseAndSetIfChanged(ref requestedState, value);

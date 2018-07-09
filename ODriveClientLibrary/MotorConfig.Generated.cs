@@ -19,7 +19,7 @@ namespace ODrive
                 return preCalibrated;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<bool>(79, value);
                 this.RaiseAndSetIfChanged(ref preCalibrated, value);
@@ -36,7 +36,7 @@ namespace ODrive
                 return polePairs;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<int>(80, value);
                 this.RaiseAndSetIfChanged(ref polePairs, value);
@@ -53,7 +53,7 @@ namespace ODrive
                 return calibrationCurrent;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(81, value);
                 this.RaiseAndSetIfChanged(ref calibrationCurrent, value);
@@ -70,7 +70,7 @@ namespace ODrive
                 return resistanceCalibMaxVoltage;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(82, value);
                 this.RaiseAndSetIfChanged(ref resistanceCalibMaxVoltage, value);
@@ -87,7 +87,7 @@ namespace ODrive
                 return phaseInductance;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(83, value);
                 this.RaiseAndSetIfChanged(ref phaseInductance, value);
@@ -104,7 +104,7 @@ namespace ODrive
                 return phaseResistance;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(84, value);
                 this.RaiseAndSetIfChanged(ref phaseResistance, value);
@@ -121,7 +121,7 @@ namespace ODrive
                 return direction;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<int>(85, value);
                 this.RaiseAndSetIfChanged(ref direction, value);
@@ -138,7 +138,7 @@ namespace ODrive
                 return motorType;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<byte>(86, value);
                 this.RaiseAndSetIfChanged(ref motorType, value);
@@ -155,7 +155,7 @@ namespace ODrive
                 return currentLim;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(87, value);
                 this.RaiseAndSetIfChanged(ref currentLim, value);
@@ -172,7 +172,7 @@ namespace ODrive
                 return requestedCurrentRange;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(88, value);
                 this.RaiseAndSetIfChanged(ref requestedCurrentRange, value);

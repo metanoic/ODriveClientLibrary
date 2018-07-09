@@ -3,9 +3,9 @@ namespace ODrive
     using System;
     using ReactiveUI;
 
-    public partial class AxisController : RemoteObject
+    public partial class Axis0Controller : RemoteObject
     {
-        public AxisController(Device device): base(device)
+        public Axis0Controller(Device device): base(device)
         {
             Config = new ControllerConfig(device);
         }
@@ -26,7 +26,7 @@ namespace ODrive
                 return posSetpoint;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(89, value);
                 this.RaiseAndSetIfChanged(ref posSetpoint, value);
@@ -43,7 +43,7 @@ namespace ODrive
                 return velSetpoint;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(90, value);
                 this.RaiseAndSetIfChanged(ref velSetpoint, value);
@@ -60,7 +60,7 @@ namespace ODrive
                 return velIntegratorCurrent;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(91, value);
                 this.RaiseAndSetIfChanged(ref velIntegratorCurrent, value);
@@ -77,7 +77,7 @@ namespace ODrive
                 return currentSetpoint;
             }
 
-            private set
+            set
             {
                 device.FetchEndpointSync<float>(92, value);
                 this.RaiseAndSetIfChanged(ref currentSetpoint, value);
