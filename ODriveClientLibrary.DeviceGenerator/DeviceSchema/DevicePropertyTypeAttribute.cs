@@ -1,4 +1,4 @@
-﻿namespace ODrive.CodeGeneration.DeviceSchema
+﻿namespace ODrive.DeviceGenerator.DeviceSchema
 {
     using System;
 

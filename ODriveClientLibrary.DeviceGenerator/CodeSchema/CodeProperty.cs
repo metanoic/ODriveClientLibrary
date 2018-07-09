@@ -1,12 +1,12 @@
-﻿namespace ODrive.CodeGeneration.CodeSchema
+﻿namespace ODrive.DeviceGenerator.CodeSchema
 {
-    using System;
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using ODrive.CodeGeneration.DeviceSchema;
+    using ODrive.DeviceGenerator.DeviceSchema;
+    using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-    internal class CodeProperty
+    public class CodeProperty
     {
         public int? EndpointID { get; private set; }
         public string Name { get; private set; }
@@ -19,7 +19,7 @@
 
             codeProperty.EndpointID = deviceProperty.ID;
             codeProperty.Name = Helpers.ToPascalCase(deviceProperty.Name);
-            codeProperty.Type = typeof(ushort).Name;
+            codeProperty.Type = Helpers.DataTypeToString(deviceProperty.Type);
             codeProperty.CanSet = deviceProperty.Access.HasFlag(AccessMode.CanWrite);
 
             return codeProperty;
@@ -30,38 +30,45 @@
             var codeProperty = new CodeProperty();
 
             codeProperty.Name = Helpers.ToPascalCase(deviceObject.Name);
-            codeProperty.Type = CodeClass.GetObjectClassName(deviceObject.Parent);
+            codeProperty.Type = CodeClass.GetObjectClassName(deviceObject);
 
             return codeProperty;
         }
 
+        public IEnumerable<MemberDeclarationSyntax> GenerateObject()
+        {
+            var propertyDeclaration = PropertyDeclaration(ParseTypeName(Type), Name)
+                .AddModifiers(Token(SyntaxKind.PublicKeyword))
+                .AddAccessorListAccessors(AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)))
+                .AddAccessorListAccessors(AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                    .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword)))
+                    .WithSemicolonToken(Token(SyntaxKind.SemicolonToken)));
+
+            return new List<MemberDeclarationSyntax>()
+            {
+                propertyDeclaration
+            };
+        }
+
         public IEnumerable<MemberDeclarationSyntax> GenerateScalar()
         {
-            var fieldDeclaration = SyntaxFactory.FieldDeclaration(
-                SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName(Type),
-                SyntaxFactory.SeparatedList(new[] {
-                    SyntaxFactory.VariableDeclarator(
-                        SyntaxFactory.Identifier(
-                            Helpers.ToCamelCase(Name)
-                        )
-                    )
-                })
-            )).AddModifiers(
-                SyntaxFactory.Token(SyntaxKind.PrivateKeyword
-            ));
+            var fieldDeclaration = FieldDeclaration(
+                VariableDeclaration(ParseTypeName(Type),
+                SeparatedList(new[] { VariableDeclarator(Identifier(Helpers.ToCamelCase(Name))) })
+            )).AddModifiers(Token(SyntaxKind.PrivateKeyword));
 
-            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(Type), Name)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+            var propertyDeclaration = PropertyDeclaration(ParseTypeName(Type), Name)
+                .AddModifiers(Token(SyntaxKind.PublicKeyword))
                 .AddAccessorListAccessors(
-                    SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, SyntaxFactory.Block(
-                        SyntaxFactory.List(new[] {
-                            SyntaxFactory.ParseStatement(
+                    AccessorDeclaration(SyntaxKind.GetAccessorDeclaration, Block(
+                        List(new[] {
+                            ParseStatement(
                                 $"var result = FetchEndpointSync<{Type}>({EndpointID});"
                             ),
-                            SyntaxFactory.ParseStatement(
+                            ParseStatement(
                                 $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, result);"
                             ),
-                            SyntaxFactory.ParseStatement(
+                            ParseStatement(
                                 $"return {Helpers.ToCamelCase(Name)};"
                             )
                         })
@@ -71,16 +78,16 @@
             if (CanSet)
             {
                 propertyDeclaration = propertyDeclaration.AddAccessorListAccessors(
-                    SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration, SyntaxFactory.Block(
-                        SyntaxFactory.List(new[] {
-                            SyntaxFactory.ParseStatement(
+                    AccessorDeclaration(SyntaxKind.SetAccessorDeclaration, Block(
+                        List(new[] {
+                            ParseStatement(
                                 $"FetchEndpointSync<{Type}>({EndpointID}, value);"
                             ),
-                            SyntaxFactory.ParseStatement(
+                            ParseStatement(
                                 $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, value);"
                             )
                         })
-                    )).AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                    )).AddModifiers(Token(SyntaxKind.PrivateKeyword))
                 );
             }
 

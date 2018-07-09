@@ -1,10 +1,10 @@
-﻿namespace ODrive.CodeGeneration
+﻿namespace ODrive.DeviceGenerator
 {
     using System;
-    using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using System.Reflection;
+    using ODrive.DeviceGenerator.DeviceSchema;
 
     internal static class Helpers
     {
@@ -46,6 +46,26 @@
                 return Char.ToLowerInvariant(input[0]) + input.Substring(1);
             }
             return input;
+        }
+
+        public static string DataTypeToString(DataType type)
+        {
+            return GetAttribute<DescriptionAttribute>(type).Description;
+        }
+
+        public static T GetAttribute<T>(Enum enumValue) where T : Attribute
+        {
+            T attribute;
+
+            MemberInfo memberInfo = enumValue.GetType().GetMember(enumValue.ToString()).FirstOrDefault();
+
+            if (memberInfo != null)
+            {
+                attribute = (T)memberInfo.GetCustomAttributes(typeof(T), false).FirstOrDefault();
+                return attribute;
+            }
+
+            return null;
         }
     }
 }

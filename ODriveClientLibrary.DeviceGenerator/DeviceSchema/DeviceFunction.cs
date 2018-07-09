@@ -1,9 +1,9 @@
-﻿namespace ODrive.CodeGeneration.DeviceSchema
+﻿namespace ODrive.DeviceGenerator.DeviceSchema
 {
     using System.Collections.Generic;
     using Newtonsoft.Json.Linq;
 
-    internal class DeviceFunction : IDeviceMember
+    public class DeviceFunction : IDeviceMember
     {
         public int ID { get; private set; }
         public string Name { get; private set; }

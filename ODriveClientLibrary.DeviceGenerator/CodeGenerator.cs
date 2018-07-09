@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ODrive.CodeGeneration.DeviceSchema
+namespace ODriveClientLibrary.DeviceGenerator
 {
-    internal interface IDeviceMember
+    class CodeGenerator
     {
-        DataType Type { get; }
     }
 }

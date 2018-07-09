@@ -1,38 +1,44 @@
-﻿namespace ODrive.CodeGeneration
+﻿namespace ODrive.DeviceGenerator
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using ODrive.CodeGeneration.CodeSchema;
-    using ODrive.CodeGeneration.DeviceSchema;
+    using ODrive.DeviceGenerator.CodeSchema;
+    using ODrive.DeviceGenerator.DeviceSchema;
 
     public static class SchemaParser
     {
         public static void Test()
         {
-
-            var json = File.ReadAllText(@"H:\repos\ODriveClientLibrary\ODriveClientLibrary\CodeGeneration\DeviceSchema\DefinitionArchive\3.5.json");
+            var json = File.ReadAllText(@"H:\repos\ODriveClientLibrary\ODriveClientLibrary.DeviceGenerator\DeviceSchema\DefinitionArchive\3.5.json");
             var x = Parse(json);
-
         }
 
-        internal static IEnumerable<CodeClass> Parse(string jsonInput)
+        public static IEnumerable<CodeClass> Parse(string jsonInput)
         {
             var rootDeviceObject = DeviceSchemaParser.Parse("Device", jsonInput);
 
-            var uniqueDeviceObjects = rootDeviceObject.Members
+            var deviceObjects = rootDeviceObject.Members
                 .Flatten(x => x is DeviceObject ? ((DeviceObject)x).Members : null)
                 .Where(x => x is DeviceObject)
                 .Cast<DeviceObject>()
                 .ToList();
 
-            uniqueDeviceObjects.Insert(0, rootDeviceObject);
+            deviceObjects.Insert(0, rootDeviceObject);
+
+            var uniqueObjectKeys = deviceObjects.Select(deviceObject => deviceObject.GetObjectKey()).Distinct().ToList();
+            var uniqueDeviceObjects = new List<DeviceObject>();
+
+            foreach (var objectKey in uniqueObjectKeys)
+            {
+                uniqueDeviceObjects.Add(deviceObjects.Find(x => x.GetObjectKey() == objectKey));
+            }
 
             var codeClasses = uniqueDeviceObjects.Select(deviceObject => CodeClass.CreateFrom(deviceObject)).ToList();
-            codeClasses.ForEach(x => x.Generate());
+
+            codeClasses.ForEach(codeClass => codeClass.Generate());
+
             return codeClasses;
         }
 

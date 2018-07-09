@@ -25,8 +25,6 @@
                 PrintDeviceInfos(deviceMonitor.AvailableDevices.ToList());
             });
 
-            ODrive.CodeGeneration.SchemaParser.Test();
-
             while (!Console.KeyAvailable)
             {
                 Application.DoEvents();

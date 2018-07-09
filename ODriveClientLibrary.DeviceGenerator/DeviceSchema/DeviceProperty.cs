@@ -1,4 +1,4 @@
-﻿namespace ODrive.CodeGeneration.DeviceSchema
+﻿namespace ODrive.DeviceGenerator.DeviceSchema
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
     using System.Reflection;
     using Newtonsoft.Json.Linq;
 
-    internal class DeviceProperty : IDeviceMember
+    public class DeviceProperty : IDeviceMember
     {
         public int ID { get; private set; }
         public string Name { get; private set; }
@@ -18,7 +18,7 @@
             {
                 return Enum.GetValues(typeof(DataType))
                     .Cast<DataType>()
-                    .ToDictionary(key => GetAttribute<DevicePropertyType>(key).DeviceTypeString, val => val);
+                    .ToDictionary(key => Helpers.GetAttribute<DevicePropertyType>(key).DeviceTypeString, val => val);
             });
 
 
@@ -46,19 +46,5 @@
             return deviceProperty;
         }
 
-        private static T GetAttribute<T>(Enum enumValue) where T : Attribute
-        {
-            T attribute;
-
-            MemberInfo memberInfo = enumValue.GetType().GetMember(enumValue.ToString()).FirstOrDefault();
-
-            if (memberInfo != null)
-            {
-                attribute = (T)memberInfo.GetCustomAttributes(typeof(T), false).FirstOrDefault();
-                return attribute;
-            }
-
-            return null;
-        }
     }
 }
