@@ -4,9 +4,9 @@
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reactive.Linq;
-    using ODrive.Utilities;
     using LibUsbDotNet;
     using LibUsbDotNet.DeviceNotify;
+    using ODrive.Utilities;
     using ReactiveUI;
 
     /// <summary>
@@ -27,7 +27,6 @@
         public static DeviceMonitor Instance { get => LazyInstantiator.Value; }
 
         private static IDeviceNotifier usbDeviceNotifier;
-
 
         private ReactiveList<BasicDeviceInfo> allDevices = new ReactiveList<BasicDeviceInfo>() { ChangeTrackingEnabled = true };
 

@@ -46,6 +46,19 @@
             return deviceObject;
         }
 
+        public static DeviceObject CreateFrom(DeviceObject parent, string name, JObject inputNode)
+        {
+            int? id = inputNode.Value<int?>("id");
+            var members = inputNode.Value<JArray>("members");
+            return CreateFrom(parent, id, name, members);
+        }
+
+        public static DeviceObject CreateFrom(DeviceObject parent, JObject inputNode)
+        {
+            string name = inputNode.Value<string>("name");
+            return CreateFrom(parent, name, inputNode);
+        }
+
         // Since the schema doesn't tell us the class type, we just uniquely identify the object type by its exposed
         // properties and such...
         public string GetObjectKey()
@@ -78,19 +91,6 @@
             }
 
             return objectKey;
-        }
-
-        public static DeviceObject CreateFrom(DeviceObject parent, string name, JObject inputNode)
-        {
-            int? id = inputNode.Value<int?>("id");
-            var members = inputNode.Value<JArray>("members");
-            return CreateFrom(parent, id, name, members);
-        }
-
-        public static DeviceObject CreateFrom(DeviceObject parent, JObject inputNode)
-        {
-            string name = inputNode.Value<string>("name");
-            return CreateFrom(parent, name, inputNode);
         }
     }
 }

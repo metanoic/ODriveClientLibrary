@@ -9,8 +9,8 @@ namespace ODrive
         {
             SystemStats = new DeviceSystemStats(this);
             Config = new DeviceConfig(this);
-            Axis0 = new DeviceAxis(this);
-            Axis1 = new DeviceAxis(this);
+            Axis0 = new DeviceAxis0(this);
+            Axis1 = new DeviceAxis1(this);
             Can = new DeviceCan(this);
         }
 
@@ -26,13 +26,13 @@ namespace ODrive
             private set;
         }
 
-        public DeviceAxis Axis0
+        public DeviceAxis0 Axis0
         {
             get;
             private set;
         }
 
-        public DeviceAxis Axis1
+        public DeviceAxis1 Axis1
         {
             get;
             private set;

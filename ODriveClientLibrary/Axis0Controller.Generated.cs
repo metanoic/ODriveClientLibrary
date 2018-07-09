@@ -3,9 +3,9 @@ namespace ODrive
     using System;
     using ReactiveUI;
 
-    public partial class AxisController : RemoteObject
+    public partial class Axis0Controller : RemoteObject
     {
-        public AxisController(Device device): base(device)
+        public Axis0Controller(Device device): base(device)
         {
             Config = new ControllerConfig(device);
         }

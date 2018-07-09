@@ -51,7 +51,6 @@
                 ).WithBody(Block());
             }
 
-
             if (ReturnType != null)
             {
                 methodStatements.Add(ParseStatement(
@@ -64,7 +63,6 @@
                    $"device.FetchEndpointSync<byte>({EndpointID});"
                ));
             }
-
 
             methodDeclaration = methodDeclaration.WithBody(Block(methodStatements));
 

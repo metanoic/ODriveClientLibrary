@@ -21,7 +21,6 @@
                     .ToDictionary(key => Helpers.GetAttribute<DevicePropertyType>(key).DeviceTypeString, val => val);
             });
 
-
         public static DeviceProperty CreateFrom(JObject inputNode)
         {
             var deviceProperty = new DeviceProperty();
@@ -45,6 +44,5 @@
 
             return deviceProperty;
         }
-
     }
 }

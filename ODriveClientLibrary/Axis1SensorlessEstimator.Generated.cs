@@ -3,9 +3,9 @@ namespace ODrive
     using System;
     using ReactiveUI;
 
-    public partial class AxisSensorlessEstimator : RemoteObject
+    public partial class Axis1SensorlessEstimator : RemoteObject
     {
-        public AxisSensorlessEstimator(Device device): base(device)
+        public Axis1SensorlessEstimator(Device device): base(device)
         {
         }
 
@@ -14,14 +14,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<byte>(130);
+                var result = device.FetchEndpointSync<byte>(232);
                 this.RaiseAndSetIfChanged(ref error, result);
                 return error;
             }
 
             set
             {
-                device.FetchEndpointSync<byte>(130, value);
+                device.FetchEndpointSync<byte>(232, value);
                 this.RaiseAndSetIfChanged(ref error, value);
             }
         }
@@ -31,14 +31,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(131);
+                var result = device.FetchEndpointSync<float>(233);
                 this.RaiseAndSetIfChanged(ref phase, result);
                 return phase;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(131, value);
+                device.FetchEndpointSync<float>(233, value);
                 this.RaiseAndSetIfChanged(ref phase, value);
             }
         }
@@ -48,14 +48,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(132);
+                var result = device.FetchEndpointSync<float>(234);
                 this.RaiseAndSetIfChanged(ref pllPos, result);
                 return pllPos;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(132, value);
+                device.FetchEndpointSync<float>(234, value);
                 this.RaiseAndSetIfChanged(ref pllPos, value);
             }
         }
@@ -65,14 +65,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(133);
+                var result = device.FetchEndpointSync<float>(235);
                 this.RaiseAndSetIfChanged(ref pllVel, result);
                 return pllVel;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(133, value);
+                device.FetchEndpointSync<float>(235, value);
                 this.RaiseAndSetIfChanged(ref pllVel, value);
             }
         }
@@ -82,14 +82,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(134);
+                var result = device.FetchEndpointSync<float>(236);
                 this.RaiseAndSetIfChanged(ref pllKp, result);
                 return pllKp;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(134, value);
+                device.FetchEndpointSync<float>(236, value);
                 this.RaiseAndSetIfChanged(ref pllKp, value);
             }
         }
@@ -99,14 +99,14 @@ namespace ODrive
         {
             get
             {
-                var result = device.FetchEndpointSync<float>(135);
+                var result = device.FetchEndpointSync<float>(237);
                 this.RaiseAndSetIfChanged(ref pllKi, result);
                 return pllKi;
             }
 
             set
             {
-                device.FetchEndpointSync<float>(135, value);
+                device.FetchEndpointSync<float>(237, value);
                 this.RaiseAndSetIfChanged(ref pllKi, value);
             }
         }

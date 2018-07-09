@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ReactiveUI;
-
-namespace ODrive
+﻿namespace ODrive
 {
+    using ReactiveUI;
+
     public abstract class RemoteObject : ReactiveObject
     {
-        protected Device device;
+        protected Device device { get; set; }
 
         public RemoteObject(Device device)
         {
@@ -18,7 +13,6 @@ namespace ODrive
 
         public RemoteObject()
         {
-
         }
     }
 }

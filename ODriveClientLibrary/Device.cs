@@ -10,17 +10,17 @@
         public const string TARGET_FIRMWARE_VERSION = "4.2.2";
 
         private readonly BasicDeviceInfo deviceInfo;
+        private readonly Func<BasicDeviceInfo, bool> deviceIdentifyingPredicate;
+
         private UsbDevice usbDevice;
         private Connection deviceConnection;
-
-        private readonly Func<BasicDeviceInfo, bool> deviceIdentifyingPredicate;
 
         public Device(BasicDeviceInfo deviceInfo) : this()
         {
             this.deviceInfo = deviceInfo;
             usbDevice = deviceInfo.Device;
 
-            //Play nice with generated partial
+            // Play nice with generated partial
             device = this;
 
             // Open usb read and write endpoints
@@ -34,9 +34,9 @@
                     .And(inputDeviceInfo => inputDeviceInfo.SerialNumber == deviceInfo.SerialNumber)
                     .Compile();
 
-            deviceConnection.JsonCRC = 9455;
-            //deviceConnection.EndpointJSON = FetchSchemaSync();
-            //var x = 1;
+            // You can assign the CRC immediately and bypass the Schema fetch
+            // deviceConnection.JsonCRC = 9455;
+            deviceConnection.EndpointJSON = FetchSchemaSync();
         }
 
         public async Task<string> FetchSchema()

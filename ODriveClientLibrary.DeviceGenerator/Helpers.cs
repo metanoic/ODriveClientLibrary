@@ -21,14 +21,21 @@
         {
             input = UnderscoreToCamelCase(input);
 
-            if (input == null) return input;
-            if (input.Length < 2) return input.ToUpper();
+            if (input == null)
+            {
+                return input;
+            }
+
+            if (input.Length < 2)
+            {
+                return input.ToUpper();
+            }
 
             string[] words = input.Split(
                 new char[] { },
                 StringSplitOptions.RemoveEmptyEntries);
 
-            string result = "";
+            string result = string.Empty;
             foreach (string word in words)
             {
                 result +=
@@ -43,8 +50,9 @@
         {
             if (!string.IsNullOrEmpty(input) && input.Length > 1)
             {
-                return Char.ToLowerInvariant(input[0]) + input.Substring(1);
+                return char.ToLowerInvariant(input[0]) + input.Substring(1);
             }
+
             return input;
         }
 

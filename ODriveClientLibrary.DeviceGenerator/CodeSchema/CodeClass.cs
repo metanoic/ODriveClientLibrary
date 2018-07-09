@@ -37,9 +37,6 @@
             var parentName = deviceObject.Parent != null ? deviceObject.Parent.Name : string.Empty;
             var objectName = deviceObject.Name;
 
-            parentName = parentName.Replace("axis0", "axis").Replace("axis1", "axis");
-            objectName = objectName.Replace("axis0", "axis").Replace("axis1", "axis");
-
             return Helpers.ToPascalCase(parentName) + Helpers.ToPascalCase(objectName);
         }
 
@@ -82,7 +79,6 @@
             {
                 classConstructor = classConstructor.WithModifiers(TokenList(Token(SyntaxKind.InternalKeyword)));
             }
-
 
             var classDeclaration = ClassDeclaration(ClassName)
                 .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.PartialKeyword))
