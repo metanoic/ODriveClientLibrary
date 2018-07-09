@@ -5,14 +5,14 @@
     using LibUsbDotNet;
     using ODrive.Utilities;
 
-    public partial class Device : RemoteObject
+    public partial class Device : RemoteObject, IDisposable
     {
         private readonly BasicDeviceInfo deviceInfo;
         private readonly Func<BasicDeviceInfo, bool> deviceIdentifyingPredicate;
 
+        private bool disposedValue = false;
         private UsbDevice usbDevice;
         private Connection deviceConnection;
-        private CRC<ushort> CRC16 = new CRC<ushort>(16, ODrive.Config.CANONICAL_CRC16_POLYNOMIAL, ODrive.Config.USB_PROTOCOL_VERSION);
 
         // TODO: Assign the json definition CRC value to this property during generation
         // and then check the device's CRC at runtime and error if they don't match.
@@ -67,6 +67,25 @@
         public T FetchEndpointSync<T>(ushort endpointID, T? newValue = null) where T : struct
         {
             return Task.Run(async () => await deviceConnection.FetchEndpointScalar(endpointID, newValue)).Result;
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    deviceConnection.Disconnect();
+                    deviceConnection.EndpointJSON = string.Empty;
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }
