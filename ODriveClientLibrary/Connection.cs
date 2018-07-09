@@ -8,7 +8,7 @@
     using LibUsbDotNet;
     using LibUsbDotNet.Info;
     using LibUsbDotNet.Main;
-    using global::ODrive.Utilities;
+    using ODrive.Utilities;
 
     public class Connection
     {
@@ -40,18 +40,54 @@
             set
             {
                 endpointJSON = value;
-                JsonCRC = CRC16.CalculateAsNumeric(System.Text.Encoding.ASCII.GetBytes(endpointJSON));
+
+                var jsonBytes = System.Text.Encoding.ASCII.GetBytes(endpointJSON);
+                if (jsonBytes.Any())
+                {
+                    JsonCRC = CRC16.CalculateAsNumeric(jsonBytes);
+                }
             }
+        }
+
+        public bool Connect()
+        {
+            if (usbDevice.IsOpen == true)
+            {
+                return false;
+            }
+
+            var openResult = usbDevice.Open();
+
+            if (!openResult)
+            {
+                throw new Exception("Failed to open device.");
+            }
+
+            return openResult;
+        }
+
+        public bool Disconnect()
+        {
+            if (usbDevice.IsOpen == false)
+            {
+                return false;
+            }
+
+            var closeResult = usbDevice.Close();
+
+            if (!closeResult)
+            {
+                throw new Exception("Failed to close device");
+            }
+
+            return closeResult;
         }
 
         public Connection(UsbDevice usbDevice)
         {
             this.usbDevice = usbDevice;
 
-            if (!usbDevice.Open())
-            {
-                throw new Exception("Failed to open device.");
-            }
+            Connect();
 
             // There should be only one config, but whatevs.
             foreach (var config in usbDevice.Configs)
