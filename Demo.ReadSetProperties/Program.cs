@@ -27,6 +27,8 @@
                     throw new TimeoutException("Timeout expired while waiting for device to be ready.");
                 }
 
+                oDrive.FetchSchemaSync();
+
                 Console.WriteLine($"Firmware Version: {oDrive.FwVersionMajor}.{oDrive.FwVersionMinor}.{oDrive.FwVersionRevision}.{oDrive.FwVersionUnreleased}");
                 Console.WriteLine($"Hardware Version: {oDrive.HwVersionMajor}.{oDrive.HwVersionMinor}.{oDrive.HwVersionVariant}");
                 Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");

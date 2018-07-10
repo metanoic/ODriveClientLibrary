@@ -16,18 +16,26 @@
 
         public DeviceStatus Status { get; private set; } = DeviceStatus.Unknown;
 
-        // TODO: Assign the json definition CRC value to this property during generation
-        // and then check the device's CRC at runtime and error if they don't match.
-        public ushort GeneratedForCRC { get; private set; }
+        private ushort? schemaChecksum;
+        public ushort SchemaChecksum
+        {
+            get => schemaChecksum.HasValue ? schemaChecksum.Value : originSchemaChecksum;
+            private set => schemaChecksum = value;
+        }
 
         private Func<BasicDeviceInfo, bool> DeviceIdentifyingPredicate { get; set; }
 
-        public Device(BasicDeviceInfo deviceInfo) : this()
+        public Device(BasicDeviceInfo deviceInfo, ushort? schemaChecksum = null) : this()
         {
             Status = DeviceStatus.Initializing;
 
             this.deviceInfo = deviceInfo;
             usbDevice = deviceInfo.Device;
+
+            if (schemaChecksum.HasValue)
+            {
+                originSchemaChecksum = schemaChecksum.Value;
+            }
 
             // Play nice with generated partial
             // TODO: Convert to partial method?
@@ -67,7 +75,7 @@
             }
 
             // Open usb read and write endpoints
-            deviceConnection = new Connection(usbDevice);
+            deviceConnection = new Connection(usbDevice, SchemaChecksum);
 
             // If we get disconnected, we'll use this to find the device later
             // so we can reconnect to it.
@@ -87,20 +95,16 @@
                 Status = DeviceStatus.Ready;
             }
 
-            // You can assign the CRC immediately and bypass the Schema fetch
-            // deviceConnection.JsonCRC = 9455;
-            FetchSchema().ContinueWith(jsonTask =>
-            {
-                deviceConnection.EndpointJSON = jsonTask.Result;
+            readyEvent.Set();
 
-                ////if (deviceConnection.JsonCRC != GeneratedForCRC)
-                ////{
-                ////    throw new Exception("Device schema does not match the schema this library was generated against");
-                ////}
-
-                Status = DeviceStatus.Ready;
-                readyEvent.Set();
-            });
+            ////deviceConnection.ValidateChecksum(OriginSchemaChecksum).ContinueWith(validationTask =>
+            ////{
+            ////    if (validationTask.Result)
+            ////    {
+            ////        Status = DeviceStatus.Ready;
+            ////        readyEvent.Set();
+            ////    }
+            ////});
 
             return connectSuccessful;
         }
@@ -114,8 +118,8 @@
         {
             AssertNotDisposed();
             byte[] schemaBytes = await deviceConnection.FetchEndpointBuffer(cancellationToken);
-            string schema = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
-            return schema;
+            string schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
+            return schemaJson;
         }
 
         public string FetchSchemaSync(CancellationToken cancellationToken = default(CancellationToken))
@@ -147,8 +151,7 @@
             {
                 if (disposing)
                 {
-                    deviceConnection.Disconnect();
-                    deviceConnection.EndpointJSON = string.Empty;
+                    Disconnect();
                 }
 
                 Status = DeviceStatus.Disposed;

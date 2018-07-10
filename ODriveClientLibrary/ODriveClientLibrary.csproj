@@ -106,19 +106,9 @@
     <Compile Include="Axis1SensorlessEstimator.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="DeviceStatusEnum.cs" />
-    <Compile Include="Enums\AxisStateEnum.cs" />
-    <Compile Include="BasicDeviceInfo.cs" />
-    <Compile Include="Config.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
-    <Compile Include="Connection.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
     <Compile Include="ControllerConfig.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="Device.cs" />
     <Compile Include="Device.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
@@ -134,13 +124,23 @@
     <Compile Include="DeviceConfig.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="DeviceMonitor.cs" />
+    <Compile Include="DeviceStatusEnum.cs" />
     <Compile Include="DeviceSystemStats.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
     <Compile Include="EncoderConfig.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
+    <Compile Include="Enums\AxisStateEnum.cs" />
+    <Compile Include="BasicDeviceInfo.cs" />
+    <Compile Include="Config.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Connection.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Device.cs" />
+    <Compile Include="DeviceMonitor.cs" />
     <Compile Include="Enums\AxisErrorCodeEnum.cs" />
     <Compile Include="Enums\ControlModeEnum.cs" />
     <Compile Include="Enums\EncoderErrorCodeEnum.cs" />

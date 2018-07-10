@@ -11,7 +11,7 @@
     using LibUsbDotNet.Main;
     using ODrive.Utilities;
 
-    public class Connection
+    internal class Connection
     {
         private readonly ThreadSafeCounter sequenceCounter = new ThreadSafeCounter();
         private readonly Dictionary<ushort, Request> pendingRequests = new Dictionary<ushort, Request>();
@@ -29,21 +29,24 @@
         private UsbEndpointWriter endpointWriter;
 
         // For endpoint 0 the protocol version is used, for all others we need the actual CRC16 of the JSON endpoints definition
-        public ushort JsonCRC { get; set; }
-
-        private string endpointJSON = string.Empty;
-        public string EndpointJSON
-        {
-            get => endpointJSON;
-
-            set
-            {
-                endpointJSON = value;
-                JsonCRC = SchemaChecksumCalculator.CalculateChecksum(endpointJSON);
-            }
-        }
+        public ushort? SchemaChecksum { get; private set; }
 
         public bool IsConnected { get => endpointWriter != null && endpointWriter != null; }
+
+        public Connection(UsbDevice usbDevice, ushort schemaChecksum)
+        {
+            this.usbDevice = usbDevice;
+            SchemaChecksum = schemaChecksum;
+        }
+
+        // Determine if the supplied checksum is valid for the device we're connected to.
+        // Since the device won't reply to non-zero endpoints if the checksum is incorrect,
+        // we first verify it will reply at all by fetching a small bit of endpoint 0 and 
+        // then endpoint 1 (which should be the bus voltage endpoint)
+        public async Task<bool> ValidateChecksum(ushort checksumValue)
+        {
+            throw new NotImplementedException();
+        }
 
         // TODO: Need proper return type
         // TODO: Timeout? What are possible results of OpenEndpointReader/Writer?
@@ -125,36 +128,12 @@
             return true;
         }
 
-        public Connection(UsbDevice usbDevice)
-        {
-            this.usbDevice = usbDevice;
-        }
-
-        public async Task<byte[]> FetchEndpointBuffer(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            byte[] cumulativeResponse = new byte[0];
-            uint totalBytesReceived = 0;
-
-            while (cancellationToken.IsCancellationRequested == false)
-            {
-                var data = await FetchEndpointBuffer(totalBytesReceived, cancellationToken);
-                if (data.Length == 0)
-                {
-                    break;
-                }
-                else
-                {
-                    totalBytesReceived += (uint)data.Length;
-                }
-
-                cumulativeResponse = ConcatByteArrays(cumulativeResponse, data);
-            }
-
-            return cumulativeResponse;
-        }
-
         public async Task<T> FetchEndpointScalar<T>(ushort endpointID, T? newValue = null, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
         {
+            //if (endpointID != 0 && SchemaChecksum.HasValue == false)
+            //{
+            //    throw new Exception("Must set SchemaChecksum to request non-zero endpoints");
+            //}
             var tcs = new TaskCompletionSource<T>();
 
             var dataSize = Marshal.SizeOf(typeof(T));
@@ -177,7 +156,7 @@
                     var responseData = res.Body.Read<T>();
                     tcs.SetResult(responseData);
                 },
-                signature: JsonCRC
+                signature: SchemaChecksum.HasValue ? SchemaChecksum.Value : (ushort)Config.USB_PROTOCOL_VERSION
             );
 
             cancellationToken.Register(() =>
@@ -198,10 +177,43 @@
             return outputBytes;
         }
 
+        public async Task<byte[]> FetchEndpointBuffer(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            byte[] cumulativeResponse = new byte[0];
+            uint totalBytesReceived = 0;
+
+            while (cancellationToken.IsCancellationRequested == false)
+            {
+                var data = await FetchEndpointBuffer(totalBytesReceived, cancellationToken);
+                if (data.Length == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    totalBytesReceived += (uint)data.Length;
+                }
+
+                cumulativeResponse = ConcatByteArrays(cumulativeResponse, data);
+            }
+
+            // We could be done with the loop 'cause user cancelled
+            if (cancellationToken.IsCancellationRequested == false)
+            {
+                SchemaChecksum = SchemaChecksumCalculator.CalculateChecksum(cumulativeResponse);
+            }
+
+            return cumulativeResponse;
+        }
+
         // TODO: Retry
         // TODO: Timeout
         // TODO: Reconnect()?
-        private async Task<byte[]> FetchEndpointBuffer(uint payloadOffset = 0, CancellationToken cancellationToken = default(CancellationToken))
+        // TODO: Use this to verify successful connection prior to attempting a non-zero endpoint fetch with a questionable CRC
+        internal async Task<byte[]> FetchEndpointBuffer(
+            uint payloadOffset = 0,
+            CancellationToken cancellationToken = default(CancellationToken),
+            ushort? schemaChecksum = null)
         {
             var tcs = new TaskCompletionSource<byte[]>();
 
@@ -252,9 +264,10 @@
                 throw new NotSupportedException("Packets larger than 127 bytes are not currently supported.");
             }
 
+            // TODO: Is the compare to USB_PROTOCOL_VERSION safe? Is there any chance the CRC could be 1?
             if (request.EndpointID != 0 && request.Signature == Config.USB_PROTOCOL_VERSION)
             {
-                throw new ArgumentException("Packet CRC must be provided if requesting endpoints other than 0.");
+                throw new ArgumentException("Packet signature must be provided if requesting endpoints other than 0.");
             }
 
             var requestBytes = request.ToByteArray();
@@ -279,6 +292,7 @@
 
             if (!(request is null))
             {
+                System.Diagnostics.Debug.WriteLine("Got response for endpoint " + request.EndpointID.ToString());
                 if (!request.CancellationRequested)
                 {
                     request.ResponseCallback?.Invoke(request, response);

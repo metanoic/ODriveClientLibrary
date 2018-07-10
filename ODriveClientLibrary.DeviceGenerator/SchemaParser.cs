@@ -6,17 +6,16 @@
     using System.Linq;
     using ODrive.DeviceGenerator.CodeSchema;
     using ODrive.DeviceGenerator.DeviceSchema;
-    using ODriveClientLibrary.DeviceGenerator;
 
     public static class SchemaParser
     {
-        public static ParsedSchema ParseFile(string filePath)
+        public static List<CodeClass> ParseFile(string filePath)
         {
             var json = File.ReadAllText(filePath);
             return Parse(json);
         }
 
-        public static ParsedSchema Parse(string jsonInput)
+        public static List<CodeClass> Parse(string jsonInput)
         {
             var rootDeviceObject = DeviceSchemaParser.Parse("Device", jsonInput);
 
@@ -30,10 +29,7 @@
 
             var codeClasses = deviceObjects.Select(deviceObject => CodeClass.CreateFrom(deviceObject)).ToList();
 
-            codeClasses.ForEach(codeClass => codeClass.Generate());
-
-            var parsedSchema = new ParsedSchema(codeClasses, jsonInput);
-            return parsedSchema;
+            return codeClasses;
         }
 
         public static IEnumerable<T> Flatten<T, R>(this IEnumerable<T> source, Func<T, R> recursion) where R : IEnumerable<T>

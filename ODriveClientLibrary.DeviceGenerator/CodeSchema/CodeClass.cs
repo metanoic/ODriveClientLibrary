@@ -1,5 +1,6 @@
 ﻿namespace ODrive.DeviceGenerator.CodeSchema
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis;
@@ -42,7 +43,7 @@
             return Helpers.ToPascalCase(parentName) + Helpers.ToPascalCase(objectName);
         }
 
-        public void Generate()
+        public void Generate(Func<CompilationUnitSyntax, CompilationUnitSyntax> modify = null)
         {
             var compilationUnit = CompilationUnit();
 
@@ -113,6 +114,11 @@
 
             namespaceDeclaration = namespaceDeclaration.AddMembers(classDeclaration);
             compilationUnit = compilationUnit.AddMembers(namespaceDeclaration);
+
+            if (modify != null)
+            {
+                compilationUnit = modify(compilationUnit);
+            }
 
             var source = compilationUnit.NormalizeWhitespace().ToFullString();
 
