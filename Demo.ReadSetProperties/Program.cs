@@ -11,9 +11,21 @@
         static void Main(string[] args)
         {
             var deviceMonitor = DeviceMonitor.Instance;
+            var foundDevice = deviceMonitor.AvailableDevices.FirstOrDefault();
 
-            using (var oDrive = new Device(deviceMonitor.AvailableDevices.First()))
+            if (foundDevice == null)
             {
+                throw new Exception("Could not find any suitable devices to connect to");
+            }
+
+            using (var oDrive = new Device(foundDevice))
+            {
+                oDrive.Connect();
+
+                if (!oDrive.WaitUntilReady(TimeSpan.FromSeconds(30)))
+                {
+                    throw new TimeoutException("Timeout expired while waiting for device to be ready.");
+                }
 
                 Console.WriteLine($"Firmware Version: {oDrive.FwVersionMajor}.{oDrive.FwVersionMinor}.{oDrive.FwVersionRevision}.{oDrive.FwVersionUnreleased}");
                 Console.WriteLine($"Hardware Version: {oDrive.HwVersionMajor}.{oDrive.HwVersionMinor}.{oDrive.HwVersionVariant}");
@@ -24,9 +36,9 @@
                 Console.ReadKey();
 
                 // Casting to byte is totally hackish.  Will improve when schema is improved or better partials with generated code.
-                oDrive.Axis1.RequestedState = (byte)AxisState.AXIS_STATE_FULL_CALIBRATION_SEQUENCE;
+                oDrive.Axis0.RequestedState = (byte)AxisState.AXIS_STATE_FULL_CALIBRATION_SEQUENCE;
 
-                while (oDrive.Axis1.CurrentState != (byte)AxisState.AXIS_STATE_IDLE)
+                while (oDrive.Axis0.CurrentState != (byte)AxisState.AXIS_STATE_IDLE)
                 {
                     System.Threading.Thread.Sleep(500);
                     Application.DoEvents();
@@ -34,8 +46,6 @@
 
                 Console.WriteLine("Calibration complete");
             }
-
-
 
             while (!Console.KeyAvailable)
             {

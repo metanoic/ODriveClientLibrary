@@ -106,6 +106,7 @@
     <Compile Include="Axis1SensorlessEstimator.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
+    <Compile Include="DeviceStatusEnum.cs" />
     <Compile Include="Enums\AxisStateEnum.cs" />
     <Compile Include="BasicDeviceInfo.cs" />
     <Compile Include="Config.cs">

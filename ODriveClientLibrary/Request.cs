@@ -15,6 +15,7 @@
 
         public WireBuffer Body { get; private set; }
         public Action<Request, Response> ResponseCallback { get; private set; }
+        public bool CancellationRequested { get; private set; }
 
         public Request(
             ushort endpointID,
@@ -29,8 +30,8 @@
             RequestACK = requestACK;
             Signature = signature;
             ResponseCallback = responseCallback;
-
             Body = populateBody.Invoke();
+
             if (Body == null)
             {
                 Body = new WireBuffer(0);
@@ -39,6 +40,12 @@
             // This should be the sole source of SequenceNumber values
             var seqNo = SequenceCounter.NextValue();
             SequenceNumber = (ushort)(seqNo | 0x80);
+        }
+
+        public void CancelRequest()
+        {
+            // Just set a flag we'll check later if we receive the response
+            CancellationRequested = true;
         }
 
         public byte[] ToByteArray()

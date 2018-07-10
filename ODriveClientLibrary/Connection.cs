@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
+    using System.Threading;
     using System.Threading.Tasks;
     using LibUsbDotNet;
     using LibUsbDotNet.Info;
@@ -49,45 +50,16 @@
             }
         }
 
+        public bool IsConnected { get => endpointWriter != null && endpointWriter != null; }
+
+        // TODO: Need proper return type
+        // TODO: Timeout? What are possible results of OpenEndpointReader/Writer?
         public bool Connect()
         {
-            if (usbDevice.IsOpen == true)
+            if (IsConnected)
             {
-                return false;
+                throw new Exception("Attempted to Connect an already connected connection.");
             }
-
-            var openResult = usbDevice.Open();
-
-            if (!openResult)
-            {
-                throw new Exception("Failed to open device.");
-            }
-
-            return openResult;
-        }
-
-        public bool Disconnect()
-        {
-            if (usbDevice.IsOpen == false)
-            {
-                return false;
-            }
-
-            var closeResult = usbDevice.Close();
-
-            if (!closeResult)
-            {
-                throw new Exception("Failed to close device");
-            }
-
-            return closeResult;
-        }
-
-        public Connection(UsbDevice usbDevice)
-        {
-            this.usbDevice = usbDevice;
-
-            Connect();
 
             // There should be only one config, but whatevs.
             foreach (var config in usbDevice.Configs)
@@ -133,24 +105,46 @@
                 readEndpointInfo.Descriptor.MaxPacketSize,
                 (EndpointType)(readEndpointInfo.Descriptor.Attributes & 0x03));
 
-            endpointReader.ReadThreadPriority = System.Threading.ThreadPriority.AboveNormal;
+            endpointReader.ReadThreadPriority = ThreadPriority.AboveNormal;
             endpointReader.DataReceivedEnabled = true;
 
+            endpointReader.DataReceived -= EndpointReader_DataReceived;
             endpointReader.DataReceived += EndpointReader_DataReceived;
 
             endpointWriter = usbDevice.OpenEndpointWriter(
                 (WriteEndpointID)writeEndpointInfo.Descriptor.EndpointID,
                 (EndpointType)(writeEndpointInfo.Descriptor.Attributes & 0x03));
+
+            return true;
         }
 
-        public async Task<byte[]> FetchEndpointBuffer()
+        // TODO: Need propert return type
+        public bool Disconnect()
+        {
+            if (IsConnected == false)
+            {
+                throw new Exception("Attempted to Disconnect and already disconnected connection");
+            }
+            endpointReader.DataReceived -= EndpointReader_DataReceived;
+            endpointReader = null;
+            endpointWriter = null;
+
+            return true;
+        }
+
+        public Connection(UsbDevice usbDevice)
+        {
+            this.usbDevice = usbDevice;
+        }
+
+        public async Task<byte[]> FetchEndpointBuffer(CancellationToken cancellationToken = default(CancellationToken))
         {
             byte[] cumulativeResponse = new byte[0];
             uint totalBytesReceived = 0;
 
-            while (true)
+            while (cancellationToken.IsCancellationRequested == false)
             {
-                var data = await FetchEndpointBuffer(totalBytesReceived);
+                var data = await FetchEndpointBuffer(totalBytesReceived, cancellationToken);
                 if (data.Length == 0)
                 {
                     break;
@@ -166,7 +160,7 @@
             return cumulativeResponse;
         }
 
-        public async Task<T> FetchEndpointScalar<T>(ushort endpointID, T? newValue = null) where T : struct
+        public async Task<T> FetchEndpointScalar<T>(ushort endpointID, T? newValue = null, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
         {
             var tcs = new TaskCompletionSource<T>();
 
@@ -180,7 +174,7 @@
                 requestBuffer.Write(newValue.Value);
             }
 
-            SendRequest(new Request(
+            var request = new Request(
                 endpointID: endpointID,
                 expectedResponseSize: 32,
                 requestACK: true,
@@ -191,7 +185,14 @@
                     tcs.SetResult(responseData);
                 },
                 signature: JsonCRC
-            ));
+            );
+
+            cancellationToken.Register(() =>
+            {
+                request.CancelRequest();
+            });
+
+            SendRequest(request);
 
             return await tcs.Task;
         }
@@ -206,15 +207,14 @@
 
         // TODO: Retry
         // TODO: Timeout
-        // TODO: Cancel
-        // TODO: Disconnect() Reconnect()?
-        private async Task<byte[]> FetchEndpointBuffer(uint payloadOffset = 0)
+        // TODO: Reconnect()?
+        private async Task<byte[]> FetchEndpointBuffer(uint payloadOffset = 0, CancellationToken cancellationToken = default(CancellationToken))
         {
             var tcs = new TaskCompletionSource<byte[]>();
 
             byte[] cumulativeResponse = new byte[0];
 
-            SendRequest(new Request(
+            var request = new Request(
                 endpointID: 0,
                 expectedResponseSize: 32,
                 requestACK: true,
@@ -230,13 +230,30 @@
                     tcs.SetResult(responseBytes);
                 },
                 signature: Config.USB_PROTOCOL_VERSION
-            ));
+            );
+
+            cancellationToken.Register(() =>
+            {
+                request.CancelRequest();
+            });
+
+            SendRequest(request);
 
             return await tcs.Task;
         }
 
-        private int SendRequest(Request request)
+        private void AssertConnected()
         {
+            if (endpointReader == null || endpointWriter == null)
+            {
+                throw new InvalidOperationException("Attempted to read or write while connection is not open");
+            }
+        }
+
+        private int SendRequest(Request request, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            AssertConnected();
+
             if (request.Body.Data.Length + 2 >= Config.USB_MAX_PACKET_SIZE)
             {
                 throw new NotSupportedException("Packets larger than 127 bytes are not currently supported.");
@@ -269,7 +286,10 @@
 
             if (!(request is null))
             {
-                request.ResponseCallback?.Invoke(request, response);
+                if (!request.CancellationRequested)
+                {
+                    request.ResponseCallback?.Invoke(request, response);
+                }
                 pendingRequests.Remove(sequenceNumber);
                 queuedResponses.Remove(sequenceNumber);
             }
