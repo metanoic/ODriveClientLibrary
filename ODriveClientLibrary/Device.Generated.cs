@@ -3,7 +3,7 @@ namespace ODrive
     using System;
     using ReactiveUI;
 
-    public partial class Device : RemoteObject
+    public partial  class Device : RemoteObject
     {
         internal Device()
         {
@@ -196,5 +196,7 @@ namespace ODrive
         {
             ODriveDevice.FetchEndpointSync<byte>(258);
         }
+
+        ushort originSchemaChecksum = 9455;
     }
 }
