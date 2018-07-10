@@ -123,6 +123,7 @@
     <Compile Include="DeviceSchema\DeviceSchemaParser.cs" />
     <Compile Include="DeviceSchema\IDeviceMember.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="ParsedSchema.cs" />
     <Compile Include="SchemaParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

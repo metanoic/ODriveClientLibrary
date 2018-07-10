@@ -29,9 +29,7 @@
         private UsbEndpointWriter endpointWriter;
 
         // For endpoint 0 the protocol version is used, for all others we need the actual CRC16 of the JSON endpoints definition
-        public ushort JsonCRC { get; set; } = Config.USB_PROTOCOL_VERSION;
-
-        private CRC<ushort> CRC16 = new CRC<ushort>(16, Config.CANONICAL_CRC16_POLYNOMIAL, Config.USB_PROTOCOL_VERSION);
+        public ushort JsonCRC { get; set; }
 
         private string endpointJSON = string.Empty;
         public string EndpointJSON
@@ -41,12 +39,7 @@
             set
             {
                 endpointJSON = value;
-
-                var jsonBytes = System.Text.Encoding.ASCII.GetBytes(endpointJSON);
-                if (jsonBytes.Any())
-                {
-                    JsonCRC = CRC16.CalculateAsNumeric(jsonBytes);
-                }
+                JsonCRC = SchemaChecksumCalculator.CalculateChecksum(endpointJSON);
             }
         }
 

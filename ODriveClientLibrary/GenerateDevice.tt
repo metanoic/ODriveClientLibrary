@@ -45,14 +45,14 @@
 		schemaJSON = System.IO.File.ReadAllText(Host.ResolvePath("..\\ODriveClientLibrary.DeviceGenerator\\DeviceSchema\\DefinitionArchive\\3.5.json"));
 	}
 
-	var classFiles = SchemaParser.Parse(schemaJSON);
+	var parsedSchema = SchemaParser.Parse(schemaJSON);
 
 	var templateManager = Manager.Create(Host, GenerationEnvironment);
 
-	foreach (var classFile in classFiles) 
+	foreach (var codeClass in parsedSchema.CodeClasses) 
 	{
-		templateManager.StartNewFile(classFile.FileName);
-		Write(classFile.Source);
+		templateManager.StartNewFile(codeClass.FileName);
+		Write(codeClass.Source);
 		templateManager.EndBlock();
 	}
 

@@ -170,6 +170,7 @@
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
     <Compile Include="Utilities\CRC.cs" />
+    <Compile Include="Utilities\SchemaChecksumCalculator.cs" />
     <Compile Include="Utilities\WireBuffer.cs" />
     <Compile Include="Utilities\PredicateBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

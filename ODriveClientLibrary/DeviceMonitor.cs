@@ -18,7 +18,7 @@
     /// <seealso cref="ReactiveUI.ReactiveObject" />
     public sealed class DeviceMonitor : ReactiveObject
     {
-        private static readonly Lazy<DeviceMonitor> LazyInstantiator = new Lazy<DeviceMonitor>(() => new DeviceMonitor());
+        private static readonly Lazy<DeviceMonitor> LazyInstantiator = new Lazy<DeviceMonitor>(() => new DeviceMonitor(), isThreadSafe: true);
 
         /// <summary>
         /// Gets the instance of the DeviceMonitor singleton
