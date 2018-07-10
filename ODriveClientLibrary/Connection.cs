@@ -50,11 +50,13 @@
             }
         }
 
+        public bool IsConnected { get => endpointWriter != null && endpointWriter != null; }
+
         // TODO: Need proper return type
         // TODO: Timeout? What are possible results of OpenEndpointReader/Writer?
         public bool Connect()
         {
-            if (endpointReader != null || endpointWriter != null)
+            if (IsConnected)
             {
                 throw new Exception("Attempted to Connect an already connected connection.");
             }
@@ -119,7 +121,7 @@
         // TODO: Need propert return type
         public bool Disconnect()
         {
-            if (endpointReader == null || endpointWriter == null)
+            if (IsConnected == false)
             {
                 throw new Exception("Attempted to Disconnect and already disconnected connection");
             }
