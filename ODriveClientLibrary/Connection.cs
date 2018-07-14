@@ -10,12 +10,21 @@
     using LibUsbDotNet.Info;
     using LibUsbDotNet.Main;
     using ODrive.Utilities;
+    using Nito.AsyncEx;
+    using Nito.Disposables;
+    using Nito;
+    using System.Collections.Concurrent;
 
-    internal class Connection
+    public class Connection
     {
+        private const int REQUEST_TIMEOUT_MS = 450 * 1000;
+        private const int SCHEMA_FETCH_TIMEOUT_SECONDS = 30 * 20;
+        //private const int RESEND_TIMEOUT = 5;
+        //private const int SEND_ATTEMPTS = 5;
+
         private readonly ThreadSafeCounter sequenceCounter = new ThreadSafeCounter();
-        private readonly Dictionary<ushort, Request> pendingRequests = new Dictionary<ushort, Request>();
-        private readonly Dictionary<ushort, Response> queuedResponses = new Dictionary<ushort, Response>();
+        private readonly ConcurrentDictionary<ushort, Request> pendingRequests = new ConcurrentDictionary<ushort, Request>();
+        private readonly ConcurrentDictionary<ushort, Request> cancelledRequests = new ConcurrentDictionary<ushort, Request>();
 
         private readonly UsbDevice usbDevice;
 
@@ -39,14 +48,14 @@
             SchemaChecksum = schemaChecksum;
         }
 
-        // Determine if the supplied checksum is valid for the device we're connected to.
-        // Since the device won't reply to non-zero endpoints if the checksum is incorrect,
-        // we first verify it will reply at all by fetching a small bit of endpoint 0 and 
-        // then endpoint 1 (which should be the bus voltage endpoint)
-        public async Task<bool> ValidateChecksum(ushort checksumValue)
-        {
-            throw new NotImplementedException();
-        }
+        ////// Determine if the supplied checksum is valid for the device we're connected to.
+        ////// Since the device won't reply to non-zero endpoints if the checksum is incorrect,
+        ////// we first verify it will reply at all by fetching a small bit of endpoint 0 and 
+        ////// then endpoint 1 (which should be the bus voltage endpoint)
+        ////public async Task<bool> ValidateChecksum(ushort checksumValue)
+        ////{
+        ////    throw new NotImplementedException();
+        ////}
 
         // TODO: Need proper return type
         // TODO: Timeout? What are possible results of OpenEndpointReader/Writer?
@@ -128,134 +137,7 @@
             return true;
         }
 
-        public async Task<T> FetchEndpointScalar<T>(ushort endpointID, T? newValue = null, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
-        {
-            //if (endpointID != 0 && SchemaChecksum.HasValue == false)
-            //{
-            //    throw new Exception("Must set SchemaChecksum to request non-zero endpoints");
-            //}
-            var tcs = new TaskCompletionSource<T>();
-
-            var dataSize = Marshal.SizeOf(typeof(T));
-
-            WireBuffer requestBuffer = null;
-
-            if (newValue.HasValue)
-            {
-                requestBuffer = new WireBuffer(dataSize);
-                requestBuffer.Write(newValue.Value);
-            }
-
-            var request = new Request(
-                endpointID: endpointID,
-                expectedResponseSize: 32,
-                requestACK: true,
-                populateBody: () => requestBuffer,
-                responseCallback: (req, res) =>
-                {
-                    var responseData = res.Body.Read<T>();
-                    tcs.SetResult(responseData);
-                },
-                signature: SchemaChecksum.HasValue ? SchemaChecksum.Value : (ushort)Config.USB_PROTOCOL_VERSION
-            );
-
-            cancellationToken.Register(() =>
-            {
-                request.CancelRequest();
-            });
-
-            SendRequest(request);
-
-            return await tcs.Task;
-        }
-
-        private static byte[] ConcatByteArrays(byte[] arrayA, byte[] arrayB)
-        {
-            byte[] outputBytes = new byte[arrayA.Length + arrayB.Length];
-            Buffer.BlockCopy(arrayA, 0, outputBytes, 0, arrayA.Length);
-            Buffer.BlockCopy(arrayB, 0, outputBytes, arrayA.Length, arrayB.Length);
-            return outputBytes;
-        }
-
-        public async Task<byte[]> FetchEndpointBuffer(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            byte[] cumulativeResponse = new byte[0];
-            uint totalBytesReceived = 0;
-
-            while (cancellationToken.IsCancellationRequested == false)
-            {
-                var data = await FetchEndpointBuffer(totalBytesReceived, cancellationToken);
-                if (data.Length == 0)
-                {
-                    break;
-                }
-                else
-                {
-                    totalBytesReceived += (uint)data.Length;
-                }
-
-                cumulativeResponse = ConcatByteArrays(cumulativeResponse, data);
-            }
-
-            // We could be done with the loop 'cause user cancelled
-            if (cancellationToken.IsCancellationRequested == false)
-            {
-                SchemaChecksum = SchemaChecksumCalculator.CalculateChecksum(cumulativeResponse);
-            }
-
-            return cumulativeResponse;
-        }
-
-        // TODO: Retry
-        // TODO: Timeout
-        // TODO: Reconnect()?
-        // TODO: Use this to verify successful connection prior to attempting a non-zero endpoint fetch with a questionable CRC
-        internal async Task<byte[]> FetchEndpointBuffer(
-            uint payloadOffset = 0,
-            CancellationToken cancellationToken = default(CancellationToken),
-            ushort? schemaChecksum = null)
-        {
-            var tcs = new TaskCompletionSource<byte[]>();
-
-            byte[] cumulativeResponse = new byte[0];
-
-            var request = new Request(
-                endpointID: 0,
-                expectedResponseSize: 32,
-                requestACK: true,
-                populateBody: () =>
-                {
-                    var wireBuffer = new WireBuffer(4);
-                    wireBuffer.Write(payloadOffset);
-                    return wireBuffer;
-                },
-                responseCallback: (req, res) =>
-                {
-                    var responseBytes = res.Body.Data;
-                    tcs.SetResult(responseBytes);
-                },
-                signature: Config.USB_PROTOCOL_VERSION
-            );
-
-            cancellationToken.Register(() =>
-            {
-                request.CancelRequest();
-            });
-
-            SendRequest(request);
-
-            return await tcs.Task;
-        }
-
-        private void AssertConnected()
-        {
-            if (endpointReader == null || endpointWriter == null)
-            {
-                throw new InvalidOperationException("Attempted to read or write while connection is not open");
-            }
-        }
-
-        private int SendRequest(Request request, CancellationToken cancellationToken = default(CancellationToken))
+        private int SendRequest(Request request)
         {
             AssertConnected();
 
@@ -270,15 +152,21 @@
                 throw new ArgumentException("Packet signature must be provided if requesting endpoints other than 0.");
             }
 
-            var requestBytes = request.ToByteArray();
-            ErrorCode err = endpointWriter.Write(requestBytes, Config.USB_WRITE_TIMEOUT, out int transferLength);
+            int transferLength = 0;
 
-            if (err != ErrorCode.None)
+            if (!request.CancellationToken.IsCancellationRequested)
             {
-                throw new Exception(err.ToString());
-            }
+                var requestBytes = request.ToByteArray();
 
-            pendingRequests.Add(request.SequenceNumber, request);
+                ErrorCode err = endpointWriter.Write(requestBytes, Config.USB_WRITE_TIMEOUT, out transferLength);
+
+                if (err != ErrorCode.None)
+                {
+                    throw new Exception(err.ToString());
+                }
+
+                pendingRequests.TryAdd(request.SequenceNumber, request);
+            }
 
             return transferLength;
         }
@@ -288,18 +176,244 @@
             var response = new Response(e.Buffer, e.Count);
             var sequenceNumber = response.SequenceNumber;
 
-            pendingRequests.TryGetValue(response.SequenceNumber, out Request request);
+            pendingRequests.TryGetValue(sequenceNumber, out Request pendingRequest);
 
-            if (!(request is null))
+            System.Diagnostics.Debug.WriteLine("Received Data... " + DateTime.Now.ToLongDateString());
+
+            if (pendingRequest != null)
             {
-                System.Diagnostics.Debug.WriteLine("Got response for endpoint " + request.EndpointID.ToString());
-                if (!request.CancellationRequested)
+                if (pendingRequest.CancellationToken.IsCancellationRequested)
                 {
-                    request.ResponseCallback?.Invoke(request, response);
+                    // Move the request into the cancelled list, we may still receive
+                    // the response for it, although we will discard the response
+                    pendingRequests.TryRemove(sequenceNumber, out _);
+                    cancelledRequests.TryAdd(sequenceNumber, pendingRequest);
+                    return;
                 }
-                pendingRequests.Remove(sequenceNumber);
-                queuedResponses.Remove(sequenceNumber);
+                else
+                {
+                    pendingRequests.TryRemove(sequenceNumber, out _);
+                    pendingRequest.ResponseCallback?.Invoke(pendingRequest, response);
+                }
             }
+            else
+            {
+                // If it's not pending, maybe it was cancelled?  If it was then we
+                // know it can be discarded.
+                cancelledRequests.TryGetValue(sequenceNumber, out Request cancelledRequest);
+                if (cancelledRequest != null)
+                {
+                    // TODO: Extension method?
+                    pendingRequests.TryRemove(sequenceNumber, out _);
+                    cancelledRequests.TryRemove(sequenceNumber, out _);
+                }
+
+                // Received data we have no knoweldge of asking for...
+            }
+        }
+
+        public async Task<T> FetchEndpointScalar<T>(
+            ushort endpointID,
+            T? newValue = null,
+            CancellationToken cancellationToken = default(CancellationToken),
+            TimeSpan? timeoutOverride = null) where T : struct
+        {
+            var timeoutDuration = timeoutOverride ?? TimeSpan.FromMilliseconds(REQUEST_TIMEOUT_MS);
+
+            using (NormalizedCancellationToken timeoutTokenSource = NormalizedCancellationToken.Timeout(timeoutDuration),
+                cancelAndTimeoutTokenSource = NormalizedCancellationToken.Normalize(cancellationToken, timeoutTokenSource.Token))
+            {
+                var cancelAndTimeoutToken = cancelAndTimeoutTokenSource.Token;
+
+                var taskCompletionSource = new TaskCompletionSource<T>();
+
+                var dataSize = Marshal.SizeOf(typeof(T));
+
+                WireBuffer requestBuffer = null;
+
+                if (newValue.HasValue)
+                {
+                    requestBuffer = new WireBuffer(dataSize);
+                    requestBuffer.Write(newValue.Value);
+                }
+
+                var request = new Request(
+                    endpointID: endpointID,
+                    expectedResponseSize: 32,
+                    requestACK: true,
+                    populateBody: () => requestBuffer,
+                    responseCallback: (req, res) =>
+                    {
+                        var responseData = res.Body.Read<T>();
+                        taskCompletionSource.TrySetResult(responseData);
+                    },
+                    signature: SchemaChecksum ?? Config.USB_PROTOCOL_VERSION,
+                    cancellationToken: cancellationToken //cancelAndTimeoutToken
+                );
+
+                SendRequest(request);
+
+                T result = default(T);
+
+                try
+                {
+                    result = await taskCompletionSource.Task.WaitAsync(cancelAndTimeoutToken);
+                }
+                catch (TaskCanceledException ex)
+                {
+                    if (ex.CancellationToken == timeoutTokenSource.Token)
+                    {
+                        // TODO: Retry
+                        throw new TimeoutException($"Fetch to endpoint {endpointID} timed out.", ex);
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        public async Task<byte[]> FetchEndpointBuffer(CancellationToken parentCancellationToken = default(CancellationToken), TimeSpan? timeoutOverride = null)
+        {
+            var fetchEndpointsTimeoutDuration = timeoutOverride ?? TimeSpan.FromSeconds(SCHEMA_FETCH_TIMEOUT_SECONDS);
+            using (CancellationTokenSource requestTimeoutTokenSource = new CancellationTokenSource(fetchEndpointsTimeoutDuration),
+                timeoutOrParentCancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(parentCancellationToken, requestTimeoutTokenSource.Token))
+            {
+                var timeoutOrParentCancelToken = timeoutOrParentCancelTokenSource.Token;
+                var taskCompletionSource = new TaskCompletionSource<byte[]>();
+                byte[] cumulativeResponse = new byte[0];
+                uint totalBytesReceived = 0;
+
+                while (true)
+                {
+                    using (CancellationTokenSource byteRequestTimeoutTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(REQUEST_TIMEOUT_MS)),
+                        timeoutOrCancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutOrParentCancelToken, byteRequestTimeoutTokenSource.Token))
+                    {
+                        var timeoutOrCancelToken = timeoutOrCancelTokenSource.Token;
+                        try
+                        {
+                            var data = await FetchEndpointBuffer(totalBytesReceived, parentCancellationToken: timeoutOrCancelToken, timeoutOverride: timeoutOverride)
+                                .WaitAsync(timeoutOrCancelToken);
+
+                            if (data.Length == 0)
+                            {
+                                SchemaChecksum = SchemaChecksumCalculator.CalculateChecksum(cumulativeResponse);
+                                taskCompletionSource.SetResult(cumulativeResponse);
+
+                                break;
+                            }
+                            else
+                            {
+                                totalBytesReceived += (uint)data.Length;
+                            }
+
+                            cumulativeResponse = ConcatByteArrays(cumulativeResponse, data);
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            // Indicates we timed out on the fetch inside the loop
+                            if (byteRequestTimeoutTokenSource.IsCancellationRequested)
+                            {
+                                throw;
+                            }
+                            // Indicates we timed out waiting for the loop
+                            if (requestTimeoutTokenSource.IsCancellationRequested)
+                            {
+                                throw;
+                            }
+                            // Indicates that the parent cancelled
+                            if (parentCancellationToken.IsCancellationRequested)
+                            {
+                                throw;
+                            }
+                        }
+                    }
+                }
+                return await taskCompletionSource.Task;
+            }
+        }
+
+        // TODO: Retry
+        // TODO: Timeout
+        // TODO: Reconnect()?
+        // TODO: Use this to verify successful connection prior to attempting a non-zero endpoint fetch with a questionable CRC
+        internal async Task<byte[]> FetchEndpointBuffer(
+            uint payloadOffset = 0,
+            ushort? schemaChecksum = null,
+            CancellationToken parentCancellationToken = default(CancellationToken),
+            TimeSpan? timeoutOverride = null)
+        {
+            var timeoutDuration = timeoutOverride ?? TimeSpan.FromMilliseconds(REQUEST_TIMEOUT_MS);
+            using (CancellationTokenSource requestTimeoutTokenSource = new CancellationTokenSource(timeoutDuration),
+                timeoutOrParentCancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(parentCancellationToken, requestTimeoutTokenSource.Token))
+            {
+                var timeoutOrParentCancelToken = timeoutOrParentCancelTokenSource.Token;
+
+                var taskCompletionSource = new TaskCompletionSource<byte[]>();
+
+                byte[] cumulativeResponse = new byte[0];
+
+                var request = new Request(
+                    endpointID: 0,
+                    expectedResponseSize: 32,
+                    requestACK: true,
+                    populateBody: () =>
+                    {
+                        var wireBuffer = new WireBuffer(4);
+                        wireBuffer.Write(payloadOffset);
+                        return wireBuffer;
+                    },
+                    responseCallback: (req, res) =>
+                    {
+                        var responseBytes = res.Body.Data;
+                        taskCompletionSource.SetResult(responseBytes);
+                    },
+                    signature: Config.USB_PROTOCOL_VERSION,
+                    cancellationToken: timeoutOrParentCancelToken
+                );
+
+
+                byte[] result = null;
+
+                try
+                {
+                    //timeoutOrParentCancelToken.ThrowIfCancellationRequested();
+
+                    SendRequest(request);
+
+                    result = await taskCompletionSource.Task.WaitAsync(timeoutOrParentCancelToken);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    if (requestTimeoutTokenSource.IsCancellationRequested)
+                    {
+                        // TODO: Retry
+                        throw;
+                    }
+                    if (parentCancellationToken.IsCancellationRequested)
+                    {
+                        // Consumer aborted
+                        throw;
+                    }
+                }
+
+                return result;
+            }
+        }
+
+        private void AssertConnected()
+        {
+            if (endpointReader == null || endpointWriter == null)
+            {
+                throw new InvalidOperationException("Attempted to read or write while connection is not open");
+            }
+        }
+
+        private static byte[] ConcatByteArrays(byte[] arrayA, byte[] arrayB)
+        {
+            byte[] outputBytes = new byte[arrayA.Length + arrayB.Length];
+            Buffer.BlockCopy(arrayA, 0, outputBytes, 0, arrayA.Length);
+            Buffer.BlockCopy(arrayB, 0, outputBytes, arrayA.Length, arrayB.Length);
+            return outputBytes;
         }
     }
 }

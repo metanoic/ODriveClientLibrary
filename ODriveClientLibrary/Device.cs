@@ -11,7 +11,7 @@
         private readonly BasicDeviceInfo deviceInfo;
 
         private UsbDevice usbDevice;
-        private Connection deviceConnection;
+        public Connection deviceConnection;
         private ManualResetEventSlim readyEvent = new ManualResetEventSlim();
 
         public DeviceStatus Status { get; private set; } = DeviceStatus.Unknown;
@@ -19,7 +19,7 @@
         private ushort? schemaChecksum;
         public ushort SchemaChecksum
         {
-            get => schemaChecksum.HasValue ? schemaChecksum.Value : originSchemaChecksum;
+            get => schemaChecksum ?? originSchemaChecksum;
             private set => schemaChecksum = value;
         }
 
@@ -42,19 +42,9 @@
             ODriveDevice = this;
         }
 
-        public bool Disconnect()
+        public bool WaitUntilReady(TimeSpan? timeout = null)
         {
-            AssertNotDisposed();
-
-            // TODO: Throws on failure - try/catch/finally
-            var result = deviceConnection.Disconnect();
-
-            if (result)
-            {
-                Status = DeviceStatus.Disconnected;
-            }
-
-            return result;
+            return readyEvent.Wait(timeout ?? Timeout.InfiniteTimeSpan);
         }
 
         public bool Connect()
@@ -109,35 +99,66 @@
             return connectSuccessful;
         }
 
-        public bool WaitUntilReady(TimeSpan? timeout = null)
-        {
-            return readyEvent.Wait(timeout ?? Timeout.InfiniteTimeSpan);
-        }
-
-        public async Task<string> FetchSchema(CancellationToken cancellationToken = default(CancellationToken))
+        public bool Disconnect()
         {
             AssertNotDisposed();
-            byte[] schemaBytes = await deviceConnection.FetchEndpointBuffer(cancellationToken);
+
+            // TODO: Throws on failure - try/catch/finally
+            var result = deviceConnection.Disconnect();
+
+            if (result)
+            {
+                Status = DeviceStatus.Disconnected;
+            }
+
+            return result;
+        }
+
+        public async Task<string> FetchSchema(CancellationToken cancellationToken = default(CancellationToken), TimeSpan? timeoutOverride = null)
+        {
+            AssertNotDisposed();
+            byte[] schemaBytes = await deviceConnection.FetchEndpointBuffer(cancellationToken, timeoutOverride);
             string schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
             return schemaJson;
         }
 
-        public string FetchSchemaSync(CancellationToken cancellationToken = default(CancellationToken))
+        public string FetchSchemaSync(CancellationToken cancellationToken = default(CancellationToken), TimeSpan? timeoutOverride = null)
         {
             AssertNotDisposed();
             return Task.Run(async () => await FetchSchema(cancellationToken)).Result;
         }
 
-        public async Task<T> FetchEndpoint<T>(ushort endpointID, T? newValue = null, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
+        public async Task<T> FetchEndpoint<T>(
+            ushort endpointID,
+            T? newValue = null,
+            CancellationToken cancellationToken = default(CancellationToken),
+            TimeSpan? timeoutOverride = null) where T : struct
         {
             AssertNotDisposed();
-            return await deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken);
+
+            T result = default(T);
+
+            try
+            {
+                result = await deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken, timeoutOverride);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return result;
         }
 
-        public T FetchEndpointSync<T>(ushort endpointID, T? newValue = null, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
+        public T FetchEndpointSync<T>(
+            ushort endpointID,
+            T? newValue = null,
+            CancellationToken cancellationToken = default(CancellationToken),
+            TimeSpan? timeoutOverride = null
+            ) where T : struct
         {
             AssertNotDisposed();
-            return Task.Run(async () => await deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken)).Result;
+            return Task.Run(async () => await deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken, timeoutOverride)).Result;
         }
 
         public void Dispose()

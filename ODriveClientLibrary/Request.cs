@@ -1,6 +1,7 @@
 ﻿namespace ODrive
 {
     using System;
+    using System.Threading;
     using ODrive.Utilities;
 
     internal class Request
@@ -12,10 +13,10 @@
         public bool RequestACK { get; private set; }
         public ushort SequenceNumber { get; private set; }
         public ushort Signature { get; private set; }
+        public CancellationToken CancellationToken { get; private set; }
 
         public WireBuffer Body { get; private set; }
         public Action<Request, Response> ResponseCallback { get; private set; }
-        public bool CancellationRequested { get; private set; }
 
         public Request(
             ushort endpointID,
@@ -23,14 +24,16 @@
             bool requestACK,
             Func<WireBuffer> populateBody,
             Action<Request, Response> responseCallback,
-            ushort signature)
+            ushort signature,
+            CancellationToken cancellationToken)
         {
             EndpointID = endpointID;
             ExpectedResponseSize = expectedResponseSize;
             RequestACK = requestACK;
-            Signature = signature;
-            ResponseCallback = responseCallback;
             Body = populateBody.Invoke();
+            ResponseCallback = responseCallback;
+            Signature = signature;
+            CancellationToken = cancellationToken;
 
             if (Body == null)
             {
@@ -40,12 +43,6 @@
             // This should be the sole source of SequenceNumber values
             var seqNo = SequenceCounter.NextValue();
             SequenceNumber = (ushort)(seqNo | 0x80);
-        }
-
-        public void CancelRequest()
-        {
-            // Just set a flag we'll check later if we receive the response
-            CancellationRequested = true;
         }
 
         public byte[] ToByteArray()
