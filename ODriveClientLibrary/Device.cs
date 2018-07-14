@@ -11,7 +11,7 @@
         private readonly BasicDeviceInfo deviceInfo;
 
         private UsbDevice usbDevice;
-        public Connection deviceConnection;
+        private Connection deviceConnection;
         private ManualResetEventSlim readyEvent = new ManualResetEventSlim();
 
         public DeviceStatus Status { get; private set; } = DeviceStatus.Unknown;

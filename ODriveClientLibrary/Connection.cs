@@ -15,7 +15,7 @@
     using Nito;
     using System.Collections.Concurrent;
 
-    public class Connection
+    internal class Connection
     {
         private const int REQUEST_TIMEOUT_MS = 450 * 1000;
         private const int SCHEMA_FETCH_TIMEOUT_SECONDS = 30 * 20;
@@ -376,8 +376,6 @@
 
                 try
                 {
-                    //timeoutOrParentCancelToken.ThrowIfCancellationRequested();
-
                     SendRequest(request);
 
                     result = await taskCompletionSource.Task.WaitAsync(timeoutOrParentCancelToken);
