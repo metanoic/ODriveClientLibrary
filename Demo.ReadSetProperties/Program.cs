@@ -2,6 +2,8 @@
 {
     using System;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using ODrive;
     using ODrive.Enums;
@@ -9,6 +11,11 @@
     class Program
     {
         static void Main(string[] args)
+        {
+            MyAsyncFunc();
+        }
+
+        static async Task MyAsyncFunc()
         {
             var deviceMonitor = DeviceMonitor.Instance;
             var foundDevice = deviceMonitor.AvailableDevices.FirstOrDefault();
@@ -21,13 +28,6 @@
             using (var oDrive = new Device(foundDevice))
             {
                 oDrive.Connect();
-
-                if (!oDrive.WaitUntilReady(TimeSpan.FromSeconds(30)))
-                {
-                    throw new TimeoutException("Timeout expired while waiting for device to be ready.");
-                }
-
-                oDrive.FetchSchemaSync();
 
                 Console.WriteLine($"Firmware Version: {oDrive.FwVersionMajor}.{oDrive.FwVersionMinor}.{oDrive.FwVersionRevision}.{oDrive.FwVersionUnreleased}");
                 Console.WriteLine($"Hardware Version: {oDrive.HwVersionMajor}.{oDrive.HwVersionMinor}.{oDrive.HwVersionVariant}");
@@ -47,6 +47,7 @@
                 }
 
                 Console.WriteLine("Calibration complete");
+
             }
 
             while (!Console.KeyAvailable)
