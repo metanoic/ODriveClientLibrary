@@ -4,11 +4,12 @@
     using System.Threading;
     using System.Threading.Tasks;
     using LibUsbDotNet;
+    using ODrive.Exceptions;
     using ODrive.Utilities;
 
     public partial class Device : RemoteObject, IDisposable
     {
-        private const int RETRY_DELAY_MS = 5 * 1000;
+        private const int RETRY_DELAY_MS = 1 * 1000;
         private const int RETRY_ATTEMPTS = 5;
 
         private readonly BasicDeviceInfo deviceInfo;
@@ -80,12 +81,17 @@
 
             Status = DeviceStatus.Connecting;
 
-            // TODO: Throws on failure - try/catch/finally
-            var connectSuccessful = deviceConnection.Connect();
+            bool connectSuccessful = false;
 
-            if (connectSuccessful)
+            try
             {
-                Status = DeviceStatus.Ready;
+                connectSuccessful = deviceConnection.Connect();
+            }
+            catch
+            {
+                try { deviceConnection.Disconnect(); } catch { }
+                try { Disconnect(); } catch { }
+                throw;
             }
 
             readyEvent.Set();
@@ -106,15 +112,14 @@
         {
             AssertNotDisposed();
 
-            // TODO: Throws on failure - try/catch/finally
-            var result = deviceConnection.Disconnect();
+            bool disconnectSuccessful = deviceConnection.Disconnect();
 
-            if (result)
+            if (disconnectSuccessful)
             {
                 Status = DeviceStatus.Disconnected;
             }
 
-            return result;
+            return disconnectSuccessful;
         }
 
         public async Task<string> FetchSchema(
@@ -136,7 +141,7 @@
 
                 schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
@@ -174,7 +179,7 @@
                      return deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken, timeoutOverride);
                  }, retryAttempts, retryDelayOverride ?? TimeSpan.FromMilliseconds(RETRY_DELAY_MS));
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }

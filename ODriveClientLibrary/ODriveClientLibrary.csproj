@@ -177,6 +177,9 @@
     <Compile Include="Enums\EncoderErrorCodeEnum.cs" />
     <Compile Include="Enums\MotorArmedStateEnum.cs" />
     <Compile Include="Enums\MotorErrorCodeEnum.cs" />
+    <Compile Include="Exceptions\RequestCancelledException.cs" />
+    <Compile Include="Exceptions\RequestTimeoutException.cs" />
+    <Compile Include="Exceptions\UsbLibraryException.cs" />
     <Compile Include="MotorConfig.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
