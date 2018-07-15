@@ -21,7 +21,7 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(173);
+                var result = FetchEndpointSync<float>(173);
                 this.RaiseAndSetIfChanged(ref phase, result);
                 return phase;
             }
@@ -32,14 +32,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(174);
+                var result = FetchEndpointSync<float>(174);
                 this.RaiseAndSetIfChanged(ref pllPos, result);
                 return pllPos;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(174, value);
+                SetPropertySync<float>(174, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref pllPos, value);
             }
         }
@@ -49,14 +49,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(175);
+                var result = FetchEndpointSync<float>(175);
                 this.RaiseAndSetIfChanged(ref pllVel, result);
                 return pllVel;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(175, value);
+                SetPropertySync<float>(175, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref pllVel, value);
             }
         }
@@ -66,14 +66,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(176);
+                var result = FetchEndpointSync<float>(176);
                 this.RaiseAndSetIfChanged(ref pllKp, result);
                 return pllKp;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(176, value);
+                SetPropertySync<float>(176, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref pllKp, value);
             }
         }
@@ -83,14 +83,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(177);
+                var result = FetchEndpointSync<float>(177);
                 this.RaiseAndSetIfChanged(ref pllKi, result);
                 return pllKi;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(177, value);
+                SetPropertySync<float>(177, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref pllKi, value);
             }
         }
@@ -100,14 +100,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<int>(178);
+                var result = FetchEndpointSync<int>(178);
                 this.RaiseAndSetIfChanged(ref encoderOffset, result);
                 return encoderOffset;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<int>(178, value);
+                SetPropertySync<int>(178, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref encoderOffset, value);
             }
         }
@@ -117,14 +117,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<int>(179);
+                var result = FetchEndpointSync<int>(179);
                 this.RaiseAndSetIfChanged(ref encoderState, result);
                 return encoderState;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<int>(179, value);
+                SetPropertySync<int>(179, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref encoderState, value);
             }
         }
@@ -134,14 +134,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<int>(180);
+                var result = FetchEndpointSync<int>(180);
                 this.RaiseAndSetIfChanged(ref motorDir, result);
                 return motorDir;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<int>(180, value);
+                SetPropertySync<int>(180, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref motorDir, value);
             }
         }

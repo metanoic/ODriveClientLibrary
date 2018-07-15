@@ -49,7 +49,7 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(1);
+                var result = FetchEndpointSync<float>(1);
                 this.RaiseAndSetIfChanged(ref vbusVoltage, result);
                 return vbusVoltage;
             }
@@ -60,7 +60,7 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<ulong>(2);
+                var result = FetchEndpointSync<ulong>(2);
                 this.RaiseAndSetIfChanged(ref serialNumber, result);
                 return serialNumber;
             }
@@ -68,27 +68,27 @@ namespace ODrive
 
         public void RunAnticoggingCalibration()
         {
-            ODriveDevice.FetchEndpointSync<byte>(3);
+            FetchEndpointSync<byte>(3);
         }
 
         public void SaveConfiguration()
         {
-            ODriveDevice.FetchEndpointSync<byte>(208);
+            FetchEndpointSync<byte>(208);
         }
 
         public void EraseConfiguration()
         {
-            ODriveDevice.FetchEndpointSync<byte>(210);
+            FetchEndpointSync<byte>(210);
         }
 
         public void Reboot()
         {
-            ODriveDevice.FetchEndpointSync<byte>(212);
+            FetchEndpointSync<byte>(212);
         }
 
         public void EnterDfuMode()
         {
-            ODriveDevice.FetchEndpointSync<byte>(214);
+            FetchEndpointSync<byte>(214);
         }
 
         ushort originSchemaChecksum = 47683;

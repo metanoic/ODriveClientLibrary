@@ -28,9 +28,10 @@
 
             using (var oDrive = new Device(foundDevice))
             {
+                bool connectSuccess = false;
                 try
                 {
-                    await oDrive.Connect();
+                    connectSuccess = await oDrive.Connect(true);
                     var z = 1;
                 }
                 catch (Exception ex)
@@ -39,7 +40,12 @@
                 }
 
                 Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
+                var tt = await oDrive.FetchSchema();
                 Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
+
+
+                var zz = await oDrive.FetchSchema();
+                var sadf = 1;
             }
 
             while (!Console.KeyAvailable)

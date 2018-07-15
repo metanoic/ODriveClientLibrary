@@ -35,7 +35,7 @@
                 var connectResult = oDrive.Connect(true);
                 connectResult.Wait();
 
-                var schemaJson = oDrive.FetchSchemaSync();
+                var schemaJson = oDrive.FetchSchema().Result;
 
                 var codeClasses = SchemaParser.Parse(schemaJson);
 
@@ -59,10 +59,10 @@
                     var revisionEndpointID = firmwareVersionProperties.Find(item => item.Name == "FwVersionRevision").EndpointID.Value;
                     var unreleasedEndpointID = firmwareVersionProperties.Find(item => item.Name == "FwVersionUnreleased").EndpointID.Value;
 
-                    majorVersion = oDrive.FetchEndpointSync<byte>((ushort)majorEndpointID);
-                    minorVersion = oDrive.FetchEndpointSync<byte>((ushort)minorEndpointID);
-                    revisionVersion = oDrive.FetchEndpointSync<byte>((ushort)revisionEndpointID);
-                    unreleasedVersion = oDrive.FetchEndpointSync<byte>((ushort)unreleasedEndpointID);
+                    majorVersion = oDrive.FetchEndpoint<byte>((ushort)majorEndpointID).Result;
+                    minorVersion = oDrive.FetchEndpoint<byte>((ushort)minorEndpointID).Result;
+                    revisionVersion = oDrive.FetchEndpoint<byte>((ushort)revisionEndpointID).Result;
+                    unreleasedVersion = oDrive.FetchEndpoint<byte>((ushort)unreleasedEndpointID).Result;
                 }
 
                 var schemaBytes = Encoding.ASCII.GetBytes(schemaJson);

@@ -21,14 +21,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(149);
+                var result = FetchEndpointSync<float>(149);
                 this.RaiseAndSetIfChanged(ref pGain, result);
                 return pGain;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(149, value);
+                SetPropertySync<float>(149, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref pGain, value);
             }
         }
@@ -38,14 +38,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(150);
+                var result = FetchEndpointSync<float>(150);
                 this.RaiseAndSetIfChanged(ref iGain, result);
                 return iGain;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(150, value);
+                SetPropertySync<float>(150, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref iGain, value);
             }
         }
@@ -55,14 +55,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(151);
+                var result = FetchEndpointSync<float>(151);
                 this.RaiseAndSetIfChanged(ref vCurrentControlIntegralD, result);
                 return vCurrentControlIntegralD;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(151, value);
+                SetPropertySync<float>(151, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref vCurrentControlIntegralD, value);
             }
         }
@@ -72,14 +72,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(152);
+                var result = FetchEndpointSync<float>(152);
                 this.RaiseAndSetIfChanged(ref vCurrentControlIntegralQ, result);
                 return vCurrentControlIntegralQ;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(152, value);
+                SetPropertySync<float>(152, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref vCurrentControlIntegralQ, value);
             }
         }
@@ -89,14 +89,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(153);
+                var result = FetchEndpointSync<float>(153);
                 this.RaiseAndSetIfChanged(ref iqSetpoint, result);
                 return iqSetpoint;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(153, value);
+                SetPropertySync<float>(153, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref iqSetpoint, value);
             }
         }
@@ -106,14 +106,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(154);
+                var result = FetchEndpointSync<float>(154);
                 this.RaiseAndSetIfChanged(ref iqMeasured, result);
                 return iqMeasured;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(154, value);
+                SetPropertySync<float>(154, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref iqMeasured, value);
             }
         }
@@ -123,7 +123,7 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(155);
+                var result = FetchEndpointSync<float>(155);
                 this.RaiseAndSetIfChanged(ref ibus, result);
                 return ibus;
             }

@@ -14,14 +14,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<bool>(110);
+                var result = FetchEndpointSync<bool>(110);
                 this.RaiseAndSetIfChanged(ref enableControlAtStart, result);
                 return enableControlAtStart;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<bool>(110, value);
+                SetPropertySync<bool>(110, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref enableControlAtStart, value);
             }
         }
@@ -31,14 +31,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<bool>(111);
+                var result = FetchEndpointSync<bool>(111);
                 this.RaiseAndSetIfChanged(ref doCalibrationAtStart, result);
                 return doCalibrationAtStart;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<bool>(111, value);
+                SetPropertySync<bool>(111, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref doCalibrationAtStart, value);
             }
         }

@@ -67,7 +67,7 @@
                         List(new[] 
                         {
                             ParseStatement(
-                                $"var result = ODriveDevice.FetchEndpointSync<{Type}>({EndpointID});"
+                                $"var result = FetchEndpointSync<{Type}>({EndpointID});"
                             ),
                             ParseStatement(
                                 $"this.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, result);"
@@ -86,7 +86,7 @@
                         List(new[]
                         {
                             ParseStatement(
-                                $"ODriveDevice.FetchEndpointSync<{Type}>({EndpointID}, value);"
+                                $"SetPropertySync<{Type}>({EndpointID}, value);"
                             ),
                             ParseStatement(
                                 $"ODriveDevice.RaiseAndSetIfChanged(ref {Helpers.ToCamelCase(Name)}, value);"
