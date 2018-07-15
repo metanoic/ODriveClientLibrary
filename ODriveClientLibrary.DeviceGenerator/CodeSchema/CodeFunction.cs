@@ -44,7 +44,7 @@
             foreach (var argument in Arguments)
             {
                 methodStatements.Add(ParseStatement(
-                    $"ODriveDevice.FetchEndpointSync<{argument.Type}>({argument.EndpointID}, {Helpers.ToCamelCase(argument.Name)});"
+                    $"FetchEndpointSync<{argument.Type}>({argument.EndpointID}, {Helpers.ToCamelCase(argument.Name)});"
                 ));
 
                 methodDeclaration = methodDeclaration.AddParameterListParameters(
@@ -55,13 +55,13 @@
             if (ReturnType != null)
             {
                 methodStatements.Add(ParseStatement(
-                    $"return ODriveDevice.FetchEndpointSync<{ReturnType}>({EndpointID});"
+                    $"return FetchEndpointSync<{ReturnType}>({EndpointID});"
                 ));
             }
             else
             {
                 methodStatements.Add(ParseStatement(
-                   $"ODriveDevice.FetchEndpointSync<byte>({EndpointID});"
+                   $"FetchEndpointSync<byte>({EndpointID});"
                ));
             }
 

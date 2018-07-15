@@ -15,11 +15,40 @@
     using Nito;
     using System.Collections.Concurrent;
     using ODrive.Exceptions;
+    using Polly;
 
     internal class Connection
     {
         private const int REQUEST_TIMEOUT_MS = 120 * 1000;
         private const int SCHEMA_FETCH_TIMEOUT_SECONDS = 30;
+
+        private static readonly Lazy<Policy> StandardWaitAndRetryPolicy = new Lazy<Policy>(() =>
+        {
+            return Policy.Handle<Exception>().WaitAndRetryAsync(
+                retryCount: 5,
+                sleepDurationProvider: attempt => TimeSpan.FromSeconds(1),
+                onRetry: (exception, span, retryCount, context) =>
+                {
+                    System.Diagnostics.Debug.WriteLine($"Polly onRetry[{retryCount}]: {exception.Message}");
+                });
+        }, isThreadSafe: true);
+
+        private static readonly Lazy<Policy> StandardTimeoutPolicy = new Lazy<Policy>(() =>
+        {
+            return Policy.TimeoutAsync(
+                timeout: TimeSpan.FromSeconds(1),
+                timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic,
+                onTimeoutAsync: (context, timespan, task) =>
+                {
+                    System.Diagnostics.Debug.WriteLine("Timeout occurred");
+                    return task;
+                });
+        }, isThreadSafe: true);
+
+        private static readonly Lazy<Policy> StandardTimeoutWaitAndRetryPolicy = new Lazy<Policy>(() =>
+        {
+            return Policy.WrapAsync(StandardTimeoutPolicy.Value, StandardWaitAndRetryPolicy.Value);
+        }, isThreadSafe: true);
 
         private readonly ThreadSafeCounter sequenceCounter = new ThreadSafeCounter();
         private readonly ConcurrentDictionary<ushort, Request> pendingRequests = new ConcurrentDictionary<ushort, Request>();
@@ -49,7 +78,8 @@
 
         public async Task<bool> TestConnection()
         {
-            var testBytes = await FetchEndpointBuffer(payloadOffset: 0, timeoutOverride: TimeSpan.FromSeconds(3));
+            // Don't retry on this request
+            var testBytes = await FetchEndpointBuffer(payloadOffset: 0, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
             return testBytes.Length >= 30;
         }
 
@@ -61,8 +91,8 @@
             {
                 throw new ArgumentNullException("No checksum provided.");
             }
-
-            await FetchEndpointScalar<float>(endpointID: 1, timeoutOverride: TimeSpan.FromSeconds(2));
+            // Don't retry on this request
+            await FetchEndpointScalar<float>(endpointID: 1, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
 
             return true;
         }
@@ -131,7 +161,6 @@
             return true;
         }
 
-        // TODO: Need proper return type
         public bool Disconnect()
         {
             if (IsConnected == false)
@@ -223,16 +252,12 @@
         public async Task<T> FetchEndpointScalar<T>(
             ushort endpointID,
             T? newValue = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            TimeSpan? timeoutOverride = null) where T : struct
+            CancellationToken parentCancellationToken = default(CancellationToken),
+            Policy requestPolicy = null) where T : struct
         {
-            var timeoutDuration = timeoutOverride ?? TimeSpan.FromMilliseconds(REQUEST_TIMEOUT_MS);
-
-            using (NormalizedCancellationToken timeoutTokenSource = NormalizedCancellationToken.Timeout(timeoutDuration),
-                cancelAndTimeoutTokenSource = NormalizedCancellationToken.Normalize(cancellationToken, timeoutTokenSource.Token))
+            var policyToUse = requestPolicy ?? StandardTimeoutWaitAndRetryPolicy.Value;
+            return await policyToUse.ExecuteAsync(async cancellationToken =>
             {
-                var cancelAndTimeoutToken = cancelAndTimeoutTokenSource.Token;
-
                 var taskCompletionSource = new TaskCompletionSource<T>();
 
                 var dataSize = Marshal.SizeOf(typeof(T));
@@ -256,104 +281,54 @@
                         taskCompletionSource.SetResult(responseData);
                     },
                     signature: SchemaChecksum ?? Config.USB_PROTOCOL_VERSION,
-                    cancellationToken: cancelAndTimeoutToken
+                    cancellationToken: cancellationToken
                 );
 
                 SendRequest(request);
 
-                try
-                {
-                    return await taskCompletionSource.Task.WaitAsync(cancelAndTimeoutToken);
-                }
-                catch (OperationCanceledException ex)
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        throw new RequestCancelledException($"Cancellation signal received during {nameof(FetchEndpointScalar)}.", ex);
-                    }
-                    if (timeoutTokenSource.Token.IsCancellationRequested)
-                    {
-                        throw new RequestTimeoutException($"Timeout occurred during {nameof(FetchEndpointScalar)}.", ex);
-                    }
-                }
-
-                return default(T);
-            }
+                return await taskCompletionSource.Task.ConfigureAwait(false);
+            }, parentCancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<byte[]> FetchEndpointBuffer(CancellationToken parentCancellationToken = default(CancellationToken), TimeSpan? timeoutOverride = null)
+        public async Task<byte[]> FetchEndpointBuffer(CancellationToken parentCancellationToken = default(CancellationToken), Policy requestPolicy = null)
         {
-            var fetchEndpointsTimeoutDuration = timeoutOverride ?? TimeSpan.FromSeconds(SCHEMA_FETCH_TIMEOUT_SECONDS);
-            using (CancellationTokenSource requestTimeoutTokenSource = new CancellationTokenSource(fetchEndpointsTimeoutDuration),
-                timeoutOrParentCancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(parentCancellationToken, requestTimeoutTokenSource.Token))
+            var policyToUse = requestPolicy ?? StandardTimeoutWaitAndRetryPolicy.Value;
+            return await policyToUse.ExecuteAsync(async cancellationToken =>
             {
-                var timeoutOrParentCancelToken = timeoutOrParentCancelTokenSource.Token;
                 var taskCompletionSource = new TaskCompletionSource<byte[]>();
                 byte[] cumulativeResponse = new byte[0];
                 uint totalBytesReceived = 0;
 
-                // TODO: Ensure that timing out on this inner request triggers a retry on THIS area of code, not the parent
                 while (true)
                 {
-                    using (CancellationTokenSource byteRequestTimeoutTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(REQUEST_TIMEOUT_MS)),
-                        timeoutOrCancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutOrParentCancelToken, byteRequestTimeoutTokenSource.Token))
+                    var data = await FetchEndpointBuffer(totalBytesReceived, parentCancellationToken: cancellationToken, requestPolicy: requestPolicy).ConfigureAwait(false);
+                    if (data.Length == 0)
                     {
-                        var timeoutOrCancelToken = timeoutOrCancelTokenSource.Token;
-                        try
-                        {
-                            var data = await FetchEndpointBuffer(totalBytesReceived, parentCancellationToken: timeoutOrCancelToken, timeoutOverride: timeoutOverride)
-                                .WaitAsync(byteRequestTimeoutTokenSource.Token);
+                        SchemaChecksum = SchemaChecksumCalculator.CalculateChecksum(cumulativeResponse);
+                        taskCompletionSource.SetResult(cumulativeResponse);
 
-                            if (data.Length == 0)
-                            {
-                                SchemaChecksum = SchemaChecksumCalculator.CalculateChecksum(cumulativeResponse);
-                                taskCompletionSource.SetResult(cumulativeResponse);
-
-                                break;
-                            }
-                            else
-                            {
-                                totalBytesReceived += (uint)data.Length;
-                            }
-
-                            cumulativeResponse = ConcatByteArrays(cumulativeResponse, data);
-                        }
-                        catch (OperationCanceledException ex)
-                        {
-                            // Indicates we timed out on the fetch inside the loop
-                            if (byteRequestTimeoutTokenSource.IsCancellationRequested)
-                            {
-                                throw new RequestTimeoutException($"Timeout occurred during {nameof(FetchEndpointBuffer)}.", ex);
-                            }
-                            // Indicates we timed out waiting for the loop
-                            if (requestTimeoutTokenSource.IsCancellationRequested)
-                            {
-                                throw new RequestTimeoutException($"Timeout occurred during {nameof(FetchEndpointBuffer)}.", ex);
-                            }
-                            // Indicates that the parent cancelled
-                            if (parentCancellationToken.IsCancellationRequested)
-                            {
-                                throw new RequestCancelledException($"Cancellation signal received during {nameof(FetchEndpointBuffer)}.", ex);
-                            }
-                        }
+                        break;
                     }
+                    else
+                    {
+                        totalBytesReceived += (uint)data.Length;
+                    }
+
+                    cumulativeResponse = ConcatByteArrays(cumulativeResponse, data);
                 }
-                return await taskCompletionSource.Task;
-            }
+
+                return await taskCompletionSource.Task.ConfigureAwait(false);
+            }, parentCancellationToken).ConfigureAwait(false);
         }
 
-        // TODO: Reconnect()?
         internal async Task<byte[]> FetchEndpointBuffer(
             uint payloadOffset = 0,
             CancellationToken parentCancellationToken = default(CancellationToken),
-            TimeSpan? timeoutOverride = null)
+            Policy requestPolicy = null)
         {
-            var timeoutDuration = timeoutOverride ?? TimeSpan.FromMilliseconds(REQUEST_TIMEOUT_MS);
-            using (CancellationTokenSource requestTimeoutTokenSource = new CancellationTokenSource(timeoutDuration),
-                timeoutOrParentCancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(parentCancellationToken, requestTimeoutTokenSource.Token))
+            var policyToUse = requestPolicy ?? StandardTimeoutWaitAndRetryPolicy.Value;
+            return await policyToUse.ExecuteAsync(async cancellationToken =>
             {
-                var timeoutOrParentCancelToken = timeoutOrParentCancelTokenSource.Token;
-
                 var taskCompletionSource = new TaskCompletionSource<byte[]>();
 
                 byte[] cumulativeResponse = new byte[0];
@@ -374,33 +349,13 @@
                         taskCompletionSource.SetResult(responseBytes);
                     },
                     signature: Config.USB_PROTOCOL_VERSION,
-                    cancellationToken: timeoutOrParentCancelToken
+                    cancellationToken: cancellationToken
                 );
 
+                SendRequest(request);
 
-                byte[] result = null;
-
-                try
-                {
-                    SendRequest(request);
-
-                    result = await taskCompletionSource.Task.WaitAsync(timeoutOrParentCancelToken);
-                }
-                catch (OperationCanceledException ex)
-                {
-                    if (parentCancellationToken.IsCancellationRequested)
-                    {
-                        throw new RequestCancelledException($"Cancellation signal received during {nameof(FetchEndpointBuffer)}.", ex);
-                    }
-
-                    if (requestTimeoutTokenSource.Token.IsCancellationRequested)
-                    {
-                        throw new RequestTimeoutException($"Timeout occurred during {nameof(FetchEndpointBuffer)}.", ex);
-                    }
-                }
-
-                return result;
-            }
+                return await taskCompletionSource.Task.ConfigureAwait(false);
+            }, parentCancellationToken).ConfigureAwait(false);
         }
 
         private void AssertConnected()

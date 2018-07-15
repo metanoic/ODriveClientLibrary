@@ -14,14 +14,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<float>(47);
+                var result = FetchEndpointSync<float>(47);
                 this.RaiseAndSetIfChanged(ref currentLim, result);
                 return currentLim;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<float>(47, value);
+                SetPropertySync<float>(47, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref currentLim, value);
             }
         }

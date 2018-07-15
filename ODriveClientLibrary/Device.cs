@@ -105,7 +105,7 @@
                 bool connectionActive = false;
                 try
                 {
-                    connectionActive = await deviceConnection.TestConnection();
+                    connectionActive = await deviceConnection.TestConnection().ConfigureAwait(false);
                 }
                 catch { }
 
@@ -117,7 +117,7 @@
                 bool checksumIsValid = false;
                 try
                 {
-                    checksumIsValid = await deviceConnection.ValidateChecksum(SchemaChecksum);
+                    checksumIsValid = await deviceConnection.ValidateChecksum(SchemaChecksum).ConfigureAwait(false);
                 }
                 catch (RequestTimeoutException)
                 {
@@ -153,87 +153,29 @@
             return disconnectSuccessful;
         }
 
-        public async Task<string> FetchSchema(
-            CancellationToken cancellationToken = default(CancellationToken),
-            TimeSpan? timeoutOverride = null,
-            int retryAttempts = RETRY_ATTEMPTS,
-            TimeSpan? retryDelayOverride = null)
+        public async Task<string> FetchSchema(CancellationToken cancellationToken = default(CancellationToken))
         {
             AssertNotDisposed();
 
-            string schemaJson = string.Empty;
-
-            try
-            {
-                byte[] schemaBytes = await RetryHelper.ExecuteWithRetry(() =>
-                {
-                    return deviceConnection.FetchEndpointBuffer(cancellationToken, timeoutOverride);
-                }, retryAttempts, retryDelayOverride ?? TimeSpan.FromMilliseconds(RETRY_DELAY_MS));
-
-                schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
-            }
-            catch
-            {
-                throw;
-            }
+            byte[] schemaBytes = await deviceConnection.FetchEndpointBuffer(cancellationToken).ConfigureAwait(false);
+            var schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
 
             return schemaJson;
         }
 
-        // TODO: Remove.  If consumer wants synchronous, they can implement themselves.
-        public string FetchSchemaSync(
-            CancellationToken cancellationToken = default(CancellationToken),
-            TimeSpan? timeoutOverride = null,
-            int retryAttempts = RETRY_ATTEMPTS,
-            TimeSpan? retryDelayOverride = null)
+        public async Task<T> FetchEndpoint<T>(ushort endpointID, T? newValue = null, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
         {
             AssertNotDisposed();
-            return Task.Run(async () => await FetchSchema(cancellationToken)).Result;
+
+            return await deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<T> FetchEndpoint<T>(
-            ushort endpointID,
-            T? newValue = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            TimeSpan? timeoutOverride = null,
-            int retryAttempts = RETRY_ATTEMPTS,
-            TimeSpan? retryDelayOverride = null) where T : struct
+        private void AssertNotDisposed()
         {
-            AssertNotDisposed();
-
-            T result = default(T);
-
-            try
+            if (Status == DeviceStatus.Disposed)
             {
-                result = await RetryHelper.ExecuteWithRetry(() =>
-                 {
-                     return deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken, timeoutOverride);
-                 }, retryAttempts, retryDelayOverride ?? TimeSpan.FromMilliseconds(RETRY_DELAY_MS));
+                throw new ObjectDisposedException(GetType().FullName);
             }
-            catch
-            {
-                throw;
-            }
-
-            return result;
-        }
-
-        // TODO: Remove.  If consumer wants synchronous, they can implement themselves.
-        public T FetchEndpointSync<T>(
-            ushort endpointID,
-            T? newValue = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            TimeSpan? timeoutOverride = null,
-            int retryAttempts = RETRY_ATTEMPTS,
-            TimeSpan? retryDelayOverride = null) where T : struct
-        {
-            AssertNotDisposed();
-            return Task.Run(async () => await FetchEndpoint(endpointID, newValue, cancellationToken, timeoutOverride, retryAttempts, retryDelayOverride)).Result;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -249,12 +191,9 @@
             }
         }
 
-        private void AssertNotDisposed()
+        public void Dispose()
         {
-            if (Status == DeviceStatus.Disposed)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
+            Dispose(true);
         }
     }
 }

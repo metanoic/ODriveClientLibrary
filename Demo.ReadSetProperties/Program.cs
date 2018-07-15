@@ -28,23 +28,23 @@
 
             using (var oDrive = new Device(foundDevice))
             {
+                bool connectSuccess = false;
                 try
                 {
-                    await oDrive.Connect();
-                    var z = 1;
+                    connectSuccess = await oDrive.Connect();
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debugger.Break();
                 }
 
-                Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
-                Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
-            }
+                while (!Console.KeyAvailable)
+                {
+                    Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
+                    Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
 
-            while (!Console.KeyAvailable)
-            {
-                Application.DoEvents();
+                    Application.DoEvents();
+                }
             }
         }
     }

@@ -14,14 +14,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<int>(58);
+                var result = FetchEndpointSync<int>(58);
                 this.RaiseAndSetIfChanged(ref drvFault, result);
                 return drvFault;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<int>(58, value);
+                SetPropertySync<int>(58, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref drvFault, value);
             }
         }
@@ -31,14 +31,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<ushort>(59);
+                var result = FetchEndpointSync<ushort>(59);
                 this.RaiseAndSetIfChanged(ref statusReg1, result);
                 return statusReg1;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<ushort>(59, value);
+                SetPropertySync<ushort>(59, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref statusReg1, value);
             }
         }
@@ -48,14 +48,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<ushort>(60);
+                var result = FetchEndpointSync<ushort>(60);
                 this.RaiseAndSetIfChanged(ref statusReg2, result);
                 return statusReg2;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<ushort>(60, value);
+                SetPropertySync<ushort>(60, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref statusReg2, value);
             }
         }
@@ -65,14 +65,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<ushort>(61);
+                var result = FetchEndpointSync<ushort>(61);
                 this.RaiseAndSetIfChanged(ref ctrlReg1, result);
                 return ctrlReg1;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<ushort>(61, value);
+                SetPropertySync<ushort>(61, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref ctrlReg1, value);
             }
         }
@@ -82,14 +82,14 @@ namespace ODrive
         {
             get
             {
-                var result = ODriveDevice.FetchEndpointSync<ushort>(62);
+                var result = FetchEndpointSync<ushort>(62);
                 this.RaiseAndSetIfChanged(ref ctrlReg2, result);
                 return ctrlReg2;
             }
 
             set
             {
-                ODriveDevice.FetchEndpointSync<ushort>(62, value);
+                SetPropertySync<ushort>(62, value);
                 ODriveDevice.RaiseAndSetIfChanged(ref ctrlReg2, value);
             }
         }
