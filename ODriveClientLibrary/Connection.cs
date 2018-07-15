@@ -14,11 +14,12 @@
     using Nito.Disposables;
     using Nito;
     using System.Collections.Concurrent;
+    using ODrive.Exceptions;
 
     internal class Connection
     {
-        private const int REQUEST_TIMEOUT_MS = 450 * 1000;
-        private const int SCHEMA_FETCH_TIMEOUT_SECONDS = 30 * 20;
+        private const int REQUEST_TIMEOUT_MS = 1 * 1000;
+        private const int SCHEMA_FETCH_TIMEOUT_SECONDS = 30;
 
         private readonly ThreadSafeCounter sequenceCounter = new ThreadSafeCounter();
         private readonly ConcurrentDictionary<ushort, Request> pendingRequests = new ConcurrentDictionary<ushort, Request>();
@@ -126,7 +127,7 @@
         {
             if (IsConnected == false)
             {
-                throw new Exception("Attempted to Disconnect and already disconnected connection");
+                throw new Exception("Attempted to Disconnect and already disconnected connection.");
             }
             endpointReader.DataReceived -= EndpointReader_DataReceived;
             endpointReader = null;
@@ -160,7 +161,7 @@
 
                 if (err != ErrorCode.None)
                 {
-                    throw new Exception(err.ToString());
+                    throw new UsbLibraryException($"Error {UsbDevice.LastErrorNumber} occurred in USB library: {UsbDevice.LastErrorString}.");
                 }
 
                 pendingRequests.TryAdd(request.SequenceNumber, request);
@@ -184,7 +185,7 @@
                     // the response for it, although we will discard the response
                     pendingRequests.TryRemove(sequenceNumber, out _);
                     cancelledRequests.TryAdd(sequenceNumber, pendingRequest);
-                    return;
+                    pendingRequest.CancellationToken.ThrowIfCancellationRequested();
                 }
                 else
                 {
@@ -200,12 +201,11 @@
                 cancelledRequests.TryGetValue(sequenceNumber, out Request cancelledRequest);
                 if (cancelledRequest != null)
                 {
-                    // TODO: Extension method?
                     pendingRequests.TryRemove(sequenceNumber, out _);
                     cancelledRequests.TryRemove(sequenceNumber, out _);
                 }
 
-                // Received data we have no knoweldge of asking for...
+                // Received data we have no knoweldge of asking for... log it?
             }
         }
 
@@ -256,17 +256,15 @@
                 {
                     result = await taskCompletionSource.Task.WaitAsync(cancelAndTimeoutToken);
                 }
-                catch (TaskCanceledException ex)
+                catch (OperationCanceledException ex)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        // User cancelled
-                        throw;
+                        throw new RequestCancelledException($"Cancellation signal received during {nameof(FetchEndpointScalar)}.", ex);
                     }
                     if (timeoutTokenSource.Token.IsCancellationRequested)
                     {
-                        // Timed out, retry.
-                        throw new TimeoutException($"Fetch to endpoint {endpointID} timed out.", ex);
+                        throw new RequestTimeoutException($"Timeout occurred during {nameof(FetchEndpointScalar)}.", ex);
                     }
                 }
 
@@ -285,6 +283,7 @@
                 byte[] cumulativeResponse = new byte[0];
                 uint totalBytesReceived = 0;
 
+                // TODO: Ensure that timing out on this inner request triggers a retry on THIS area of code, not the parent
                 while (true)
                 {
                     using (CancellationTokenSource byteRequestTimeoutTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(REQUEST_TIMEOUT_MS)),
@@ -294,7 +293,7 @@
                         try
                         {
                             var data = await FetchEndpointBuffer(totalBytesReceived, parentCancellationToken: timeoutOrCancelToken, timeoutOverride: timeoutOverride)
-                                .WaitAsync(timeoutOrCancelToken);
+                                .WaitAsync(byteRequestTimeoutTokenSource.Token);
 
                             if (data.Length == 0)
                             {
@@ -315,17 +314,17 @@
                             // Indicates we timed out on the fetch inside the loop
                             if (byteRequestTimeoutTokenSource.IsCancellationRequested)
                             {
-                                throw;
+                                throw new RequestTimeoutException($"Timeout occurred during {nameof(FetchEndpointBuffer)}.", ex);
                             }
                             // Indicates we timed out waiting for the loop
                             if (requestTimeoutTokenSource.IsCancellationRequested)
                             {
-                                throw;
+                                throw new RequestTimeoutException($"Timeout occurred during {nameof(FetchEndpointBuffer)}.", ex);
                             }
                             // Indicates that the parent cancelled
                             if (parentCancellationToken.IsCancellationRequested)
                             {
-                                throw;
+                                throw new RequestCancelledException($"Cancellation signal received during {nameof(FetchEndpointBuffer)}.", ex);
                             }
                         }
                     }
@@ -334,8 +333,6 @@
             }
         }
 
-        // TODO: Retry
-        // TODO: Timeout
         // TODO: Reconnect()?
         // TODO: Use this to verify successful connection prior to attempting a non-zero endpoint fetch with a questionable CRC
         internal async Task<byte[]> FetchEndpointBuffer(
@@ -386,14 +383,12 @@
                 {
                     if (parentCancellationToken.IsCancellationRequested)
                     {
-                        // Consumer aborted
-                        throw;
+                        throw new RequestCancelledException($"Cancellation signal received during {nameof(FetchEndpointBuffer)}.", ex);
                     }
 
                     if (requestTimeoutTokenSource.Token.IsCancellationRequested)
                     {
-                        // Timed out, retry
-                        throw;
+                        throw new RequestTimeoutException($"Timeout occurred during {nameof(FetchEndpointBuffer)}.", ex);
                     }
                 }
 
