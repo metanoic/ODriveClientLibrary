@@ -12,7 +12,7 @@
         {
             var codeArgument = new CodeArgument
             {
-                Name = Helpers.ToCamelCase(deviceProperty.Name),
+                Name = Helpers.ToCamelCase(Helpers.ReplaceIllegals(deviceProperty.Name)),
                 Type = Helpers.DataTypeToString(deviceProperty.Type),
                 EndpointID = deviceProperty.ID
             };

@@ -18,7 +18,7 @@
             var codeProperty = new CodeProperty
             {
                 EndpointID = deviceProperty.ID,
-                Name = Helpers.ToPascalCase(deviceProperty.Name),
+                Name = Helpers.ToPascalCase(Helpers.ReplaceIllegals(deviceProperty.Name)),
                 Type = Helpers.DataTypeToString(deviceProperty.Type),
                 CanSet = deviceProperty.Access.HasFlag(AccessMode.CanWrite)
             };

@@ -32,7 +32,8 @@
 
             using (var oDrive = new Device(foundDeviceInfo))
             {
-                oDrive.Connect();
+                var connectResult = oDrive.Connect(true);
+                connectResult.Wait();
 
                 var schemaJson = oDrive.FetchSchemaSync();
 

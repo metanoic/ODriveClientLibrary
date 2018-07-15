@@ -110,34 +110,10 @@
     <Compile Include="Axis0Config.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="Axis0Controller.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Axis0Encoder.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Axis0Motor.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Axis0SensorlessEstimator.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
     <Compile Include="Axis1Config.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="Axis1Controller.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Axis1Encoder.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Axis1Motor.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Axis1SensorlessEstimator.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ControllerConfig.Generated.cs">
+    <Compile Include="CurrentControlConfig.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
     <Compile Include="Device.Generated.cs">
@@ -149,16 +125,16 @@
     <Compile Include="DeviceAxis1.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="DeviceCan.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
     <Compile Include="DeviceConfig.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="DeviceStatusEnum.cs" />
-    <Compile Include="DeviceSystemStats.Generated.cs">
+    <Compile Include="DeviceMotor0.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
+    <Compile Include="DeviceMotor1.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DeviceStatusEnum.cs" />
     <Compile Include="EncoderConfig.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
@@ -177,19 +153,38 @@
     <Compile Include="Enums\EncoderErrorCodeEnum.cs" />
     <Compile Include="Enums\MotorArmedStateEnum.cs" />
     <Compile Include="Enums\MotorErrorCodeEnum.cs" />
+    <Compile Include="Exceptions\InvalidChecksumException.cs" />
     <Compile Include="Exceptions\RequestCancelledException.cs" />
     <Compile Include="Exceptions\RequestTimeoutException.cs" />
     <Compile Include="Exceptions\UsbLibraryException.cs" />
-    <Compile Include="MotorConfig.Generated.cs">
+    <Compile Include="Motor0Config.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="MotorCurrentControl.Generated.cs">
+    <Compile Include="Motor0CurrentControl.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="MotorGateDriver.Generated.cs">
+    <Compile Include="Motor0Encoder.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
-    <Compile Include="MotorTimingLog.Generated.cs">
+    <Compile Include="Motor0GateDriver.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Motor0TimingLog.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Motor1Config.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Motor1CurrentControl.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Motor1Encoder.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Motor1GateDriver.Generated.cs">
+      <DependentUpon>GenerateDevice.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Motor1TimingLog.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
     <Compile Include="RemoteObject.cs">
@@ -197,12 +192,6 @@
     </Compile>
     <Compile Include="Request.cs" />
     <Compile Include="Response.cs" />
-    <Compile Include="SystemStatsI2c.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SystemStatsUsb.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
     <Compile Include="Utilities\RetryHelper.cs" />
     <Compile Include="Utilities\CRC.cs" />
     <Compile Include="Utilities\SchemaChecksumCalculator.cs" />

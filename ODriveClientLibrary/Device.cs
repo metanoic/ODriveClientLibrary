@@ -21,6 +21,7 @@
         public DeviceStatus Status { get; private set; } = DeviceStatus.Unknown;
 
         private ushort? schemaChecksum;
+
         public ushort SchemaChecksum
         {
             get => schemaChecksum ?? originSchemaChecksum;
@@ -51,7 +52,7 @@
             return readyEvent.Wait(timeout ?? Timeout.InfiniteTimeSpan);
         }
 
-        public bool Connect()
+        public async Task<bool> Connect(bool skipChecksumValidation = false)
         {
             AssertNotDisposed();
 
@@ -82,7 +83,6 @@
             Status = DeviceStatus.Connecting;
 
             bool connectSuccessful = false;
-
             try
             {
                 connectSuccessful = deviceConnection.Connect();
@@ -94,18 +94,49 @@
                 throw;
             }
 
-            readyEvent.Set();
+            if (!connectSuccessful)
+            {
+                throw new UsbLibraryException("Failed to connect to USB Device.");
+            }
 
-            ////deviceConnection.ValidateChecksum(OriginSchemaChecksum).ContinueWith(validationTask =>
-            ////{
-            ////    if (validationTask.Result)
-            ////    {
-            ////        Status = DeviceStatus.Ready;
-            ////        readyEvent.Set();
-            ////    }
-            ////});
+            if (!skipChecksumValidation)
+            {
 
-            return connectSuccessful;
+                bool connectionActive = false;
+                try
+                {
+                    connectionActive = await deviceConnection.TestConnection();
+                }
+                catch { }
+
+                if (!connectionActive)
+                {
+                    throw new RequestTimeoutException("Connected to USB Device successfully, but communication failed.");
+                }
+
+                bool checksumIsValid = false;
+                try
+                {
+                    checksumIsValid = await deviceConnection.ValidateChecksum(SchemaChecksum);
+                }
+                catch (RequestTimeoutException)
+                {
+                    throw new InvalidChecksumException($"The checksum provided ({SchemaChecksum.ToString("X2")}) does not match the device's checksum.");
+                }
+
+                if (checksumIsValid)
+                {
+                    readyEvent.Set();
+                }
+
+                return connectSuccessful && connectionActive && checksumIsValid;
+            }
+            else
+            {
+                readyEvent.Set();
+
+                return connectSuccessful;
+            }
         }
 
         public bool Disconnect()

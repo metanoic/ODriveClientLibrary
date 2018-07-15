@@ -18,7 +18,7 @@
         {
             var codeFunction = new CodeFunction
             {
-                Name = Helpers.ToPascalCase(deviceFunction.Name),
+                Name = Helpers.ToPascalCase(Helpers.ReplaceIllegals(deviceFunction.Name)),
                 EndpointID = deviceFunction.ID.ToString()
             };
 

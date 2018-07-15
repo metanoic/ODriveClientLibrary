@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using System.Windows.Forms;
     using ODrive;
+    using ODrive.DeviceGenerator;
     using ODrive.Enums;
 
     class Program
@@ -27,27 +28,18 @@
 
             using (var oDrive = new Device(foundDevice))
             {
-                oDrive.Connect();
-
-                Console.WriteLine($"Firmware Version: {oDrive.FwVersionMajor}.{oDrive.FwVersionMinor}.{oDrive.FwVersionRevision}.{oDrive.FwVersionUnreleased}");
-                Console.WriteLine($"Hardware Version: {oDrive.HwVersionMajor}.{oDrive.HwVersionMinor}.{oDrive.HwVersionVariant}");
-                Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
-                Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
-
-                Console.WriteLine("Press any key to begin calibration...");
-                Console.ReadKey();
-
-                // Casting to byte is totally hackish.  Will improve when schema is improved or better partials with generated code.
-                oDrive.Axis0.RequestedState = (byte)AxisState.AXIS_STATE_FULL_CALIBRATION_SEQUENCE;
-
-                while (oDrive.Axis0.CurrentState != (byte)AxisState.AXIS_STATE_IDLE)
+                try
                 {
-                    System.Threading.Thread.Sleep(500);
-                    Application.DoEvents();
+                    await oDrive.Connect();
+                    var z = 1;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debugger.Break();
                 }
 
-                Console.WriteLine("Calibration complete");
-
+                Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
+                Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
             }
 
             while (!Console.KeyAvailable)
