@@ -18,7 +18,7 @@
 
     internal class Connection
     {
-        private const int REQUEST_TIMEOUT_MS = 1 * 1000;
+        private const int REQUEST_TIMEOUT_MS = 120 * 1000;
         private const int SCHEMA_FETCH_TIMEOUT_SECONDS = 30;
 
         private readonly ThreadSafeCounter sequenceCounter = new ThreadSafeCounter();
@@ -47,17 +47,26 @@
             SchemaChecksum = schemaChecksum;
         }
 
-        ////// Determine if the supplied checksum is valid for the device we're connected to.
-        ////// Since the device won't reply to non-zero endpoints if the checksum is incorrect,
-        ////// we first verify it will reply at all by fetching a small bit of endpoint 0 and 
-        ////// then endpoint 1 (which should be the bus voltage endpoint)
-        ////public async Task<bool> ValidateChecksum(ushort checksumValue)
-        ////{
-        ////    throw new NotImplementedException();
-        ////}
+        public async Task<bool> TestConnection()
+        {
+            var testBytes = await FetchEndpointBuffer(payloadOffset: 0, timeoutOverride: TimeSpan.FromSeconds(3));
+            return testBytes.Length >= 30;
+        }
 
-        // TODO: Need proper return type
-        // TODO: Timeout? What are possible results of OpenEndpointReader/Writer?
+        public async Task<bool> ValidateChecksum(ushort? checksumValue)
+        {
+            var checksumToValidate = checksumValue ?? SchemaChecksum;
+
+            if (!checksumToValidate.HasValue)
+            {
+                throw new ArgumentNullException("No checksum provided.");
+            }
+
+            await FetchEndpointScalar<float>(endpointID: 1, timeoutOverride: TimeSpan.FromSeconds(2));
+
+            return true;
+        }
+
         public bool Connect()
         {
             if (IsConnected)
@@ -129,7 +138,9 @@
             {
                 throw new Exception("Attempted to Disconnect and already disconnected connection.");
             }
+
             endpointReader.DataReceived -= EndpointReader_DataReceived;
+
             endpointReader = null;
             endpointWriter = null;
 
@@ -250,11 +261,9 @@
 
                 SendRequest(request);
 
-                T result = default(T);
-
                 try
                 {
-                    result = await taskCompletionSource.Task.WaitAsync(cancelAndTimeoutToken);
+                    return await taskCompletionSource.Task.WaitAsync(cancelAndTimeoutToken);
                 }
                 catch (OperationCanceledException ex)
                 {
@@ -268,7 +277,7 @@
                     }
                 }
 
-                return result;
+                return default(T);
             }
         }
 
@@ -334,10 +343,8 @@
         }
 
         // TODO: Reconnect()?
-        // TODO: Use this to verify successful connection prior to attempting a non-zero endpoint fetch with a questionable CRC
         internal async Task<byte[]> FetchEndpointBuffer(
             uint payloadOffset = 0,
-            ushort? schemaChecksum = null,
             CancellationToken parentCancellationToken = default(CancellationToken),
             TimeSpan? timeoutOverride = null)
         {

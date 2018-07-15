@@ -40,7 +40,7 @@
             var parentName = deviceObject.Parent != null ? deviceObject.Parent.Name : string.Empty;
             var objectName = deviceObject.Name;
 
-            return Helpers.ToPascalCase(parentName) + Helpers.ToPascalCase(objectName);
+            return Helpers.ReplaceIllegals(Helpers.ToPascalCase(parentName) + Helpers.ToPascalCase(objectName));
         }
 
         public void Generate(Func<CompilationUnitSyntax, CompilationUnitSyntax> modify = null)

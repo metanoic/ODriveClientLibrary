@@ -29,7 +29,7 @@ namespace ODrive.Utilities
                 try
                 {
                     //Call the function passed in by the caller. 
-                    return await func().ConfigureAwait(false);
+                    return await func();
                 }
                 catch (Exception exception)
                 {
@@ -54,7 +54,7 @@ namespace ODrive.Utilities
 
             async Task<bool> wrapper()
             {
-                await func().ConfigureAwait(false);
+                await func();
                 return true;
             }
 

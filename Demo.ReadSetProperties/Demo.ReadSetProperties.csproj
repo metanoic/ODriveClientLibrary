@@ -85,6 +85,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ODriveClientLibrary.DeviceGenerator\ODriveClientLibrary.DeviceGenerator.csproj">
+      <Project>{D12BC650-454A-478D-B53C-8B36F126BA1C}</Project>
+      <Name>ODriveClientLibrary.DeviceGenerator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ODriveClientLibrary\ODriveClientLibrary.csproj">
       <Project>{42aafb74-1f01-4d12-a8b6-35b4b9de7f24}</Project>
       <Name>ODriveClientLibrary</Name>

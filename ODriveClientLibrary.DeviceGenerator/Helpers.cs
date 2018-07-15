@@ -17,6 +17,11 @@
                 }).Aggregate(string.Empty, (segment1, segment2) => segment1 + segment2);
         }
 
+        public static string ReplaceIllegals(string input)
+        {
+            return input.Replace(".", "_");
+        }
+
         public static string ToPascalCase(string input)
         {
             input = UnderscoreToCamelCase(input);

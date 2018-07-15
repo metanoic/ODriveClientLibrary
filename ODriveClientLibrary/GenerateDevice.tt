@@ -18,7 +18,7 @@
 <#
 
 	// Replace the serial number with your board's and set useLiveSchema = true to generate code for your device's version
-	string deviceSerialNumber = "366233683037";
+	string deviceSerialNumber = "385932683037";
 	
 	var templateManager = Manager.Create(Host, GenerationEnvironment);
 	
