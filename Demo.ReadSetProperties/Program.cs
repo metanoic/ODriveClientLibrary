@@ -31,26 +31,20 @@
                 bool connectSuccess = false;
                 try
                 {
-                    connectSuccess = await oDrive.Connect(true);
-                    var z = 1;
+                    connectSuccess = await oDrive.Connect();
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debugger.Break();
                 }
 
-                Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
-                var tt = await oDrive.FetchSchema();
-                Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
+                while (!Console.KeyAvailable)
+                {
+                    Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
+                    Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
 
-
-                var zz = await oDrive.FetchSchema();
-                var sadf = 1;
-            }
-
-            while (!Console.KeyAvailable)
-            {
-                Application.DoEvents();
+                    Application.DoEvents();
+                }
             }
         }
     }
