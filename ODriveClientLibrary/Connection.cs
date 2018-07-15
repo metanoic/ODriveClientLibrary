@@ -19,8 +19,6 @@
     {
         private const int REQUEST_TIMEOUT_MS = 450 * 1000;
         private const int SCHEMA_FETCH_TIMEOUT_SECONDS = 30 * 20;
-        //private const int RESEND_TIMEOUT = 5;
-        //private const int SEND_ATTEMPTS = 5;
 
         private readonly ThreadSafeCounter sequenceCounter = new ThreadSafeCounter();
         private readonly ConcurrentDictionary<ushort, Request> pendingRequests = new ConcurrentDictionary<ushort, Request>();
@@ -123,7 +121,7 @@
             return true;
         }
 
-        // TODO: Need propert return type
+        // TODO: Need proper return type
         public bool Disconnect()
         {
             if (IsConnected == false)
@@ -178,8 +176,6 @@
 
             pendingRequests.TryGetValue(sequenceNumber, out Request pendingRequest);
 
-            System.Diagnostics.Debug.WriteLine("Received Data... " + DateTime.Now.ToLongDateString());
-
             if (pendingRequest != null)
             {
                 if (pendingRequest.CancellationToken.IsCancellationRequested)
@@ -192,6 +188,7 @@
                 }
                 else
                 {
+                    // TODO: Log on failure??
                     pendingRequests.TryRemove(sequenceNumber, out _);
                     pendingRequest.ResponseCallback?.Invoke(pendingRequest, response);
                 }
@@ -245,10 +242,10 @@
                     responseCallback: (req, res) =>
                     {
                         var responseData = res.Body.Read<T>();
-                        taskCompletionSource.TrySetResult(responseData);
+                        taskCompletionSource.SetResult(responseData);
                     },
                     signature: SchemaChecksum ?? Config.USB_PROTOCOL_VERSION,
-                    cancellationToken: cancellationToken //cancelAndTimeoutToken
+                    cancellationToken: cancelAndTimeoutToken
                 );
 
                 SendRequest(request);
@@ -261,9 +258,14 @@
                 }
                 catch (TaskCanceledException ex)
                 {
-                    if (ex.CancellationToken == timeoutTokenSource.Token)
+                    if (cancellationToken.IsCancellationRequested)
                     {
-                        // TODO: Retry
+                        // User cancelled
+                        throw;
+                    }
+                    if (timeoutTokenSource.Token.IsCancellationRequested)
+                    {
+                        // Timed out, retry.
                         throw new TimeoutException($"Fetch to endpoint {endpointID} timed out.", ex);
                     }
                 }
@@ -382,14 +384,15 @@
                 }
                 catch (OperationCanceledException ex)
                 {
-                    if (requestTimeoutTokenSource.IsCancellationRequested)
-                    {
-                        // TODO: Retry
-                        throw;
-                    }
                     if (parentCancellationToken.IsCancellationRequested)
                     {
                         // Consumer aborted
+                        throw;
+                    }
+
+                    if (requestTimeoutTokenSource.Token.IsCancellationRequested)
+                    {
+                        // Timed out, retry
                         throw;
                     }
                 }
@@ -402,7 +405,7 @@
         {
             if (endpointReader == null || endpointWriter == null)
             {
-                throw new InvalidOperationException("Attempted to read or write while connection is not open");
+                throw new InvalidOperationException("Attempted to read or write while connection is not open.");
             }
         }
 

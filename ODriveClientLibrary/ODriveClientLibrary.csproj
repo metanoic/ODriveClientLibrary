@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -199,6 +200,7 @@
     <Compile Include="SystemStatsUsb.Generated.cs">
       <DependentUpon>GenerateDevice.tt</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\RetryHelper.cs" />
     <Compile Include="Utilities\CRC.cs" />
     <Compile Include="Utilities\SchemaChecksumCalculator.cs" />
     <Compile Include="Utilities\WireBuffer.cs" />

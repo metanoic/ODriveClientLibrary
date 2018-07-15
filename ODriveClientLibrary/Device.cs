@@ -8,6 +8,9 @@
 
     public partial class Device : RemoteObject, IDisposable
     {
+        private const int RETRY_DELAY_MS = 5 * 1000;
+        private const int RETRY_ATTEMPTS = 5;
+
         private readonly BasicDeviceInfo deviceInfo;
 
         private UsbDevice usbDevice;
@@ -114,15 +117,39 @@
             return result;
         }
 
-        public async Task<string> FetchSchema(CancellationToken cancellationToken = default(CancellationToken), TimeSpan? timeoutOverride = null)
+        public async Task<string> FetchSchema(
+            CancellationToken cancellationToken = default(CancellationToken),
+            TimeSpan? timeoutOverride = null,
+            int retryAttempts = RETRY_ATTEMPTS,
+            TimeSpan? retryDelayOverride = null)
         {
             AssertNotDisposed();
-            byte[] schemaBytes = await deviceConnection.FetchEndpointBuffer(cancellationToken, timeoutOverride);
-            string schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
+
+            string schemaJson = string.Empty;
+
+            try
+            {
+                byte[] schemaBytes = await RetryHelper.ExecuteWithRetry(() =>
+                {
+                    return deviceConnection.FetchEndpointBuffer(cancellationToken, timeoutOverride);
+                }, retryAttempts, retryDelayOverride ?? TimeSpan.FromMilliseconds(RETRY_DELAY_MS));
+
+                schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
             return schemaJson;
         }
 
-        public string FetchSchemaSync(CancellationToken cancellationToken = default(CancellationToken), TimeSpan? timeoutOverride = null)
+        // TODO: Remove.  If consumer wants synchronous, they can implement themselves.
+        public string FetchSchemaSync(
+            CancellationToken cancellationToken = default(CancellationToken),
+            TimeSpan? timeoutOverride = null,
+            int retryAttempts = RETRY_ATTEMPTS,
+            TimeSpan? retryDelayOverride = null)
         {
             AssertNotDisposed();
             return Task.Run(async () => await FetchSchema(cancellationToken)).Result;
@@ -132,7 +159,9 @@
             ushort endpointID,
             T? newValue = null,
             CancellationToken cancellationToken = default(CancellationToken),
-            TimeSpan? timeoutOverride = null) where T : struct
+            TimeSpan? timeoutOverride = null,
+            int retryAttempts = RETRY_ATTEMPTS,
+            TimeSpan? retryDelayOverride = null) where T : struct
         {
             AssertNotDisposed();
 
@@ -140,7 +169,10 @@
 
             try
             {
-                result = await deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken, timeoutOverride);
+                result = await RetryHelper.ExecuteWithRetry(() =>
+                 {
+                     return deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken, timeoutOverride);
+                 }, retryAttempts, retryDelayOverride ?? TimeSpan.FromMilliseconds(RETRY_DELAY_MS));
             }
             catch (Exception ex)
             {
@@ -150,15 +182,17 @@
             return result;
         }
 
+        // TODO: Remove.  If consumer wants synchronous, they can implement themselves.
         public T FetchEndpointSync<T>(
             ushort endpointID,
             T? newValue = null,
             CancellationToken cancellationToken = default(CancellationToken),
-            TimeSpan? timeoutOverride = null
-            ) where T : struct
+            TimeSpan? timeoutOverride = null,
+            int retryAttempts = RETRY_ATTEMPTS,
+            TimeSpan? retryDelayOverride = null) where T : struct
         {
             AssertNotDisposed();
-            return Task.Run(async () => await deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken, timeoutOverride)).Result;
+            return Task.Run(async () => await FetchEndpoint(endpointID, newValue, cancellationToken, timeoutOverride, retryAttempts, retryDelayOverride)).Result;
         }
 
         public void Dispose()
