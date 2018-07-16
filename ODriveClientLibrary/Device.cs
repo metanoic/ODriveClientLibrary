@@ -5,13 +5,11 @@
     using System.Threading.Tasks;
     using LibUsbDotNet;
     using ODrive.Exceptions;
+    using ODrive.Schema;
     using ODrive.Utilities;
 
-    public partial class Device : RemoteObject, IDisposable
+    public partial class Device : IDisposable
     {
-        private const int RETRY_DELAY_MS = 1 * 1000;
-        private const int RETRY_ATTEMPTS = 5;
-
         private readonly BasicDeviceInfo deviceInfo;
 
         private UsbDevice usbDevice;
@@ -20,36 +18,33 @@
 
         public DeviceStatus Status { get; private set; } = DeviceStatus.Unknown;
 
-        private ushort? schemaChecksum;
-
-        public ushort SchemaChecksum
-        {
-            get => schemaChecksum ?? originSchemaChecksum;
-            private set => schemaChecksum = value;
-        }
+        public ushort SchemaChecksum { get; private set; }
 
         private Func<BasicDeviceInfo, bool> DeviceIdentifyingPredicate { get; set; }
 
-        public Device(BasicDeviceInfo deviceInfo, ushort? schemaChecksum = null) : this()
+        public Device(BasicDeviceInfo deviceInfo, ushort schemaChecksum)
         {
             Status = DeviceStatus.Initializing;
 
             this.deviceInfo = deviceInfo;
             usbDevice = deviceInfo.Device;
 
-            if (schemaChecksum.HasValue)
-            {
-                originSchemaChecksum = schemaChecksum.Value;
-            }
-
-            // Play nice with generated partial
-            // TODO: Convert to partial method?
-            ODriveDevice = this;
+            SchemaChecksum = schemaChecksum;
         }
 
-        public bool WaitUntilReady(TimeSpan? timeout = null)
+        public async Task<T> GetProperty<T>(IReadablePropertyMember<T> readablePropertyMember)
         {
-            return readyEvent.Wait(timeout ?? Timeout.InfiniteTimeSpan);
+            return await readablePropertyMember.GetProperty(this);
+        }
+
+        public async Task SetProperty<T>(IWriteablePropertyMember<T> writeablePropertyMember, T newValue)
+        {
+            await writeablePropertyMember.SetProperty(this, newValue);
+        }
+
+        public T GetExecutionDelegate<T>(IExecutableMember<T> executableMember)
+        {
+            return executableMember.GetExecutor(this);
         }
 
         public async Task<bool> Connect(bool skipChecksumValidation = false)
@@ -153,21 +148,35 @@
             return disconnectSuccessful;
         }
 
-        public async Task<string> FetchSchema(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<string> DownloadSchema(CancellationToken cancellationToken = default(CancellationToken))
         {
             AssertNotDisposed();
 
-            byte[] schemaBytes = await deviceConnection.FetchEndpointBuffer(cancellationToken).ConfigureAwait(false);
+            byte[] schemaBytes = await deviceConnection.RequestBuffer(cancellationToken).ConfigureAwait(false);
             var schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
 
             return schemaJson;
         }
 
-        public async Task<T> FetchEndpoint<T>(ushort endpointID, T? newValue = null, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
+        public async Task InvokeEndpoint(ushort endpointID, CancellationToken cancellationToken = default(CancellationToken))
         {
             AssertNotDisposed();
 
-            return await deviceConnection.FetchEndpointScalar(endpointID, newValue, cancellationToken).ConfigureAwait(false);
+            await deviceConnection.RequestInvoke(endpointID, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<T> RequestValue<T>(ushort endpointID, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
+        {
+            AssertNotDisposed();
+
+            return await deviceConnection.RequestResponse<T>(endpointID, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<T> PushValue<T>(ushort endpointID, T newValue, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
+        {
+            AssertNotDisposed();
+
+            return await deviceConnection.RequestResponse(endpointID, newValue, cancellationToken).ConfigureAwait(false);
         }
 
         private void AssertNotDisposed()

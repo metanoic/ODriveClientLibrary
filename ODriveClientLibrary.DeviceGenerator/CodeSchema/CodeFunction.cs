@@ -2,10 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using ODrive.DeviceGenerator.DeviceSchema;
-    using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
     public class CodeFunction
     {
@@ -32,45 +29,6 @@
             }
 
             return codeFunction;
-        }
-
-        public IEnumerable<MemberDeclarationSyntax> Generate()
-        {
-            var methodDeclaration = MethodDeclaration(IdentifierName(ReturnType ?? "void"), Name)
-                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
-
-            var methodStatements = new List<StatementSyntax>();
-
-            foreach (var argument in Arguments)
-            {
-                methodStatements.Add(ParseStatement(
-                    $"FetchEndpointSync<{argument.Type}>({argument.EndpointID}, {Helpers.ToCamelCase(argument.Name)});"
-                ));
-
-                methodDeclaration = methodDeclaration.AddParameterListParameters(
-                    Parameter(Identifier(Helpers.ToCamelCase(argument.Name))).WithType(ParseTypeName(argument.Type))
-                ).WithBody(Block());
-            }
-
-            if (ReturnType != null)
-            {
-                methodStatements.Add(ParseStatement(
-                    $"return FetchEndpointSync<{ReturnType}>({EndpointID});"
-                ));
-            }
-            else
-            {
-                methodStatements.Add(ParseStatement(
-                   $"FetchEndpointSync<byte>({EndpointID});"
-               ));
-            }
-
-            methodDeclaration = methodDeclaration.WithBody(Block(methodStatements));
-
-            return new List<MemberDeclarationSyntax>()
-            {
-                methodDeclaration
-            };
         }
     }
 }

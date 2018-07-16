@@ -86,7 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ODriveClientLibrary.DeviceGenerator\ODriveClientLibrary.DeviceGenerator.csproj">
-      <Project>{D12BC650-454A-478D-B53C-8B36F126BA1C}</Project>
+      <Project>{d12bc650-454a-478d-b53c-8b36f126ba1c}</Project>
       <Name>ODriveClientLibrary.DeviceGenerator</Name>
     </ProjectReference>
     <ProjectReference Include="..\ODriveClientLibrary\ODriveClientLibrary.csproj">

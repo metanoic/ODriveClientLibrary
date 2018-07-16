@@ -33,7 +33,7 @@
 
         public bool HasData => Data.Length > 0;
 
-        public WireBuffer Write<T>(T value, byte? startIndex = null) where T : struct
+        public WireBuffer Write<T>(T value, byte? startIndex = null)
         {
             var dataSize = Marshal.SizeOf<T>();
             var bytes = StructToBytes(value);
@@ -62,7 +62,7 @@
             return this;
         }
 
-        public T Read<T>(byte? startIndex = null) where T : struct
+        public T Read<T>(byte? startIndex = null)
         {
             var dataSize = Marshal.SizeOf<T>();
             var resultBytes = new byte[dataSize];

@@ -110,38 +110,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Axis0Config.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Axis1Config.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="CurrentControlConfig.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Device.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DeviceAxis0.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DeviceAxis1.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DeviceConfig.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DeviceMotor0.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DeviceMotor1.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Schema\DeviceSchema.cs" />
     <Compile Include="DeviceStatusEnum.cs" />
-    <Compile Include="EncoderConfig.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Enums\AxisStateEnum.cs" />
+    <Compile Include="Schema\Enums\AxisStateEnum.cs" />
     <Compile Include="BasicDeviceInfo.cs" />
     <Compile Include="Config.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
@@ -149,54 +120,31 @@
     <Compile Include="Connection.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="Device.cs" />
+    <Compile Include="Device.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="DeviceMonitor.cs" />
-    <Compile Include="Enums\AxisErrorCodeEnum.cs" />
-    <Compile Include="Enums\ControlModeEnum.cs" />
-    <Compile Include="Enums\EncoderErrorCodeEnum.cs" />
-    <Compile Include="Enums\MotorArmedStateEnum.cs" />
-    <Compile Include="Enums\MotorErrorCodeEnum.cs" />
+    <Compile Include="Schema\Enums\AxisErrorCodeEnum.cs" />
+    <Compile Include="Schema\Enums\ControlModeEnum.cs" />
+    <Compile Include="Schema\Enums\EncoderErrorCodeEnum.cs" />
+    <Compile Include="Schema\Enums\MotorArmedStateEnum.cs" />
+    <Compile Include="Schema\Enums\MotorErrorCodeEnum.cs" />
     <Compile Include="Exceptions\InvalidChecksumException.cs" />
     <Compile Include="Exceptions\RequestCancelledException.cs" />
     <Compile Include="Exceptions\RequestTimeoutException.cs" />
     <Compile Include="Exceptions\UsbLibraryException.cs" />
-    <Compile Include="Motor0Config.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor0CurrentControl.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor0Encoder.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor0GateDriver.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor0TimingLog.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor1Config.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor1CurrentControl.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor1Encoder.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor1GateDriver.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Motor1TimingLog.Generated.cs">
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RemoteObject.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
     <Compile Include="Request.cs" />
     <Compile Include="Response.cs" />
-    <Compile Include="Utilities\RetryHelper.cs" />
+    <Compile Include="Schema\DeviceSchema.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DeviceSchema.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Schema\IExecutableMember.cs" />
+    <Compile Include="Schema\IReadablePropertyMember.cs" />
+    <Compile Include="Schema\IWriteablePropertyMember.cs" />
     <Compile Include="Utilities\CRC.cs" />
+    <Compile Include="Utilities\InternalVoid.cs" />
     <Compile Include="Utilities\SchemaChecksumCalculator.cs" />
     <Compile Include="Utilities\WireBuffer.cs" />
     <Compile Include="Utilities\PredicateBuilder.cs" />
@@ -205,7 +153,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Manager.ttinclude" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -215,14 +162,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="GenerateDevice.tt">
+    <Content Include="Schema\DeviceSchema.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>GenerateDevice.txt</LastGenOutput>
-    </Content>
-    <Content Include="GenerateDevice.txt">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GenerateDevice.tt</DependentUpon>
+      <LastGenOutput>DeviceSchema.Generated.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup />
