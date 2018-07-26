@@ -14,8 +14,8 @@
 
         public const int USB_PROTOCOL_VERSION = 1;
 
-        public const int USB_READ_TIMEOUT = 1000;
-        public const int USB_WRITE_TIMEOUT = 1000;
+        public const int USB_READ_TIMEOUT = 10000;
+        public const int USB_WRITE_TIMEOUT = 10000;
 
         public static IReadOnlyList<int> USB_READ_ENDPOINT_ADDRESSES { get; private set; } = new List<int>() { 0x83, 0x81 };
         public static IReadOnlyList<int> USB_WRITE_ENDPOINT_ADDRESSES { get; private set; } = new List<int>() { 0x03, 0x01 };

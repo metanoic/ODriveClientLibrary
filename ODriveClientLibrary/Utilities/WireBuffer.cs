@@ -69,6 +69,11 @@
 
             SetIndexIfNeeded(startIndex);
 
+            if (Data.Length == 0)
+            {
+                return default(T);
+            }
+
             Buffer.BlockCopy(Data, currentIndex, resultBytes, 0, dataSize);
             var result = BytesToStruct<T>(resultBytes);
             currentIndex += (byte)dataSize;

@@ -12,16 +12,13 @@
 
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            MyAsyncFunc();
+            await MyAsyncFunc();
         }
 
         static async Task MyAsyncFunc()
         {
-            //var result = Generator.GenerateFromDevice("385932683037");
-            //var xx = 1;
-            //Generator.GenerateFromSchemaFile(@"H:\repos\ODriveClientLibrary\ODriveClientLibrary.DeviceGenerator\DeviceSchema\DefinitionArchive\3.5.json");
             var deviceMonitor = DeviceMonitor.Instance;
             var foundDevice = deviceMonitor.AvailableDevices.FirstOrDefault();
             var schema = new DeviceSchema();
@@ -43,13 +40,14 @@
                     System.Diagnostics.Debugger.Break();
                 }
 
-                //var download = await oDrive.FetchSchema();
+                var download = await oDrive.DownloadSchema();
 
 
                 while (!Console.KeyAvailable)
                 {
+                    Console.WriteLine(await oDrive.GetProperty(schema.VbusVoltage));
                     //await oDrive.SetProperty(schema.Motor0.Config.CalibrationCurrent, 1);
-                    await oDrive.GetExecutionDelegate(schema.SaveConfiguration)();
+                    //await oDrive.GetExecutionDelegate(schema.SaveConfiguration)();
                     Application.DoEvents();
                 }
             }

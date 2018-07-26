@@ -2,10 +2,11 @@
 {
     using System;
     using System.Threading.Tasks;
+    using ODrive.Utilities;
 
-    public partial class DeviceSchema
+    public partial class DeviceSchema : IDeviceSchema
     {
-        public static ushort SchemaChecksum = 47683;
+        public static ushort SchemaChecksum = 2254;
         public RunAnticoggingCalibrationMethod RunAnticoggingCalibration = new RunAnticoggingCalibrationMethod();
         public SaveConfigurationMethod SaveConfiguration = new SaveConfigurationMethod();
         public EraseConfigurationMethod EraseConfiguration = new EraseConfigurationMethod();
@@ -105,7 +106,7 @@
         }
     }
 
-    public partial class DeviceSchemaConfig
+    public partial class DeviceSchemaConfig : IDeviceSchema
     {
         public BrakeResistanceProperty BrakeResistance = new BrakeResistanceProperty();
         public partial class BrakeResistanceProperty : IReadablePropertyMember<float>, IWriteablePropertyMember<float>
@@ -122,12 +123,12 @@
         }
     }
 
-    public partial class DeviceSchemaAxis0
+    public partial class DeviceSchemaAxis0 : IDeviceSchema
     {
         public Axis0Config Config = new Axis0Config();
     }
 
-    public partial class DeviceSchemaMotor0
+    public partial class DeviceSchemaMotor0 : IDeviceSchema
     {
         public SetPosSetpointMethod SetPosSetpoint = new SetPosSetpointMethod();
         public SetVelSetpointMethod SetVelSetpoint = new SetVelSetpointMethod();
@@ -386,12 +387,12 @@
         }
     }
 
-    public partial class DeviceSchemaAxis1
+    public partial class DeviceSchemaAxis1 : IDeviceSchema
     {
         public Axis1Config Config = new Axis1Config();
     }
 
-    public partial class DeviceSchemaMotor1
+    public partial class DeviceSchemaMotor1 : IDeviceSchema
     {
         public SetPosSetpointMethod SetPosSetpoint = new SetPosSetpointMethod();
         public SetVelSetpointMethod SetVelSetpoint = new SetVelSetpointMethod();
@@ -650,7 +651,7 @@
         }
     }
 
-    public partial class Axis0Config
+    public partial class Axis0Config : IDeviceSchema
     {
         public EnableControlAtStartProperty EnableControlAtStart = new EnableControlAtStartProperty();
         public DoCalibrationAtStartProperty DoCalibrationAtStart = new DoCalibrationAtStartProperty();
@@ -681,7 +682,7 @@
         }
     }
 
-    public partial class Motor0Config
+    public partial class Motor0Config : IDeviceSchema
     {
         public ControlModeProperty ControlMode = new ControlModeProperty();
         public CountsPerStepProperty CountsPerStep = new CountsPerStepProperty();
@@ -866,7 +867,7 @@
         }
     }
 
-    public partial class Motor0CurrentControl
+    public partial class Motor0CurrentControl : IDeviceSchema
     {
         public CurrentControlConfig Config = new CurrentControlConfig();
         public PGainProperty PGain = new PGainProperty();
@@ -963,7 +964,7 @@
         }
     }
 
-    public partial class Motor0GateDriver
+    public partial class Motor0GateDriver : IDeviceSchema
     {
         public DrvFaultProperty DrvFault = new DrvFaultProperty();
         public StatusReg1Property StatusReg1 = new StatusReg1Property();
@@ -1036,7 +1037,7 @@
         }
     }
 
-    public partial class Motor0Encoder
+    public partial class Motor0Encoder : IDeviceSchema
     {
         public EncoderConfig Config = new EncoderConfig();
         public PhaseProperty Phase = new PhaseProperty();
@@ -1147,7 +1148,7 @@
         }
     }
 
-    public partial class Motor0TimingLog
+    public partial class Motor0TimingLog : IDeviceSchema
     {
         public TIMINGLOGGENERALProperty TIMINGLOGGENERAL = new TIMINGLOGGENERALProperty();
         public TIMINGLOGADCCBM0IProperty TIMINGLOGADCCBM0I = new TIMINGLOGADCCBM0IProperty();
@@ -1304,7 +1305,7 @@
         }
     }
 
-    public partial class CurrentControlConfig
+    public partial class CurrentControlConfig : IDeviceSchema
     {
         public CurrentLimProperty CurrentLim = new CurrentLimProperty();
         public partial class CurrentLimProperty : IReadablePropertyMember<float>, IWriteablePropertyMember<float>
@@ -1321,7 +1322,7 @@
         }
     }
 
-    public partial class EncoderConfig
+    public partial class EncoderConfig : IDeviceSchema
     {
         public UseIndexProperty UseIndex = new UseIndexProperty();
         public ManuallyCalibratedProperty ManuallyCalibrated = new ManuallyCalibratedProperty();
@@ -1408,7 +1409,7 @@
         }
     }
 
-    public partial class Axis1Config
+    public partial class Axis1Config : IDeviceSchema
     {
         public EnableControlAtStartProperty EnableControlAtStart = new EnableControlAtStartProperty();
         public DoCalibrationAtStartProperty DoCalibrationAtStart = new DoCalibrationAtStartProperty();
@@ -1439,7 +1440,7 @@
         }
     }
 
-    public partial class Motor1Config
+    public partial class Motor1Config : IDeviceSchema
     {
         public ControlModeProperty ControlMode = new ControlModeProperty();
         public CountsPerStepProperty CountsPerStep = new CountsPerStepProperty();
@@ -1624,7 +1625,7 @@
         }
     }
 
-    public partial class Motor1CurrentControl
+    public partial class Motor1CurrentControl : IDeviceSchema
     {
         public CurrentControlConfig Config = new CurrentControlConfig();
         public PGainProperty PGain = new PGainProperty();
@@ -1721,7 +1722,7 @@
         }
     }
 
-    public partial class Motor1GateDriver
+    public partial class Motor1GateDriver : IDeviceSchema
     {
         public DrvFaultProperty DrvFault = new DrvFaultProperty();
         public StatusReg1Property StatusReg1 = new StatusReg1Property();
@@ -1794,7 +1795,7 @@
         }
     }
 
-    public partial class Motor1Encoder
+    public partial class Motor1Encoder : IDeviceSchema
     {
         public EncoderConfig Config = new EncoderConfig();
         public PhaseProperty Phase = new PhaseProperty();
@@ -1905,7 +1906,7 @@
         }
     }
 
-    public partial class Motor1TimingLog
+    public partial class Motor1TimingLog : IDeviceSchema
     {
         public TIMINGLOGGENERALProperty TIMINGLOGGENERAL = new TIMINGLOGGENERALProperty();
         public TIMINGLOGADCCBM0IProperty TIMINGLOGADCCBM0I = new TIMINGLOGADCCBM0IProperty();

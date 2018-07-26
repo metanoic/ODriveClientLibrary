@@ -1,15 +1,10 @@
-﻿using System;
-namespace ODrive.DeviceGenerator.Generators
+﻿namespace ODrive.DeviceGenerator.Generators
 {
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.CodeAnalysis.Formatting;
-    using Microsoft.CodeAnalysis.MSBuild;
-    using Microsoft.CodeAnalysis.Options;
     using ODrive.DeviceGenerator.CodeSchema;
     using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-    using static Microsoft.CodeAnalysis.Formatting.Formatter;
 
     internal static class CodeClassGenerator
     {
@@ -18,12 +13,14 @@ namespace ODrive.DeviceGenerator.Generators
             string className = codeClass.ClassName;
 
             var classDeclaration = ClassDeclaration(className)
-                .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.PartialKeyword));
+                .AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.PartialKeyword))
+                .AddBaseListTypes(SimpleBaseType(ParseTypeName("IDeviceSchema")));
 
             if (className == "DeviceSchema")
             {
                 classDeclaration = classDeclaration.AddMembers(GenerateChecksumField(schemaChecksum));
             }
+
             // Generate members
             foreach (var codeFunction in codeClass.Functions)
             {

@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -110,7 +111,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Schema\DeviceSchema.cs" />
     <Compile Include="DeviceStatusEnum.cs" />
     <Compile Include="Schema\Enums\AxisStateEnum.cs" />
     <Compile Include="BasicDeviceInfo.cs" />
@@ -140,11 +140,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DeviceSchema.tt</DependentUpon>
     </Compile>
+    <Compile Include="Schema\IDeviceSchema.cs" />
     <Compile Include="Schema\IExecutableMember.cs" />
     <Compile Include="Schema\IReadablePropertyMember.cs" />
     <Compile Include="Schema\IWriteablePropertyMember.cs" />
     <Compile Include="Utilities\CRC.cs" />
-    <Compile Include="Utilities\InternalVoid.cs" />
     <Compile Include="Utilities\SchemaChecksumCalculator.cs" />
     <Compile Include="Utilities\WireBuffer.cs" />
     <Compile Include="Utilities\PredicateBuilder.cs" />

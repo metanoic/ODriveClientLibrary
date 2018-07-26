@@ -29,7 +29,7 @@
         private static readonly Lazy<Policy> StandardTimeoutPolicy = new Lazy<Policy>(() =>
         {
             return Policy.TimeoutAsync(
-                timeout: TimeSpan.FromSeconds(10),
+                timeout: TimeSpan.FromSeconds(999),
                 timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic,
                 onTimeoutAsync: (context, timespan, task) =>
                 {
@@ -59,11 +59,11 @@
         private UsbEndpointWriter endpointWriter;
 
         // For endpoint 0 the protocol version is used, for all others we need the actual CRC16 of the JSON endpoints definition
-        public ushort? SchemaChecksum { get; private set; }
+        public ushort? SchemaChecksum { get; set; }
 
         public bool IsConnected { get => endpointWriter != null && endpointWriter != null; }
 
-        public Connection(UsbDevice usbDevice, ushort schemaChecksum)
+        public Connection(UsbDevice usbDevice, ushort? schemaChecksum = null)
         {
             this.usbDevice = usbDevice;
             SchemaChecksum = schemaChecksum;
@@ -188,6 +188,7 @@
 
                 if (err != ErrorCode.None)
                 {
+                    endpointReader.Reset();
                     throw new UsbLibraryException($"Error {UsbDevice.LastErrorNumber} occurred in USB library: {UsbDevice.LastErrorString}.");
                 }
 
@@ -199,6 +200,7 @@
 
         private void EndpointReader_DataReceived(object sender, EndpointDataEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine($"RECEIVED DATA>>>");
             var response = new Response(e.Buffer, e.Count);
             var sequenceNumber = response.SequenceNumber;
 
@@ -249,12 +251,14 @@
             {
                 var taskCompletionSource = new TaskCompletionSource<T>();
 
+                var dataSize = (ushort)Marshal.SizeOf(typeof(T));
+
                 WireBuffer requestBuffer = null;
                 requestBuffer = new WireBuffer(0);
 
                 var request = new Request(
                     endpointID: endpointID,
-                    expectedResponseSize: 0,
+                    expectedResponseSize: dataSize,
                     requestACK: true,
                     populateBody: () => requestBuffer,
                     responseCallback: (req, res) =>
@@ -283,7 +287,7 @@
             {
                 var taskCompletionSource = new TaskCompletionSource<T>();
 
-                var dataSize = Marshal.SizeOf(typeof(T));
+                var dataSize = (ushort)Marshal.SizeOf(typeof(T));
 
                 WireBuffer requestBuffer = null;
                 requestBuffer = new WireBuffer(dataSize);
@@ -291,7 +295,7 @@
 
                 var request = new Request(
                     endpointID: endpointID,
-                    expectedResponseSize: 32,
+                    expectedResponseSize: dataSize,
                     requestACK: true,
                     populateBody: () => requestBuffer,
                     responseCallback: (req, res) =>
@@ -357,7 +361,6 @@
                     var data = await RequestBufferSegment(totalBytesReceived, parentCancellationToken: cancellationToken, requestPolicy: requestPolicy).ConfigureAwait(false);
                     if (data.Length == 0)
                     {
-                        SchemaChecksum = SchemaChecksumCalculator.CalculateChecksum(cumulativeResponse);
                         taskCompletionSource.SetResult(cumulativeResponse);
 
                         break;

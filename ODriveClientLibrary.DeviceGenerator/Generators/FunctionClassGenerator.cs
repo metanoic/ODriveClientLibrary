@@ -18,7 +18,7 @@
                 .AddBaseListTypes(SimpleBaseType(ParseTypeName($"IExecutableMember<{className}.ExecutionDelegate>")))
                 .AddMembers(GenerateDelegateMember(codeFunction))
                 .AddMembers(GenerateGetExecutorMember(codeFunction));
-            
+
             // var currentCode = ((SyntaxNode)classDeclaration).NormalizeWhitespace().ToFullString();
 
             return classDeclaration;
@@ -51,12 +51,14 @@
 
             foreach (var argument in codeFunction.Arguments)
             {
-                argumentFetches.Add($"await oDrive.FetchEndpoint<{argument.Type}>({argument.EndpointID}, {argument.Name});");
+                argumentFetches.Add($"await oDrive.PushValue<{argument.Type}>({argument.EndpointID}, {argument.Name});");
             }
 
             var returnType = string.IsNullOrEmpty(codeFunction.ReturnType) ? "Task" : $"Task<{codeFunction.ReturnType}>";
             bool hasReturn = !string.IsNullOrEmpty(codeFunction.ReturnType);
             var parameters = string.Join(",", GetParameterList(codeFunction.Arguments));
+
+            var oDriveMethod = hasReturn ? "RequestValue" : "InvokeEndpoint";
 
             // TODO: Figure out why this template is putting the last semicolon on a new line...
             // TODO: Could parallel the fetches if there are multiple arguments
@@ -65,7 +67,7 @@
                     return async ({parameters}) => 
                     {{
                         {string.Join(Environment.NewLine, argumentFetches)}
-                        {(hasReturn ? "return " : "")} await oDrive.FetchEndpoint{(hasReturn ? $"<{codeFunction.ReturnType}>" : "")}({codeFunction.EndpointID});
+                        {(hasReturn ? "return " : "")} await oDrive.{oDriveMethod}{(hasReturn ? $"<{codeFunction.ReturnType}>" : "")}({codeFunction.EndpointID});
                     }};
                 }}
             ";

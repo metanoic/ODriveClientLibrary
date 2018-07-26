@@ -29,7 +29,7 @@
         {
             string template = $@"
                 public async Task<{propertyType}> GetProperty(Device oDrive) {{
-                    return await oDrive.FetchEndpoint<{propertyType}>({endpointID});
+                    return await oDrive.RequestValue<{propertyType}>({endpointID});
                 }}
             ";
 
@@ -40,7 +40,7 @@
         {
             string template = $@"
                 public async Task SetProperty(Device oDrive, {propertyType} newValue) {{
-                    await oDrive.FetchEndpoint<{propertyType}>({endpointID}, newValue);
+                    await oDrive.PushValue<{propertyType}>({endpointID}, newValue);
                 }}
             ";
 

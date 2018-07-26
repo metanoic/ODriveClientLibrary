@@ -18,11 +18,11 @@
 
         public DeviceStatus Status { get; private set; } = DeviceStatus.Unknown;
 
-        public ushort SchemaChecksum { get; private set; }
+        public ushort? SchemaChecksum { get; private set; }
 
         private Func<BasicDeviceInfo, bool> DeviceIdentifyingPredicate { get; set; }
 
-        public Device(BasicDeviceInfo deviceInfo, ushort schemaChecksum)
+        public Device(BasicDeviceInfo deviceInfo, ushort? schemaChecksum = null)
         {
             Status = DeviceStatus.Initializing;
 
@@ -55,6 +55,8 @@
             {
                 readyEvent.Reset();
             }
+
+            skipChecksumValidation = skipChecksumValidation || SchemaChecksum.HasValue == false;
 
             Status = DeviceStatus.Connecting;
 
@@ -116,7 +118,7 @@
                 }
                 catch (RequestTimeoutException)
                 {
-                    throw new InvalidChecksumException($"The checksum provided ({SchemaChecksum.ToString("X2")}) does not match the device's checksum.");
+                    throw new InvalidChecksumException($"The checksum provided ({SchemaChecksum.Value.ToString("X2")}) does not match the device's checksum.");
                 }
 
                 if (checksumIsValid)
@@ -148,11 +150,19 @@
             return disconnectSuccessful;
         }
 
-        public async Task<string> DownloadSchema(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<string> DownloadSchema(CancellationToken cancellationToken = default(CancellationToken), bool setSchemaChecksum = true)
         {
             AssertNotDisposed();
 
             byte[] schemaBytes = await deviceConnection.RequestBuffer(cancellationToken).ConfigureAwait(false);
+
+            if (setSchemaChecksum)
+            {
+                var schemaChecksum = SchemaChecksumCalculator.CalculateChecksum(schemaBytes);
+                SchemaChecksum = schemaChecksum;
+                deviceConnection.SchemaChecksum = schemaChecksum;
+            }
+
             var schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
 
             return schemaJson;
