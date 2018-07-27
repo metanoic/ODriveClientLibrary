@@ -29,7 +29,7 @@
         private static readonly Lazy<Policy> StandardTimeoutPolicy = new Lazy<Policy>(() =>
         {
             return Policy.TimeoutAsync(
-                timeout: TimeSpan.FromSeconds(999),
+                timeout: TimeSpan.FromSeconds(3),
                 timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic,
                 onTimeoutAsync: (context, timespan, task) =>
                 {
@@ -74,6 +74,12 @@
             // Don't retry on this request
             var testBytes = await RequestBufferSegment(payloadOffset: 0, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
             return testBytes.Length >= 30;
+        }
+
+        public async Task<ushort> RequestSchemaChecksum()
+        {
+            var response = await RequestResponse<ushort>(1, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
+            return response;
         }
 
         public async Task<bool> ValidateChecksum(ushort? checksumValue)

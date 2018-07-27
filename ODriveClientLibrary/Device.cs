@@ -56,8 +56,6 @@
                 readyEvent.Reset();
             }
 
-            skipChecksumValidation = skipChecksumValidation || SchemaChecksum.HasValue == false;
-
             Status = DeviceStatus.Connecting;
 
             var deviceOpenResult = usbDevice.IsOpen ? true : usbDevice.Open();
@@ -98,6 +96,7 @@
 
             if (!skipChecksumValidation)
             {
+                var checksumFromDevice = await deviceConnection.RequestChecksum();
 
                 bool connectionActive = false;
                 try
