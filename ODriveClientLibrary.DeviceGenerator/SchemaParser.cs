@@ -1,11 +1,11 @@
-﻿namespace ODrive.DeviceGenerator
+﻿namespace ODriveClientLibrary.DeviceGenerator
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using ODrive.DeviceGenerator.CodeSchema;
-    using ODrive.DeviceGenerator.DeviceSchema;
+    using ODriveClientLibrary.DeviceGenerator.CodeSchema;
+    using ODriveClientLibrary.DeviceGenerator.DeviceSchema;
 
     public static class SchemaParser
     {

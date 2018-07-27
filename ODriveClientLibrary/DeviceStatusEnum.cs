@@ -1,4 +1,4 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     public enum DeviceStatus
     {

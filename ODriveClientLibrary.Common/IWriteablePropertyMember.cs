@@ -1,9 +1,9 @@
-﻿namespace ODrive.Schema
+﻿namespace ODriveClientLibrary.Common
 {
     using System.Threading.Tasks;
 
     public interface IWriteablePropertyMember<T>
     {
-        Task SetProperty(Device oDrive, T newValue);
+        Task SetProperty(IDevice oDrive, T newValue);
     }
 }

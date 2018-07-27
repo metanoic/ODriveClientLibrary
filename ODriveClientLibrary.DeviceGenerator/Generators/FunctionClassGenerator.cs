@@ -1,4 +1,4 @@
-﻿namespace ODrive.DeviceGenerator.Generators
+﻿namespace ODriveClientLibrary.DeviceGenerator.Generators
 {
     using System;
     using System.Collections.Generic;
@@ -63,7 +63,7 @@
             // TODO: Figure out why this template is putting the last semicolon on a new line...
             // TODO: Could parallel the fetches if there are multiple arguments
             string template = $@"
-                public ExecutionDelegate GetExecutor(Device oDrive) {{
+                public ExecutionDelegate GetExecutor(IDevice oDrive) {{
                     return async ({parameters}) => 
                     {{
                         {string.Join(Environment.NewLine, argumentFetches)}

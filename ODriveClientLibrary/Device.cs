@@ -1,14 +1,15 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using LibUsbDotNet;
-    using ODrive.Exceptions;
-    using ODrive.Schema;
-    using ODrive.Utilities;
+    using ODriveClientLibrary.Exceptions;
+    using ODriveClientLibrary.DeviceSchema;
+    using ODriveClientLibrary.Utilities;
+    using ODriveClientLibrary.Common;
 
-    public partial class Device : IDisposable
+    public partial class Device : IDevice, IDisposable
     {
         private readonly BasicDeviceInfo deviceInfo;
 

@@ -16,6 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveClientLibrary.DeviceSchema", "ODriveClientLibrary.DeviceSchema\ODriveClientLibrary.DeviceSchema.csproj", "{B142C49A-EDCA-4A99-8BAE-85FAEF5073F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODriveClientLibrary.Common", "ODriveClientLibrary.Common\ODriveClientLibrary.Common.csproj", "{380571C7-1E0F-4314-9122-02E16E0D9300}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,14 @@ Global
 		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48C9AAD1-4981-448E-9117-CD092683CF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B142C49A-EDCA-4A99-8BAE-85FAEF5073F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B142C49A-EDCA-4A99-8BAE-85FAEF5073F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B142C49A-EDCA-4A99-8BAE-85FAEF5073F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B142C49A-EDCA-4A99-8BAE-85FAEF5073F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{380571C7-1E0F-4314-9122-02E16E0D9300}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{380571C7-1E0F-4314-9122-02E16E0D9300}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{380571C7-1E0F-4314-9122-02E16E0D9300}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{380571C7-1E0F-4314-9122-02E16E0D9300}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

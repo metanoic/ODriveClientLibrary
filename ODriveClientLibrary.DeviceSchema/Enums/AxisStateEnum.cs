@@ -1,4 +1,4 @@
-﻿namespace ODrive.Enums
+﻿namespace ODriveClientLibrary.DeviceSchema.Enums
 {
     public enum AxisState
     {

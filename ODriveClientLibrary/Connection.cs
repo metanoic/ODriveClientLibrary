@@ -1,4 +1,4 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     using System;
     using System.Collections.Concurrent;
@@ -9,8 +9,8 @@
     using LibUsbDotNet;
     using LibUsbDotNet.Info;
     using LibUsbDotNet.Main;
-    using ODrive.Exceptions;
-    using ODrive.Utilities;
+    using ODriveClientLibrary.Exceptions;
+    using ODriveClientLibrary.Utilities;
     using Polly;
 
     internal class Connection

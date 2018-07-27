@@ -1,9 +1,9 @@
-﻿namespace ODrive.DeviceGenerator.Generators
+﻿namespace ODriveClientLibrary.DeviceGenerator.Generators
 {
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using ODrive.DeviceGenerator.CodeSchema;
+    using ODriveClientLibrary.DeviceGenerator.CodeSchema;
     using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
     internal static class FunctionMemberGenerator

@@ -1,4 +1,4 @@
-﻿namespace ODrive.DeviceGenerator
+﻿namespace ODriveClientLibrary.DeviceGenerator
 {
     using System;
     using System.Collections.Generic;
@@ -8,8 +8,8 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using ODrive;
-    using ODrive.Utilities;
+    using ODriveClientLibrary;
+    using ODriveClientLibrary.Utilities;
     using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
     public static class Generator
@@ -22,11 +22,12 @@
 
             var codeClasses = SchemaParser.Parse(schemaJson);
 
-            var namespaceDeclaration = NamespaceDeclaration(ParseName("ODrive.Schema"))
+            var namespaceDeclaration = NamespaceDeclaration(ParseName("ODriveClientlibrary.DeviceSchema"))
                 .AddUsings(
                     UsingDirective(ParseName("System")),
                     UsingDirective(ParseName("System.Threading.Tasks")),
-                    UsingDirective(ParseName("ODrive.Utilities"))
+                    UsingDirective(ParseName("ODriveClientLibrary.Common")),
+                    UsingDirective(ParseName("ODriveClientLibrary.DeviceSchema"))
                 );
 
             var alreadyGeneratedClassNames = new List<string>();
@@ -70,15 +71,7 @@
 
             var code = ((SyntaxNode)namespaceDeclaration).NormalizeWhitespace().ToFullString();
 
-            var generationResult = new GenerationResult(code, new SchemaArchiveEntry()
-            {
-                SchemaBase64 = schemaBase64,
-                SchemaChecksum = schemaChecksum
-                //FirmwareVersionMajor = majorVersion,
-                //FirmwareVersionMinor = minorVersion,
-                //FirmwareVersionRevision = revisionVersion,
-                //FirmwareVersionUnreleased = unreleasedVersion
-            });
+            var generationResult = new GenerationResult(code);
 
             return generationResult;
         }

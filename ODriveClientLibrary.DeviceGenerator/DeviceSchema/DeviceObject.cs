@@ -1,4 +1,4 @@
-﻿namespace ODrive.DeviceGenerator.DeviceSchema
+﻿namespace ODriveClientLibrary.DeviceGenerator.DeviceSchema
 {
     using System.Collections.Generic;
     using System.Linq;

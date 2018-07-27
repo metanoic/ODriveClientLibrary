@@ -1,9 +1,9 @@
-﻿namespace ODrive.Schema
+﻿namespace ODriveClientLibrary.Common
 {
     using System.Threading.Tasks;
 
     public interface IReadablePropertyMember<T>
     {
-        Task<T> GetProperty(Device oDrive);
+        Task<T> GetProperty(IDevice oDrive);
     }
 }
