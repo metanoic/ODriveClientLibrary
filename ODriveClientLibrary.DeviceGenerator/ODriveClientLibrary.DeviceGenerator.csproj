@@ -200,11 +200,14 @@
     <Compile Include="Generators\ScalarPropertyClassGenerator.cs" />
     <Compile Include="Generators\ScalarMemberGenerator.cs" />
     <Compile Include="Helpers.cs" />
-    <Compile Include="SchemaArchiveEntry.cs" />
     <Compile Include="SchemaParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ODriveClientLibrary.Common\ODriveClientLibrary.Common.csproj">
+      <Project>{380571C7-1E0F-4314-9122-02E16E0D9300}</Project>
+      <Name>ODriveClientLibrary.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ODriveClientLibrary\ODriveClientLibrary.csproj">
       <Project>{42aafb74-1f01-4d12-a8b6-35b4b9de7f24}</Project>
       <Name>ODriveClientLibrary</Name>

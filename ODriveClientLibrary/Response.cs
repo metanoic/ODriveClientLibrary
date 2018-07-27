@@ -1,7 +1,7 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     using System;
-    using ODrive.Utilities;
+    using ODriveClientLibrary.Utilities;
 
     internal class Response
     {

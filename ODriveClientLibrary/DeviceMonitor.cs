@@ -1,4 +1,4 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     using System;
     using System.Linq;
@@ -6,7 +6,7 @@
     using System.Reactive.Linq;
     using LibUsbDotNet;
     using LibUsbDotNet.DeviceNotify;
-    using ODrive.Utilities;
+    using ODriveClientLibrary.Utilities;
     using ReactiveUI;
 
     /// <summary>

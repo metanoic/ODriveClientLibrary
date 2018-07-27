@@ -1,4 +1,4 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     using System.Collections.Generic;
 

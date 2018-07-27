@@ -1,4 +1,4 @@
-﻿namespace ODrive.Exceptions
+﻿namespace ODriveClientLibrary.Exceptions
 {
     using System;
 

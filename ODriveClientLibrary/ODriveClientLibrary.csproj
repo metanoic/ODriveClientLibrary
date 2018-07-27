@@ -112,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DeviceStatusEnum.cs" />
-    <Compile Include="Schema\Enums\AxisStateEnum.cs" />
     <Compile Include="BasicDeviceInfo.cs" />
     <Compile Include="Config.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
@@ -124,26 +123,12 @@
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="DeviceMonitor.cs" />
-    <Compile Include="Schema\Enums\AxisErrorCodeEnum.cs" />
-    <Compile Include="Schema\Enums\ControlModeEnum.cs" />
-    <Compile Include="Schema\Enums\EncoderErrorCodeEnum.cs" />
-    <Compile Include="Schema\Enums\MotorArmedStateEnum.cs" />
-    <Compile Include="Schema\Enums\MotorErrorCodeEnum.cs" />
     <Compile Include="Exceptions\InvalidChecksumException.cs" />
     <Compile Include="Exceptions\RequestCancelledException.cs" />
     <Compile Include="Exceptions\RequestTimeoutException.cs" />
     <Compile Include="Exceptions\UsbLibraryException.cs" />
     <Compile Include="Request.cs" />
     <Compile Include="Response.cs" />
-    <Compile Include="Schema\DeviceSchema.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DeviceSchema.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Schema\IDeviceSchema.cs" />
-    <Compile Include="Schema\IExecutableMember.cs" />
-    <Compile Include="Schema\IReadablePropertyMember.cs" />
-    <Compile Include="Schema\IWriteablePropertyMember.cs" />
     <Compile Include="Utilities\CRC.cs" />
     <Compile Include="Utilities\SchemaChecksumCalculator.cs" />
     <Compile Include="Utilities\WireBuffer.cs" />
@@ -162,11 +147,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Schema\DeviceSchema.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DeviceSchema.Generated.cs</LastGenOutput>
-    </Content>
+    <ProjectReference Include="..\ODriveClientLibrary.Common\ODriveClientLibrary.Common.csproj">
+      <Project>{380571c7-1e0f-4314-9122-02e16e0d9300}</Project>
+      <Name>ODriveClientLibrary.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ODriveClientLibrary.DeviceSchema\ODriveClientLibrary.DeviceSchema.csproj">
+      <Project>{b142c49a-edca-4a99-8bae-85faef5073f5}</Project>
+      <Name>ODriveClientLibrary.DeviceSchema</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

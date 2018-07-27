@@ -5,10 +5,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-    using ODrive;
-    using ODrive.DeviceGenerator;
-    using ODrive.Enums;
-    using ODrive.Schema;
+    using ODriveClientlibrary.DeviceSchema;
+    using ODriveClientLibrary;
 
     class Program
     {

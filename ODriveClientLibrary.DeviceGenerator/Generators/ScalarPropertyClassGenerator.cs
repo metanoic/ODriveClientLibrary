@@ -1,8 +1,8 @@
-﻿namespace ODrive.DeviceGenerator.Generators
+﻿namespace ODriveClientLibrary.DeviceGenerator.Generators
 {
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using ODrive.DeviceGenerator.CodeSchema;
+    using ODriveClientLibrary.DeviceGenerator.CodeSchema;
     using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
     internal static class ScalarPropertyClassGenerator
@@ -28,7 +28,7 @@
         private static MethodDeclarationSyntax GenerateGetPropertyMember(string propertyType, int endpointID)
         {
             string template = $@"
-                public async Task<{propertyType}> GetProperty(Device oDrive) {{
+                public async Task<{propertyType}> GetProperty(IDevice oDrive) {{
                     return await oDrive.RequestValue<{propertyType}>({endpointID});
                 }}
             ";
@@ -39,7 +39,7 @@
         private static MethodDeclarationSyntax GenerateSetPropertyMember(string propertyType, int endpointID)
         {
             string template = $@"
-                public async Task SetProperty(Device oDrive, {propertyType} newValue) {{
+                public async Task SetProperty(IDevice oDrive, {propertyType} newValue) {{
                     await oDrive.PushValue<{propertyType}>({endpointID}, newValue);
                 }}
             ";

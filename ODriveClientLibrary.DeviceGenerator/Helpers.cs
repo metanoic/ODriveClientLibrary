@@ -1,10 +1,10 @@
-﻿namespace ODrive.DeviceGenerator
+﻿namespace ODriveClientLibrary.DeviceGenerator
 {
     using System;
     using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
-    using ODrive.DeviceGenerator.DeviceSchema;
+    using ODriveClientLibrary.DeviceGenerator.DeviceSchema;
 
     internal static class Helpers
     {

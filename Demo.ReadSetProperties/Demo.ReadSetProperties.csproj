@@ -86,9 +86,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ODriveClientLibrary.Common\ODriveClientLibrary.Common.csproj">
+      <Project>{380571c7-1e0f-4314-9122-02e16e0d9300}</Project>
+      <Name>ODriveClientLibrary.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ODriveClientLibrary.DeviceGenerator\ODriveClientLibrary.DeviceGenerator.csproj">
       <Project>{d12bc650-454a-478d-b53c-8b36f126ba1c}</Project>
       <Name>ODriveClientLibrary.DeviceGenerator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ODriveClientLibrary.DeviceSchema\ODriveClientLibrary.DeviceSchema.csproj">
+      <Project>{b142c49a-edca-4a99-8bae-85faef5073f5}</Project>
+      <Name>ODriveClientLibrary.DeviceSchema</Name>
     </ProjectReference>
     <ProjectReference Include="..\ODriveClientLibrary\ODriveClientLibrary.csproj">
       <Project>{42aafb74-1f01-4d12-a8b6-35b4b9de7f24}</Project>

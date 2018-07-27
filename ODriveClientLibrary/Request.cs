@@ -1,8 +1,8 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     using System;
     using System.Threading;
-    using ODrive.Utilities;
+    using ODriveClientLibrary.Utilities;
 
     internal class Request
     {

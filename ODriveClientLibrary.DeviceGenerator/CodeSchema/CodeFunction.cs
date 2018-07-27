@@ -1,8 +1,8 @@
-﻿namespace ODrive.DeviceGenerator.CodeSchema
+﻿namespace ODriveClientLibrary.DeviceGenerator.CodeSchema
 {
     using System.Collections.Generic;
     using System.Linq;
-    using ODrive.DeviceGenerator.DeviceSchema;
+    using ODriveClientLibrary.DeviceGenerator.DeviceSchema;
 
     public class CodeFunction
     {

@@ -1,6 +1,6 @@
-﻿namespace ODrive.DeviceGenerator.CodeSchema
+﻿namespace ODriveClientLibrary.DeviceGenerator.CodeSchema
 {
-    using ODrive.DeviceGenerator.DeviceSchema;
+    using ODriveClientLibrary.DeviceGenerator.DeviceSchema;
 
     public class CodeProperty
     {
