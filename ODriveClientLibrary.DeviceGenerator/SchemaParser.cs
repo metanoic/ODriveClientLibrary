@@ -17,7 +17,7 @@
 
         public static List<CodeClass> Parse(string jsonInput)
         {
-            var rootDeviceObject = DeviceSchemaParser.Parse("Device", jsonInput);
+            var rootDeviceObject = DeviceSchemaParser.Parse("DeviceSchema", jsonInput);
 
             var deviceObjects = rootDeviceObject.Members
                 .Flatten(x => x is DeviceObject ? ((DeviceObject)x).Members : null)

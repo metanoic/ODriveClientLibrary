@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ODrive.Exceptions
+﻿namespace ODrive.Exceptions
 {
+    using System;
+
     public class RequestCancelledException : Exception
     {
         public RequestCancelledException(string message) : base(message)

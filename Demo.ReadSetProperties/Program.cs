@@ -8,41 +8,46 @@
     using ODrive;
     using ODrive.DeviceGenerator;
     using ODrive.Enums;
+    using ODrive.Schema;
 
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            MyAsyncFunc();
+            await MyAsyncFunc();
         }
 
         static async Task MyAsyncFunc()
         {
             var deviceMonitor = DeviceMonitor.Instance;
             var foundDevice = deviceMonitor.AvailableDevices.FirstOrDefault();
+            var schema = new DeviceSchema();
 
             if (foundDevice == null)
             {
                 throw new Exception("Could not find any suitable devices to connect to");
             }
 
-            using (var oDrive = new Device(foundDevice))
+            using (var oDrive = new Device(foundDevice, DeviceSchema.SchemaChecksum))
             {
                 bool connectSuccess = false;
                 try
                 {
-                    connectSuccess = await oDrive.Connect();
+                    connectSuccess = await oDrive.Connect(true);
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debugger.Break();
                 }
 
+                var download = await oDrive.DownloadSchema();
+
+
                 while (!Console.KeyAvailable)
                 {
-                    Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
-                    Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
-
+                    Console.WriteLine(await oDrive.GetProperty(schema.VbusVoltage));
+                    //await oDrive.SetProperty(schema.Motor0.Config.CalibrationCurrent, 1);
+                    //await oDrive.GetExecutionDelegate(schema.SaveConfiguration)();
                     Application.DoEvents();
                 }
             }

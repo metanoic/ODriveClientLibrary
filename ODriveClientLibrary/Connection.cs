@@ -1,7 +1,7 @@
 ﻿namespace ODrive
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading;
@@ -9,19 +9,12 @@
     using LibUsbDotNet;
     using LibUsbDotNet.Info;
     using LibUsbDotNet.Main;
-    using ODrive.Utilities;
-    using Nito.AsyncEx;
-    using Nito.Disposables;
-    using Nito;
-    using System.Collections.Concurrent;
     using ODrive.Exceptions;
+    using ODrive.Utilities;
     using Polly;
 
     internal class Connection
     {
-        private const int REQUEST_TIMEOUT_MS = 120 * 1000;
-        private const int SCHEMA_FETCH_TIMEOUT_SECONDS = 30;
-
         private static readonly Lazy<Policy> StandardWaitAndRetryPolicy = new Lazy<Policy>(() =>
         {
             return Policy.Handle<Exception>().WaitAndRetryAsync(
@@ -36,7 +29,7 @@
         private static readonly Lazy<Policy> StandardTimeoutPolicy = new Lazy<Policy>(() =>
         {
             return Policy.TimeoutAsync(
-                timeout: TimeSpan.FromSeconds(1),
+                timeout: TimeSpan.FromSeconds(3),
                 timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic,
                 onTimeoutAsync: (context, timespan, task) =>
                 {
@@ -66,11 +59,11 @@
         private UsbEndpointWriter endpointWriter;
 
         // For endpoint 0 the protocol version is used, for all others we need the actual CRC16 of the JSON endpoints definition
-        public ushort? SchemaChecksum { get; private set; }
+        public ushort? SchemaChecksum { get; set; }
 
         public bool IsConnected { get => endpointWriter != null && endpointWriter != null; }
 
-        public Connection(UsbDevice usbDevice, ushort schemaChecksum)
+        public Connection(UsbDevice usbDevice, ushort? schemaChecksum = null)
         {
             this.usbDevice = usbDevice;
             SchemaChecksum = schemaChecksum;
@@ -79,8 +72,14 @@
         public async Task<bool> TestConnection()
         {
             // Don't retry on this request
-            var testBytes = await FetchEndpointBuffer(payloadOffset: 0, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
+            var testBytes = await RequestBufferSegment(payloadOffset: 0, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
             return testBytes.Length >= 30;
+        }
+
+        public async Task<ushort> RequestSchemaChecksum()
+        {
+            var response = await RequestResponse<ushort>(1, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
+            return response;
         }
 
         public async Task<bool> ValidateChecksum(ushort? checksumValue)
@@ -92,7 +91,7 @@
                 throw new ArgumentNullException("No checksum provided.");
             }
             // Don't retry on this request
-            await FetchEndpointScalar<float>(endpointID: 1, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
+            await RequestInvoke(endpointID: 1, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
 
             return true;
         }
@@ -185,22 +184,17 @@
                 throw new NotSupportedException("Packets larger than 127 bytes are not currently supported.");
             }
 
-            // TODO: Is the compare to USB_PROTOCOL_VERSION safe? Is there any chance the CRC could be 1?
-            if (request.EndpointID != 0 && request.Signature == Config.USB_PROTOCOL_VERSION)
-            {
-                throw new ArgumentException("Packet signature must be provided if requesting endpoints other than 0.");
-            }
-
             int transferLength = 0;
 
             if (!request.CancellationToken.IsCancellationRequested)
             {
                 var requestBytes = request.ToByteArray();
-
+                System.Diagnostics.Debug.WriteLine($"Sending seqNo {request.SequenceNumber}");
                 ErrorCode err = endpointWriter.Write(requestBytes, Config.USB_WRITE_TIMEOUT, out transferLength);
 
                 if (err != ErrorCode.None)
                 {
+                    endpointReader.Reset();
                     throw new UsbLibraryException($"Error {UsbDevice.LastErrorNumber} occurred in USB library: {UsbDevice.LastErrorString}.");
                 }
 
@@ -212,13 +206,17 @@
 
         private void EndpointReader_DataReceived(object sender, EndpointDataEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine($"RECEIVED DATA>>>");
             var response = new Response(e.Buffer, e.Count);
             var sequenceNumber = response.SequenceNumber;
+
+            System.Diagnostics.Debug.WriteLine($"Received seqNo {response.SequenceNumber}...");
 
             pendingRequests.TryGetValue(sequenceNumber, out Request pendingRequest);
 
             if (pendingRequest != null)
             {
+
                 if (pendingRequest.CancellationToken.IsCancellationRequested)
                 {
                     // Move the request into the cancelled list, we may still receive
@@ -249,30 +247,24 @@
             }
         }
 
-        public async Task<T> FetchEndpointScalar<T>(
+        public async Task<T> RequestResponse<T>(
             ushort endpointID,
-            T? newValue = null,
             CancellationToken parentCancellationToken = default(CancellationToken),
-            Policy requestPolicy = null) where T : struct
+            Policy requestPolicy = null)
         {
             var policyToUse = requestPolicy ?? StandardTimeoutWaitAndRetryPolicy.Value;
             return await policyToUse.ExecuteAsync(async cancellationToken =>
             {
                 var taskCompletionSource = new TaskCompletionSource<T>();
 
-                var dataSize = Marshal.SizeOf(typeof(T));
+                var dataSize = (ushort)Marshal.SizeOf(typeof(T));
 
                 WireBuffer requestBuffer = null;
-
-                if (newValue.HasValue)
-                {
-                    requestBuffer = new WireBuffer(dataSize);
-                    requestBuffer.Write(newValue.Value);
-                }
+                requestBuffer = new WireBuffer(0);
 
                 var request = new Request(
                     endpointID: endpointID,
-                    expectedResponseSize: 32,
+                    expectedResponseSize: dataSize,
                     requestACK: true,
                     populateBody: () => requestBuffer,
                     responseCallback: (req, res) =>
@@ -290,7 +282,78 @@
             }, parentCancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<byte[]> FetchEndpointBuffer(CancellationToken parentCancellationToken = default(CancellationToken), Policy requestPolicy = null)
+        public async Task<T> RequestResponse<T>(
+            ushort endpointID,
+            T value,
+            CancellationToken parentCancellationToken = default(CancellationToken),
+            Policy requestPolicy = null)
+        {
+            var policyToUse = requestPolicy ?? StandardTimeoutWaitAndRetryPolicy.Value;
+            return await policyToUse.ExecuteAsync(async cancellationToken =>
+            {
+                var taskCompletionSource = new TaskCompletionSource<T>();
+
+                var dataSize = (ushort)Marshal.SizeOf(typeof(T));
+
+                WireBuffer requestBuffer = null;
+                requestBuffer = new WireBuffer(dataSize);
+                requestBuffer.Write(value);
+
+                var request = new Request(
+                    endpointID: endpointID,
+                    expectedResponseSize: dataSize,
+                    requestACK: true,
+                    populateBody: () => requestBuffer,
+                    responseCallback: (req, res) =>
+                    {
+                        var responseData = res.Body.Read<T>();
+                        taskCompletionSource.SetResult(responseData);
+                    },
+                    signature: SchemaChecksum ?? Config.USB_PROTOCOL_VERSION,
+                    cancellationToken: cancellationToken
+                );
+
+                SendRequest(request);
+
+                return await taskCompletionSource.Task.ConfigureAwait(false);
+            }, parentCancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<bool> RequestInvoke(
+            ushort endpointID,
+            CancellationToken parentCancellationToken = default(CancellationToken),
+            Policy requestPolicy = null)
+        {
+            var policyToUse = requestPolicy ?? StandardTimeoutWaitAndRetryPolicy.Value;
+            return await policyToUse.ExecuteAsync(async cancellationToken =>
+            {
+                var taskCompletionSource = new TaskCompletionSource<bool>();
+
+                WireBuffer requestBuffer = null;
+                requestBuffer = new WireBuffer(0);
+
+                var request = new Request(
+                    endpointID: endpointID,
+                    expectedResponseSize: 0,
+                    requestACK: true,
+                    populateBody: () => requestBuffer,
+                    responseCallback: (req, res) =>
+                    {
+                        taskCompletionSource.SetResult(true);
+                    },
+                    signature: SchemaChecksum ?? Config.USB_PROTOCOL_VERSION,
+                    cancellationToken: cancellationToken
+                );
+
+                SendRequest(request);
+
+                return await taskCompletionSource.Task.ConfigureAwait(false);
+            }, parentCancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<byte[]> RequestBuffer(
+            CancellationToken parentCancellationToken = default(CancellationToken),
+            Policy requestPolicy = null)
         {
             var policyToUse = requestPolicy ?? StandardTimeoutWaitAndRetryPolicy.Value;
             return await policyToUse.ExecuteAsync(async cancellationToken =>
@@ -301,10 +364,9 @@
 
                 while (true)
                 {
-                    var data = await FetchEndpointBuffer(totalBytesReceived, parentCancellationToken: cancellationToken, requestPolicy: requestPolicy).ConfigureAwait(false);
+                    var data = await RequestBufferSegment(totalBytesReceived, parentCancellationToken: cancellationToken, requestPolicy: requestPolicy).ConfigureAwait(false);
                     if (data.Length == 0)
                     {
-                        SchemaChecksum = SchemaChecksumCalculator.CalculateChecksum(cumulativeResponse);
                         taskCompletionSource.SetResult(cumulativeResponse);
 
                         break;
@@ -321,7 +383,7 @@
             }, parentCancellationToken).ConfigureAwait(false);
         }
 
-        internal async Task<byte[]> FetchEndpointBuffer(
+        public async Task<byte[]> RequestBufferSegment(
             uint payloadOffset = 0,
             CancellationToken parentCancellationToken = default(CancellationToken),
             Policy requestPolicy = null)

@@ -13,22 +13,13 @@
 <#@ import namespace="ODrive" #>
 <#@ import namespace="ODrive.DeviceGenerator" #>
 <#@ import namespace="ODrive.Utilities"#>
-<#@ output extension=".txt" #>
-<#@ include file=".\Manager.ttinclude" #>
+<#@ output extension=".Generated.cs" #>
 <#
 
 	// Replace the serial number with your board's and set useLiveSchema = true to generate code for your device's version
-	string deviceSerialNumber = "385932683037";
-	
-	var templateManager = Manager.Create(Host, GenerationEnvironment);
-	
-	var generationResult = Generator.GenerateFromDevice(deviceSerialNumber);
-	
-	foreach (var codeClass in generationResult.CodeClasses) {
-		templateManager.StartNewFile(codeClass.FileName);
-		Write(codeClass.Source);
-		templateManager.EndBlock();
-	};
+	//var generationResult = Generator.GenerateFromDevice("385932683037");           
+	var generationResult = Generator.GenerateFromSchemaFile(@"H:\repos\ODriveClientLibrary\ODriveClientLibrary.DeviceGenerator\DeviceSchema\DefinitionArchive\3.4.json");
 
-	templateManager.Process(true);
+	
+	Write(generationResult.Code);
 #>
