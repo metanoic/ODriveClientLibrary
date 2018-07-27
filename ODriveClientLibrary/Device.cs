@@ -96,8 +96,6 @@
 
             if (!skipChecksumValidation)
             {
-                var checksumFromDevice = await deviceConnection.RequestChecksum();
-
                 bool connectionActive = false;
                 try
                 {
