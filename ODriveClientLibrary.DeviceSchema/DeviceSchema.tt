@@ -17,8 +17,8 @@
 <#
 
 	// Replace the serial number with your board's and set useLiveSchema = true to generate code for your device's version
-	//var generationResult = Generator.GenerateFromDevice("385932683037");           
-	var generationResult = Generator.GenerateFromSchemaFile(@"H:\repos\ODriveClientLibrary\ODriveClientLibrary.DeviceGenerator\DeviceSchema\DefinitionArchive\3.4.json");
+	var generationResult = Generator.GenerateFromDevice();           
+	//var generationResult = Generator.GenerateFromSchemaFile(@"H:\repos\ODriveClientLibrary\ODriveClientLibrary.DeviceGenerator\DeviceSchema\DefinitionArchive\3.4.json");
 
 	
 	Write(generationResult.Code);

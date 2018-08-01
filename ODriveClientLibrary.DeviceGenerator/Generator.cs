@@ -22,7 +22,7 @@
 
             var codeClasses = SchemaParser.Parse(schemaJson);
 
-            var namespaceDeclaration = NamespaceDeclaration(ParseName("ODriveClientlibrary.DeviceSchema"))
+            var namespaceDeclaration = NamespaceDeclaration(ParseName("ODriveClientLibrary.DeviceSchema"))
                 .AddUsings(
                     UsingDirective(ParseName("System")),
                     UsingDirective(ParseName("System.Threading.Tasks")),
@@ -101,7 +101,7 @@
 
             using (var oDrive = new Device(foundDeviceInfo, 1))
             {
-                var connectResult = oDrive.Connect(true).Result;
+                var connectResult = oDrive.Connect().Result;
                 var schemaJson = oDrive.DownloadSchema().Result;
                 return GenerateFromString(schemaJson);
             }

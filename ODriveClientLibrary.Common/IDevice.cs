@@ -8,7 +8,7 @@
         Task<T> GetProperty<T>(IReadablePropertyMember<T> readablePropertyMember);
         Task SetProperty<T>(IWriteablePropertyMember<T> writeablePropertyMember, T newValue);
         T GetExecutionDelegate<T>(IExecutableMember<T> executableMember);
-        Task<bool> Connect(bool skipChecksumValidation = false);
+        Task<bool> Connect(ushort? schemaChecksum = null);
         bool Disconnect();
         Task<string> DownloadSchema(CancellationToken cancellationToken = default(CancellationToken), bool setSchemaChecksum = true);
         Task InvokeEndpoint(ushort endpointID, CancellationToken cancellationToken = default(CancellationToken));

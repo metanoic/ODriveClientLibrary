@@ -23,17 +23,19 @@
                 onRetry: (exception, span, retryCount, context) =>
                 {
                     System.Diagnostics.Debug.WriteLine($"Polly onRetry[{retryCount}]: {exception.Message}");
+                    System.Diagnostics.Debugger.Break();
                 });
         }, isThreadSafe: true);
 
         private static readonly Lazy<Policy> StandardTimeoutPolicy = new Lazy<Policy>(() =>
         {
             return Policy.TimeoutAsync(
-                timeout: TimeSpan.FromSeconds(3),
+                timeout: TimeSpan.FromSeconds(30),
                 timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic,
                 onTimeoutAsync: (context, timespan, task) =>
                 {
                     System.Diagnostics.Debug.WriteLine("Timeout occurred");
+                    System.Diagnostics.Debugger.Break();
                     return task;
                 });
         }, isThreadSafe: true);
@@ -41,6 +43,19 @@
         private static readonly Lazy<Policy> StandardTimeoutWaitAndRetryPolicy = new Lazy<Policy>(() =>
         {
             return Policy.WrapAsync(StandardTimeoutPolicy.Value, StandardWaitAndRetryPolicy.Value);
+        }, isThreadSafe: true);
+
+        private static readonly Lazy<Policy> ShortTimeoutPolicy = new Lazy<Policy>(() =>
+        {
+            return Policy.TimeoutAsync(
+                timeout: TimeSpan.FromMilliseconds(250),
+                timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic,
+                onTimeoutAsync: (context, timespan, task) =>
+                {
+                    System.Diagnostics.Debug.WriteLine("Timeout occurred");
+                    System.Diagnostics.Debugger.Break();
+                    return task;
+                });
         }, isThreadSafe: true);
 
         private readonly ThreadSafeCounter sequenceCounter = new ThreadSafeCounter();
@@ -71,14 +86,13 @@
 
         public async Task<bool> TestConnection()
         {
-            // Don't retry on this request
-            var testBytes = await RequestBufferSegment(payloadOffset: 0, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
+            var testBytes = await RequestBufferSegment(payloadOffset: 0, requestPolicy: ShortTimeoutPolicy.Value).ConfigureAwait(false);
             return testBytes.Length >= 30;
         }
 
         public async Task<ushort> RequestSchemaChecksum()
         {
-            var response = await RequestResponse<ushort>(1, requestPolicy: StandardTimeoutPolicy.Value).ConfigureAwait(false);
+            var response = await RequestResponse<ushort>(Config.USB_PROTOCOL_VERSION, requestPolicy: ShortTimeoutPolicy.Value).ConfigureAwait(false);
             return response;
         }
 

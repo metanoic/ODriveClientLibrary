@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using LibUsbDotNet;
     using ODriveClientLibrary.Exceptions;
-    using ODriveClientLibrary.DeviceSchema;
     using ODriveClientLibrary.Utilities;
     using ODriveClientLibrary.Common;
 
@@ -16,8 +15,11 @@
         private UsbDevice usbDevice;
         private Connection deviceConnection;
         private ManualResetEventSlim readyEvent = new ManualResetEventSlim();
+        private bool isDisposed = false;
 
-        public DeviceStatus Status { get; private set; } = DeviceStatus.Unknown;
+        public bool IsConnected { get; private set; }
+
+        public event EventHandler<Events.DeviceConnectionChangedEventArgs> OnDeviceConnectionChanged;
 
         public ushort? SchemaChecksum { get; private set; }
 
@@ -25,12 +27,27 @@
 
         public Device(BasicDeviceInfo deviceInfo, ushort? schemaChecksum = null)
         {
-            Status = DeviceStatus.Initializing;
-
             this.deviceInfo = deviceInfo;
             usbDevice = deviceInfo.Device;
-
             SchemaChecksum = schemaChecksum;
+
+
+            // If we get disconnected, we'll use this to find the device later
+            // so we can reconnect to it.
+            DeviceIdentifyingPredicate = PredicateBuilder.True<BasicDeviceInfo>()
+                    .And(inputDeviceInfo => inputDeviceInfo.VendorID == deviceInfo.VendorID)
+                    .And(inputDeviceInfo => inputDeviceInfo.ProductID == deviceInfo.ProductID)
+                    .And(inputDeviceInfo => inputDeviceInfo.SerialNumber == deviceInfo.SerialNumber)
+                    .Compile();
+
+            // Create a listener on DeviceMonitor for this device so we can tell when it gets disconnected
+
+
+        }
+
+        public void FireOnDeviceConnectionChanged()
+        {
+            
         }
 
         public async Task<T> GetProperty<T>(IReadablePropertyMember<T> readablePropertyMember)
@@ -48,7 +65,7 @@
             return executableMember.GetExecutor(this);
         }
 
-        public async Task<bool> Connect(bool skipChecksumValidation = false)
+        public async Task<bool> Connect(ushort? schemaChecksum = null)
         {
             AssertNotDisposed();
 
@@ -57,7 +74,7 @@
                 readyEvent.Reset();
             }
 
-            Status = DeviceStatus.Connecting;
+            SchemaChecksum = schemaChecksum ?? SchemaChecksum;
 
             var deviceOpenResult = usbDevice.IsOpen ? true : usbDevice.Open();
             if (!deviceOpenResult)
@@ -67,16 +84,6 @@
 
             // Open usb read and write endpoints
             deviceConnection = new Connection(usbDevice, SchemaChecksum);
-
-            // If we get disconnected, we'll use this to find the device later
-            // so we can reconnect to it.
-            DeviceIdentifyingPredicate = PredicateBuilder.True<BasicDeviceInfo>()
-                    .And(inputDeviceInfo => inputDeviceInfo.VendorID == deviceInfo.VendorID)
-                    .And(inputDeviceInfo => inputDeviceInfo.ProductID == deviceInfo.ProductID)
-                    .And(inputDeviceInfo => inputDeviceInfo.SerialNumber == deviceInfo.SerialNumber)
-                    .Compile();
-
-            Status = DeviceStatus.Connecting;
 
             bool connectSuccessful = false;
             try
@@ -95,43 +102,25 @@
                 throw new UsbLibraryException("Failed to connect to USB Device.");
             }
 
-            if (!skipChecksumValidation)
+            IsConnected = true;
+
+            // If the checksum is the protocol version then it was never set
+            if (SchemaChecksum != Config.USB_PROTOCOL_VERSION)
             {
-                bool connectionActive = false;
-                try
+                var retrievedChecksum = await deviceConnection.RequestSchemaChecksum();
+                if (SchemaChecksum.Value != retrievedChecksum)
                 {
-                    connectionActive = await deviceConnection.TestConnection().ConfigureAwait(false);
-                }
-                catch { }
+                    try
+                    {
+                        Disconnect();
+                    }
+                    catch { };
 
-                if (!connectionActive)
-                {
-                    throw new RequestTimeoutException("Connected to USB Device successfully, but communication failed.");
+                    throw new InvalidChecksumException($"Invalid checksum.  Device has {retrievedChecksum} but expected {SchemaChecksum.Value}");
                 }
-
-                bool checksumIsValid = false;
-                try
-                {
-                    checksumIsValid = await deviceConnection.ValidateChecksum(SchemaChecksum).ConfigureAwait(false);
-                }
-                catch (RequestTimeoutException)
-                {
-                    throw new InvalidChecksumException($"The checksum provided ({SchemaChecksum.Value.ToString("X2")}) does not match the device's checksum.");
-                }
-
-                if (checksumIsValid)
-                {
-                    readyEvent.Set();
-                }
-
-                return connectSuccessful && connectionActive && checksumIsValid;
             }
-            else
-            {
-                readyEvent.Set();
 
-                return connectSuccessful;
-            }
+            return true;
         }
 
         public bool Disconnect()
@@ -142,7 +131,7 @@
 
             if (disconnectSuccessful)
             {
-                Status = DeviceStatus.Disconnected;
+                IsConnected = false;
             }
 
             return disconnectSuccessful;
@@ -151,6 +140,7 @@
         public async Task<string> DownloadSchema(CancellationToken cancellationToken = default(CancellationToken), bool setSchemaChecksum = true)
         {
             AssertNotDisposed();
+            AssertConnected();
 
             byte[] schemaBytes = await deviceConnection.RequestBuffer(cancellationToken).ConfigureAwait(false);
 
@@ -169,6 +159,7 @@
         public async Task InvokeEndpoint(ushort endpointID, CancellationToken cancellationToken = default(CancellationToken))
         {
             AssertNotDisposed();
+            AssertConnected();
 
             await deviceConnection.RequestInvoke(endpointID, cancellationToken).ConfigureAwait(false);
         }
@@ -176,6 +167,7 @@
         public async Task<T> RequestValue<T>(ushort endpointID, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
         {
             AssertNotDisposed();
+            AssertConnected();
 
             return await deviceConnection.RequestResponse<T>(endpointID, cancellationToken).ConfigureAwait(false);
         }
@@ -183,13 +175,22 @@
         public async Task<T> PushValue<T>(ushort endpointID, T newValue, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
         {
             AssertNotDisposed();
+            AssertConnected();
 
             return await deviceConnection.RequestResponse(endpointID, newValue, cancellationToken).ConfigureAwait(false);
         }
 
+        private void AssertConnected()
+        {
+            if (usbDevice.IsOpen == false)
+            {
+                throw new NotConnectedException("Not connected to device");
+            }
+        }
+
         private void AssertNotDisposed()
         {
-            if (Status == DeviceStatus.Disposed)
+            if (isDisposed == true)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -197,14 +198,14 @@
 
         protected virtual void Dispose(bool disposing)
         {
-            if (Status != DeviceStatus.Disposed)
+            if (isDisposed == false)
             {
                 if (disposing)
                 {
                     Disconnect();
                 }
 
-                Status = DeviceStatus.Disposed;
+                isDisposed = true;
             }
         }
 
