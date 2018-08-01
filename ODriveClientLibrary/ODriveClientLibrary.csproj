@@ -7,7 +7,7 @@
     <ProjectGuid>{42AAFB74-1F01-4D12-A8B6-35B4B9DE7F24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ODrive</RootNamespace>
+    <RootNamespace>ODriveClientLibrary</RootNamespace>
     <AssemblyName>ODriveClientLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -111,7 +111,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeviceStatusEnum.cs" />
     <Compile Include="BasicDeviceInfo.cs" />
     <Compile Include="Config.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
@@ -123,7 +122,9 @@
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="DeviceMonitor.cs" />
+    <Compile Include="Events\DeviceConnectionChangedEventArgs.cs" />
     <Compile Include="Exceptions\InvalidChecksumException.cs" />
+    <Compile Include="Exceptions\NotConnectedException.cs" />
     <Compile Include="Exceptions\RequestCancelledException.cs" />
     <Compile Include="Exceptions\RequestTimeoutException.cs" />
     <Compile Include="Exceptions\UsbLibraryException.cs" />

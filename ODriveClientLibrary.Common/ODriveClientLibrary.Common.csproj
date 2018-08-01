@@ -45,6 +45,7 @@
     <Compile Include="IReadablePropertyMember.cs" />
     <Compile Include="IWriteablePropertyMember.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\EndpointReference.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

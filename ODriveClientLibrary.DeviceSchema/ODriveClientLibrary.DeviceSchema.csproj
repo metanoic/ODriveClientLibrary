@@ -46,12 +46,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DeviceSchema.tt</DependentUpon>
     </Compile>
-    <Compile Include="Enums\AxisErrorCodeEnum.cs" />
-    <Compile Include="Enums\AxisStateEnum.cs" />
-    <Compile Include="Enums\ControlModeEnum.cs" />
-    <Compile Include="Enums\EncoderErrorCodeEnum.cs" />
-    <Compile Include="Enums\MotorArmedStateEnum.cs" />
-    <Compile Include="Enums\MotorErrorCodeEnum.cs" />
     <Compile Include="IDeviceSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

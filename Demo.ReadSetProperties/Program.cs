@@ -5,7 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-    using ODriveClientlibrary.DeviceSchema;
+    using ODriveClientLibrary.DeviceSchema;
     using ODriveClientLibrary;
 
     class Program
@@ -26,24 +26,27 @@
                 throw new Exception("Could not find any suitable devices to connect to");
             }
 
+
+
             using (var oDrive = new Device(foundDevice, DeviceSchema.SchemaChecksum))
             {
                 bool connectSuccess = false;
                 try
                 {
-                    connectSuccess = await oDrive.Connect(true);
+                    connectSuccess = await oDrive.Connect();
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debugger.Break();
                 }
 
-                var download = await oDrive.DownloadSchema();
+               // var download = await oDrive.DownloadSchema();
 
 
                 while (!Console.KeyAvailable)
                 {
-                    Console.WriteLine(await oDrive.GetProperty(schema.VbusVoltage));
+                    var x = await oDrive.GetProperty(schema.Config.Gpio1PwmMapping.Endpoint);
+                    Console.WriteLine($"{x.EndpointID}, {x.JsonCRC}");
                     //await oDrive.SetProperty(schema.Motor0.Config.CalibrationCurrent, 1);
                     //await oDrive.GetExecutionDelegate(schema.SaveConfiguration)();
                     Application.DoEvents();
