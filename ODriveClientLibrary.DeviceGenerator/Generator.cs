@@ -99,7 +99,7 @@
                 throw new Exception($"Could not find any ODrive boards with SerialNumber: {serialNumber}");
             }
 
-            using (var oDrive = new Device(foundDeviceInfo, 1))
+            using (var oDrive = new Device(foundDeviceInfo))
             {
                 var connectResult = oDrive.Connect().Result;
                 var schemaJson = oDrive.DownloadSchema().Result;

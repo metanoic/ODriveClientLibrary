@@ -30,7 +30,7 @@
         private static readonly Lazy<Policy> StandardTimeoutPolicy = new Lazy<Policy>(() =>
         {
             return Policy.TimeoutAsync(
-                timeout: TimeSpan.FromSeconds(30),
+                timeout: TimeSpan.FromSeconds(3),
                 timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic,
                 onTimeoutAsync: (context, timespan, task) =>
                 {
@@ -76,8 +76,14 @@
         // For endpoint 0 the protocol version is used, for all others we need the actual CRC16 of the JSON endpoints definition
         public ushort? SchemaChecksum { get; set; }
 
-        public bool IsConnected { get => endpointWriter != null && endpointWriter != null; }
-
+        public bool IsConnected
+        {
+            get
+            {
+                return endpointWriter != null && endpointWriter.IsDisposed == false
+                    && endpointReader != null && endpointReader.IsDisposed == false;
+            }
+        }
         public Connection(UsbDevice usbDevice, ushort? schemaChecksum = null)
         {
             this.usbDevice = usbDevice;
@@ -183,19 +189,27 @@
 
             endpointReader.DataReceived -= EndpointReader_DataReceived;
 
-            endpointReader = null;
-            endpointWriter = null;
+            endpointReader.Dispose();
+            endpointWriter.Dispose();
+
+            pendingRequests.Clear();
+            cancelledRequests.Clear();
 
             return true;
         }
 
         private int SendRequest(Request request)
         {
+            AssertNotDisposed();
             AssertConnected();
 
             if (request.Body.Data.Length + 2 >= Config.USB_MAX_PACKET_SIZE)
             {
                 throw new NotSupportedException("Packets larger than 127 bytes are not currently supported.");
+            }
+            if (request.EndpointID > 1 && request.Signature == Config.USB_PROTOCOL_VERSION)
+            {
+                throw new InvalidChecksumException("Cannot request endpoints above number 1 without supplying a checksum");
             }
 
             int transferLength = 0;
@@ -220,6 +234,11 @@
 
         private void EndpointReader_DataReceived(object sender, EndpointDataEventArgs e)
         {
+            if (EndpointsAreDisposed())
+            {
+                return;
+            }
+
             System.Diagnostics.Debug.WriteLine($"RECEIVED DATA>>>");
             var response = new Response(e.Buffer, e.Count);
             var sequenceNumber = response.SequenceNumber;
@@ -439,6 +458,23 @@
             if (endpointReader == null || endpointWriter == null)
             {
                 throw new InvalidOperationException("Attempted to read or write while connection is not open.");
+            }
+        }
+
+        private bool EndpointsAreDisposed()
+        {
+            return endpointReader.IsDisposed || endpointWriter.IsDisposed;
+        }
+
+        private void AssertNotDisposed()
+        {
+            if (endpointReader.IsDisposed)
+            {
+                throw new ObjectDisposedException(typeof(UsbEndpointReader).FullName);
+            }
+            if (endpointWriter.IsDisposed)
+            {
+                throw new ObjectDisposedException(typeof(UsbEndpointWriter).FullName);
             }
         }
 
