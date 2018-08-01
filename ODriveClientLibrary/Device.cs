@@ -7,6 +7,8 @@
     using ODriveClientLibrary.Exceptions;
     using ODriveClientLibrary.Utilities;
     using ODriveClientLibrary.Common;
+    using System.ComponentModel;
+    using LibUsbDotNet.Main;
 
     public partial class Device : IDevice, IDisposable
     {
@@ -19,8 +21,6 @@
 
         public bool IsConnected { get; private set; }
 
-        public event EventHandler<Events.DeviceConnectionChangedEventArgs> OnDeviceConnectionChanged;
-
         public ushort? SchemaChecksum { get; private set; }
 
         private Func<BasicDeviceInfo, bool> DeviceIdentifyingPredicate { get; set; }
@@ -29,6 +29,9 @@
         {
             this.deviceInfo = deviceInfo;
             usbDevice = deviceInfo.Device;
+
+            UsbDevice.UsbErrorEvent += UsbDevice_UsbErrorEvent;
+
             SchemaChecksum = schemaChecksum;
 
 
@@ -45,9 +48,22 @@
 
         }
 
-        public void FireOnDeviceConnectionChanged()
+        private void UsbDevice_UsbErrorEvent(object sender, UsbError e)
         {
-            
+            if (ReferenceEquals(sender, usbDevice)
+                || (sender is UsbEndpointBase
+                    && (ReferenceEquals(((UsbEndpointBase)sender).Device, usbDevice))
+                    )
+                )
+            {
+                try
+                {
+                    Disconnect();
+                }
+                catch { };
+            }
+
+            throw new UsbLibraryException($"Error {UsbDevice.LastErrorNumber} occurred in USB library: {UsbDevice.LastErrorString}.");
         }
 
         public async Task<T> GetProperty<T>(IReadablePropertyMember<T> readablePropertyMember)
@@ -104,8 +120,7 @@
 
             IsConnected = true;
 
-            // If the checksum is the protocol version then it was never set
-            if (SchemaChecksum != Config.USB_PROTOCOL_VERSION)
+            if (SchemaChecksum.HasValue)
             {
                 var retrievedChecksum = await deviceConnection.RequestSchemaChecksum();
                 if (SchemaChecksum.Value != retrievedChecksum)
@@ -129,7 +144,7 @@
 
             bool disconnectSuccessful = deviceConnection.Disconnect();
 
-            if (disconnectSuccessful)
+            if (disconnectSuccessful || deviceConnection.IsConnected == false)
             {
                 IsConnected = false;
             }

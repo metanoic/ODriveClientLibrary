@@ -26,9 +26,7 @@
                 throw new Exception("Could not find any suitable devices to connect to");
             }
 
-
-
-            using (var oDrive = new Device(foundDevice, DeviceSchema.SchemaChecksum))
+            using (var oDrive = new Device(foundDevice))
             {
                 bool connectSuccess = false;
                 try
