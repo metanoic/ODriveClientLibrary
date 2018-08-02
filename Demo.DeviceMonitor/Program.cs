@@ -2,8 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
-    using System.Reactive.Linq;
     using System.Windows.Forms;
     using ODriveClientLibrary;
 
@@ -15,20 +15,19 @@
 
             PrintDeviceInfos(deviceMonitor.AvailableDevices.ToList());
 
-            deviceMonitor.AvailableDevices.CountChanged.Subscribe(evt =>
-            {
-                PrintDeviceInfos(deviceMonitor.AvailableDevices.ToList());
-            });
 
-            deviceMonitor.AvailableDevices.ItemChanged.Subscribe(evt =>
-            {
-                PrintDeviceInfos(deviceMonitor.AvailableDevices.ToList());
-            });
+            deviceMonitor.AvailableDevices.CollectionChanged += AvailableDevices_CollectionChanged;
 
             while (!Console.KeyAvailable)
             {
                 Application.DoEvents();
             }
+        }
+
+        private static void AvailableDevices_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var availableDevices = sender as ObservableCollection<BasicDeviceInfo>;
+            PrintDeviceInfos(availableDevices.ToList());
         }
 
         private static void PrintDeviceInfos(List<BasicDeviceInfo> deviceInfos)

@@ -1,11 +1,8 @@
 ﻿<#@ template debug="true" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ assembly name="$(ProjectDir)..\ODriveClientLibrary\bin\Debug\LibUsbDotNet.dll" #>
-<#@ assembly name="$(ProjectDir)..\ODriveClientLibrary\bin\Debug\ReactiveUI.dll" #>
-<#@ assembly name="$(ProjectDir)..\ODriveClientLibrary\bin\Debug\Splat.dll" #>
+<#@ assembly name="$(ProjectDir)..\ODriveClientLibrary\bin\Debug\LibUsbDotNet.LibUsbDotNet.dll" #>
 <#@ assembly name="$(ProjectDir)..\ODriveClientLibrary\bin\Debug\ODriveClientLibrary.dll" #>
 <#@ assembly name="$(SolutionDir)ODriveClientLibrary.DeviceGenerator\bin\Debug\ODriveClientLibrary.DeviceGenerator.dll" #>
-<#@ import namespace="ReactiveUI" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
@@ -19,7 +16,6 @@
 	// Replace the serial number with your board's and set useLiveSchema = true to generate code for your device's version
 	var generationResult = Generator.GenerateFromDevice();           
 	//var generationResult = Generator.GenerateFromSchemaFile(@"H:\repos\ODriveClientLibrary\ODriveClientLibrary.DeviceGenerator\DeviceSchema\DefinitionArchive\3.4.json");
-
 	
 	Write(generationResult.Code);
 #>

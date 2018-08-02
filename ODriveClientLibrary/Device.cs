@@ -9,6 +9,7 @@
     using ODriveClientLibrary.Common;
     using System.ComponentModel;
     using LibUsbDotNet.Main;
+    using Polly;
 
     public partial class Device : IDevice, IDisposable
     {
@@ -157,7 +158,9 @@
             AssertNotDisposed();
             AssertConnected();
 
-            byte[] schemaBytes = await deviceConnection.RequestBuffer(cancellationToken).ConfigureAwait(false);
+            var schemaTimeoutPolicy = Policy.TimeoutAsync(timeout: TimeSpan.FromSeconds(30), timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic);
+
+            byte[] schemaBytes = await deviceConnection.RequestBuffer(cancellationToken, schemaTimeoutPolicy).ConfigureAwait(false);
 
             if (setSchemaChecksum)
             {
