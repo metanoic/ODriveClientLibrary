@@ -97,7 +97,7 @@
     <Compile Include="Utilities\WireBuffer.cs" />
     <Compile Include="Utilities\PredicateBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\ThreadSafeCounter.cs" />
+    <Compile Include="Utilities\SequenceCounter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
