@@ -4,9 +4,7 @@
 
     internal sealed class SequenceCounter
     {
-        private int rawValue = ushort.MinValue;
-        private ushort currentValue;
-
+        private int currentValue = ushort.MinValue;
         public SequenceCounter(ushort startValue = default)
         {
             currentValue = startValue;
@@ -14,8 +12,9 @@
 
         public ushort NextValue()
         {
-            Interlocked.CompareExchange(ref rawValue, ushort.MinValue, ushort.MaxValue);
-            return (ushort)(Interlocked.Increment(ref rawValue));
+            // See https://github.com/metanoic/ODriveClientLibrary/issues/41#issuecomment-409996806 for why we're halving the capacity
+            Interlocked.CompareExchange(ref currentValue, ushort.MinValue, short.MaxValue);
+            return (ushort)(Interlocked.Increment(ref currentValue));
         }
     }
 }
