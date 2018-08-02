@@ -26,7 +26,7 @@
                 throw new Exception("Could not find any suitable devices to connect to");
             }
 
-            using (var oDrive = new Device(foundDevice))
+            using (var oDrive = new Device(foundDevice, DeviceSchema.SchemaChecksum))
             {
                 bool connectSuccess = false;
                 try
@@ -38,8 +38,7 @@
                     System.Diagnostics.Debugger.Break();
                 }
 
-               // var download = await oDrive.DownloadSchema();
-
+                // var download = await oDrive.DownloadSchema();
 
                 while (!Console.KeyAvailable)
                 {

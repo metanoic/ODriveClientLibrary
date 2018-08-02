@@ -1,14 +1,12 @@
 ﻿namespace ODriveClientLibrary
 {
     using LibUsbDotNet;
-    using ReactiveUI;
 
     /// <summary>
     /// This class represents USB devices in what can be considered lowest-common-denominator fashion.  That is, its primary purpose is to expose
     /// just enough information about the device to allow a consumer to confidently determine whether it is the one they want to connect to.
     /// </summary>
-    /// <seealso cref="ReactiveUI.ReactiveObject" />
-    public class BasicDeviceInfo : ReactiveObject
+    public class BasicDeviceInfo : PropertyNotifierBase
     {
         /// <summary>
         /// Gets the device's vendor identifier.
@@ -55,7 +53,7 @@
         public bool IsConnected
         {
             get => isConnected;
-            set => this.RaiseAndSetIfChanged(ref isConnected, value);
+            set => RaiseAndSetIfChanged(ref isConnected, value);
         }
 
         private BasicDeviceInfo(int vendorID, int productID, string serialNumber, string manufacturer, string productName, UsbDevice device)

@@ -1,13 +1,16 @@
 ﻿namespace ODriveClientLibrary
 {
     using System;
+    using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Reactive.Disposables;
     using System.Reactive.Linq;
     using LibUsbDotNet;
     using LibUsbDotNet.DeviceNotify;
     using ODriveClientLibrary.Utilities;
-    using ReactiveUI;
 
     /// <summary>
     /// This singleton class provides a mechanism for being notified when a device the consumer is interested 
@@ -16,8 +19,9 @@
     /// put in the <see cref="AvailableDevices"/> list by composing a replacement predicate for <see cref="DeviceAvailabilityPredicate"/>.
     /// </summary>
     /// <seealso cref="ReactiveUI.ReactiveObject" />
-    public sealed class DeviceMonitor : ReactiveObject
+    public sealed class DeviceMonitor : PropertyNotifierBase, IDisposable
     {
+        private static readonly CompositeDisposable compositeDisposable = new CompositeDisposable();
         private static readonly Lazy<DeviceMonitor> LazyInstantiator = new Lazy<DeviceMonitor>(() => new DeviceMonitor(), isThreadSafe: true);
 
         /// <summary>
@@ -28,7 +32,7 @@
 
         private static IDeviceNotifier usbDeviceNotifier;
 
-        private ReactiveList<BasicDeviceInfo> allDevices = new ReactiveList<BasicDeviceInfo>() { ChangeTrackingEnabled = true };
+        private ObservableCollection<BasicDeviceInfo> allDevices = new ObservableCollection<BasicDeviceInfo>();
 
         /// <summary>
         /// This property is a real-time updating list of <see cref="BasicDeviceInfo"/> objects representing all devices the <see cref="DeviceMonitor"/>
@@ -38,23 +42,23 @@
         /// Provides a real-time list of all <see cref="BasicDeviceInfo"/> instances the <see cref="DeviceMonitor"/> has encountered, whether currently <see cref="BasicDeviceInfo.IsConnected"/> or not.
         /// </value>
         /// <remarks>This list is the source of the <see cref="AvailableDevices"/> collection, but <see cref="DeviceAvailabilityPredicate"/> has not been applied.</remarks>
-        public ReactiveList<BasicDeviceInfo> AllDevices
+        public ObservableCollection<BasicDeviceInfo> AllDevices
         {
             get => allDevices;
-            private set => this.RaiseAndSetIfChanged(ref allDevices, value);
+            private set => RaiseAndSetIfChanged(ref allDevices, value);
         }
 
-        private IReactiveDerivedList<BasicDeviceInfo> availableDevices;
+        private ObservableCollection<BasicDeviceInfo> availableDevices;
 
         /// <summary>
         /// This property represents the projection of <see cref="AllDevices"/> after applying <see cref="DeviceAvailabilityPredicate"/>.<para/>
         /// In other words, it is a list of devices that the consumer has expressed a desire to communicate with.
         /// </summary>
         /// <value>A list of devices the consumer wants to communicate with.</value>
-        public IReactiveDerivedList<BasicDeviceInfo> AvailableDevices
+        public ObservableCollection<BasicDeviceInfo> AvailableDevices
         {
             get => availableDevices;
-            private set => this.RaiseAndSetIfChanged(ref availableDevices, value);
+            private set => RaiseAndSetIfChanged(ref availableDevices, value);
         }
 
         private Expression<Func<BasicDeviceInfo, bool>> deviceAvailabilityPredicate;
@@ -68,13 +72,14 @@
         public Expression<Func<BasicDeviceInfo, bool>> DeviceAvailabilityPredicate
         {
             get => deviceAvailabilityPredicate;
-            set => this.RaiseAndSetIfChanged(ref deviceAvailabilityPredicate, value);
+            set => RaiseAndSetIfChanged(ref deviceAvailabilityPredicate, value);
         }
 
-        private readonly ObservableAsPropertyHelper<Func<BasicDeviceInfo, bool>> compiledDeviceAvailabilityPredicate;
-        private Func<BasicDeviceInfo, bool> CompiledDeviceAvailabilityPredicate
+        private Func<BasicDeviceInfo, bool> _compiledDeviceAvailabilityPredicate;
+        private Func<BasicDeviceInfo, bool> compiledDeviceAvailabilityPredicate
         {
-            get => compiledDeviceAvailabilityPredicate.Value;
+            get => _compiledDeviceAvailabilityPredicate;
+            set => RaiseAndSetIfChanged(ref _compiledDeviceAvailabilityPredicate, value);
         }
 
         private IObservable<DeviceNotifyEventArgs> deviceInterfaceNotifications = Observable.FromEventPattern<EventHandler<DeviceNotifyEventArgs>, DeviceNotifyEventArgs>(
@@ -95,23 +100,19 @@
         {
             usbDeviceNotifier = DeviceNotifier.OpenDeviceNotifier();
 
+            AllDevices = new ObservableCollection<BasicDeviceInfo>();
+            AvailableDevices = new ObservableCollection<BasicDeviceInfo>();
+
+            compositeDisposable.Add(this.OnPropertyChange(x => x.DeviceAvailabilityPredicate).Subscribe(expression =>
+               {
+                   compiledDeviceAvailabilityPredicate = expression.Compile();
+               }
+            ));
+
             DeviceAvailabilityPredicate = PredicateBuilder.True<BasicDeviceInfo>()
                 .And(deviceInfo => DeviceHasODriveVendorAndProduct(deviceInfo))
                 .And(deviceInfo => deviceInfo.IsConnected);
 
-            compiledDeviceAvailabilityPredicate = this.WhenAnyValue(x => x.DeviceAvailabilityPredicate)
-                .Select(exp => exp.Compile())
-                .ToProperty(this, x => x.CompiledDeviceAvailabilityPredicate);
-
-            // Apply predicate and ultimately compose a list of devices that the user can connect to
-            AvailableDevices = AllDevices.CreateDerivedCollection(
-                deviceInfo => deviceInfo,
-                deviceInfo =>
-                {
-                    var predicateResult = CompiledDeviceAvailabilityPredicate.Invoke(deviceInfo);
-                    return predicateResult;
-                }, signalReset: this.WhenAnyValue(x => x.CompiledDeviceAvailabilityPredicate));
-            AvailableDevices.ChangeTrackingEnabled = true;
 
             // Populate the already-connected devices
             var connectedDevices = UsbDevice.AllDevices.Select(usbRegistry =>
@@ -125,7 +126,33 @@
                 return newInfo;
             }).Where(deviceInfo => deviceInfo != null).ToList();
 
-            AllDevices.AddRange(connectedDevices);
+            compositeDisposable.Add(Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
+                handler => handler.Invoke,
+                h => AllDevices.CollectionChanged += h,
+                h => AllDevices.CollectionChanged -= h)
+            .Select(evtPattern => evtPattern.EventArgs)
+            .Subscribe(evt =>
+            {
+                if (evt.NewItems != null)
+                {
+                    foreach (BasicDeviceInfo deviceInfo in evt.NewItems)
+                    {
+                        deviceInfo.PropertyChanged += MaintainAvailabileDevices;
+                        MaintainAvailabileDevices(deviceInfo, new PropertyChangedEventArgs(nameof(deviceInfo.PropertyChanged)));
+                    }
+                }
+
+                if (evt.OldItems != null)
+                {
+                    foreach (BasicDeviceInfo deviceInfo in evt.OldItems)
+                    {
+                        deviceInfo.PropertyChanged -= MaintainAvailabileDevices;
+                        MaintainAvailabileDevices(deviceInfo, new PropertyChangedEventArgs(nameof(deviceInfo.PropertyChanged)));
+                    }
+                }
+            }));
+
+            connectedDevices.ForEach(AllDevices.Add);
 
             // Actively maintain a list of BasicDeviceInfo's, updating IsConnected as the device is connected or disconnected
             deviceInterfaceNotifications.Subscribe(evt =>
@@ -195,6 +222,39 @@
                         break;
                 }
             });
+        }
+
+        private void MaintainAvailabileDevices(object sender, PropertyChangedEventArgs e)
+        {
+            var deviceInfo = sender as BasicDeviceInfo;
+            if (compiledDeviceAvailabilityPredicate.Invoke(deviceInfo))
+            {
+                AvailableDevices.Add(deviceInfo);
+            }
+            else
+            {
+                AvailableDevices.Remove(deviceInfo);
+            }
+        }
+
+        private bool isDisposed = false; // To detect redundant calls
+
+        private void Dispose(bool disposing)
+        {
+            if (!isDisposed && compositeDisposable.IsDisposed == false)
+            {
+                if (disposing)
+                {
+                    compositeDisposable.Dispose();
+                }
+
+                isDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }
