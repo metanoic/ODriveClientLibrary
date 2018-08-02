@@ -58,7 +58,7 @@
                 });
         }, isThreadSafe: true);
 
-        private readonly ThreadSafeCounter sequenceCounter = new ThreadSafeCounter();
+        private readonly SequenceCounter sequenceCounter = new SequenceCounter();
         private readonly ConcurrentDictionary<ushort, Request> pendingRequests = new ConcurrentDictionary<ushort, Request>();
         private readonly ConcurrentDictionary<ushort, Request> cancelledRequests = new ConcurrentDictionary<ushort, Request>();
 
@@ -217,7 +217,7 @@
             if (!request.CancellationToken.IsCancellationRequested)
             {
                 var requestBytes = request.ToByteArray();
-                System.Diagnostics.Debug.WriteLine($"Sending seqNo {request.SequenceNumber}");
+                System.Diagnostics.Debug.WriteLine($"Sending seqNo {request.EncodedSequenceNumber}");
                 ErrorCode err = endpointWriter.Write(requestBytes, Config.USB_WRITE_TIMEOUT, out transferLength);
 
                 if (err != ErrorCode.None)
@@ -226,7 +226,7 @@
                     throw new UsbLibraryException($"Error {UsbDevice.LastErrorNumber} occurred in USB library: {UsbDevice.LastErrorString}.");
                 }
 
-                pendingRequests.TryAdd(request.SequenceNumber, request);
+                pendingRequests.TryAdd(request.EncodedSequenceNumber, request);
             }
 
             return transferLength;
@@ -296,6 +296,7 @@
                 requestBuffer = new WireBuffer(0);
 
                 var request = new Request(
+                    sequenceNumber: sequenceCounter.NextValue(),
                     endpointID: endpointID,
                     expectedResponseSize: dataSize,
                     requestACK: true,
@@ -333,6 +334,7 @@
                 requestBuffer.Write(value);
 
                 var request = new Request(
+                    sequenceNumber: sequenceCounter.NextValue(),
                     endpointID: endpointID,
                     expectedResponseSize: dataSize,
                     requestACK: true,
@@ -366,6 +368,7 @@
                 requestBuffer = new WireBuffer(0);
 
                 var request = new Request(
+                    sequenceNumber: sequenceCounter.NextValue(),
                     endpointID: endpointID,
                     expectedResponseSize: 0,
                     requestACK: true,
@@ -429,6 +432,7 @@
                 byte[] cumulativeResponse = new byte[0];
 
                 var request = new Request(
+                    sequenceNumber: sequenceCounter.NextValue(),
                     endpointID: 0,
                     expectedResponseSize: 32,
                     requestACK: true,
