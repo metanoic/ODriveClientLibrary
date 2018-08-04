@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Threading;
@@ -60,7 +61,6 @@
 
         private readonly SequenceCounter sequenceCounter = new SequenceCounter();
         private readonly ConcurrentDictionary<ushort, Request> pendingRequests = new ConcurrentDictionary<ushort, Request>();
-        private readonly ConcurrentDictionary<ushort, Request> cancelledRequests = new ConcurrentDictionary<ushort, Request>();
 
         private readonly UsbDevice usbDevice;
 
@@ -193,7 +193,6 @@
             endpointWriter.Dispose();
 
             pendingRequests.Clear();
-            cancelledRequests.Clear();
 
             return true;
         }
@@ -207,26 +206,29 @@
             {
                 throw new NotSupportedException("Packets larger than 127 bytes are not currently supported.");
             }
+
             if (request.EndpointID > 1 && request.Signature == Config.USB_PROTOCOL_VERSION)
             {
                 throw new InvalidChecksumException("Cannot request endpoints above number 1 without supplying a checksum");
             }
 
-            int transferLength = 0;
+            request.CancellationToken.ThrowIfCancellationRequested();
 
-            if (!request.CancellationToken.IsCancellationRequested)
+            var requestBytes = request.ToByteArray();
+
+            System.Diagnostics.Debug.WriteLine($"Sending seqNo {request.EncodedSequenceNumber}");
+
+            ErrorCode err = endpointWriter.Write(requestBytes, Config.USB_WRITE_TIMEOUT, out int transferLength);
+
+            if (err != ErrorCode.None)
             {
-                var requestBytes = request.ToByteArray();
-                System.Diagnostics.Debug.WriteLine($"Sending seqNo {request.EncodedSequenceNumber}");
-                ErrorCode err = endpointWriter.Write(requestBytes, Config.USB_WRITE_TIMEOUT, out transferLength);
+                endpointReader.Reset();
+                throw new UsbLibraryException($"Error {UsbDevice.LastErrorNumber} occurred in USB library: {UsbDevice.LastErrorString}.");
+            }
 
-                if (err != ErrorCode.None)
-                {
-                    endpointReader.Reset();
-                    throw new UsbLibraryException($"Error {UsbDevice.LastErrorNumber} occurred in USB library: {UsbDevice.LastErrorString}.");
-                }
-
-                pendingRequests.TryAdd(request.EncodedSequenceNumber, request);
+            if (!pendingRequests.TryAdd(request.EncodedSequenceNumber, request))
+            {
+                throw new Exception($"Attempted to add sequence number {request.SequenceNumber} to pending requests but that sequence number was already added.");
             }
 
             return transferLength;
@@ -239,44 +241,28 @@
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine($"RECEIVED DATA>>>");
             var response = new Response(e.Buffer, e.Count);
             var sequenceNumber = response.SequenceNumber;
 
             System.Diagnostics.Debug.WriteLine($"Received seqNo {response.SequenceNumber}...");
 
-            pendingRequests.TryGetValue(sequenceNumber, out Request pendingRequest);
-
-            if (pendingRequest != null)
+            if (pendingRequests.TryGetValue(sequenceNumber, out Request pendingRequest))
             {
-
                 if (pendingRequest.CancellationToken.IsCancellationRequested)
                 {
-                    // Move the request into the cancelled list, we may still receive
-                    // the response for it, although we will discard the response
-                    pendingRequests.TryRemove(sequenceNumber, out _);
-                    cancelledRequests.TryAdd(sequenceNumber, pendingRequest);
-                    pendingRequest.CancellationToken.ThrowIfCancellationRequested();
-                }
-                else
-                {
-                    // TODO: Log on failure??
-                    pendingRequests.TryRemove(sequenceNumber, out _);
-                    pendingRequest.ResponseCallback?.Invoke(pendingRequest, response);
+                    if (pendingRequests.TryRemove(sequenceNumber, out _))
+                    {
+                        pendingRequest.CancellationToken.ThrowIfCancellationRequested();
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException($"A cancelled response was received for sequence number ${sequenceNumber} but no pending requests exist matching that sequence number.");
+                    }
                 }
             }
             else
             {
-                // If it's not pending, maybe it was cancelled?  If it was then we
-                // know it can be discarded.
-                cancelledRequests.TryGetValue(sequenceNumber, out Request cancelledRequest);
-                if (cancelledRequest != null)
-                {
-                    pendingRequests.TryRemove(sequenceNumber, out _);
-                    cancelledRequests.TryRemove(sequenceNumber, out _);
-                }
-
-                // Received data we have no knoweldge of asking for... log it?
+                throw new KeyNotFoundException($"A response was received for sequence number ${sequenceNumber} but no pending requests exist matching that sequence number.");
             }
         }
 
