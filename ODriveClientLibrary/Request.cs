@@ -16,7 +16,7 @@
         public CancellationToken CancellationToken { get; private set; }
 
         public WireBuffer Body { get; private set; }
-        public Action<Request, Response> ResponseCallback { get; private set; }
+        public Action<Response> ResponseCallback { get; private set; }
 
         public Request(
             ushort sequenceNumber,
@@ -24,7 +24,7 @@
             ushort expectedResponseSize,
             bool requestACK,
             Func<WireBuffer> populateBody,
-            Action<Request, Response> responseCallback,
+            Action<Response> responseCallback,
             ushort signature,
             CancellationToken cancellationToken)
         {
