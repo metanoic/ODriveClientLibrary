@@ -259,6 +259,13 @@
                         throw new KeyNotFoundException($"A cancelled response was received for sequence number ${sequenceNumber} but no pending requests exist matching that sequence number.");
                     }
                 }
+
+                if (!pendingRequests.TryRemove(sequenceNumber, out _))
+                {
+                    throw new KeyNotFoundException($"A response was received for sequence number ${sequenceNumber} but something unexpectedly removed the request from the list of pending requests.");
+                }
+
+                pendingRequest.ResponseCallback(response);
             }
             else
             {
@@ -287,7 +294,7 @@
                     expectedResponseSize: dataSize,
                     requestACK: true,
                     populateBody: () => requestBuffer,
-                    responseCallback: (req, res) =>
+                    responseCallback: res =>
                     {
                         var responseData = res.Body.Read<T>();
                         taskCompletionSource.SetResult(responseData);
@@ -325,7 +332,7 @@
                     expectedResponseSize: dataSize,
                     requestACK: true,
                     populateBody: () => requestBuffer,
-                    responseCallback: (req, res) =>
+                    responseCallback: res =>
                     {
                         var responseData = res.Body.Read<T>();
                         taskCompletionSource.SetResult(responseData);
@@ -359,7 +366,7 @@
                     expectedResponseSize: 0,
                     requestACK: true,
                     populateBody: () => requestBuffer,
-                    responseCallback: (req, res) =>
+                    responseCallback: res =>
                     {
                         taskCompletionSource.SetResult(true);
                     },
@@ -428,7 +435,7 @@
                         wireBuffer.Write(payloadOffset);
                         return wireBuffer;
                     },
-                    responseCallback: (req, res) =>
+                    responseCallback: res =>
                     {
                         var responseBytes = res.Body.Data;
                         taskCompletionSource.SetResult(responseBytes);
