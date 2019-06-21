@@ -1,71 +1,235 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using LibUsbDotNet;
-    using ODrive.Utilities;
+    using ODriveClientLibrary.Exceptions;
+    using ODriveClientLibrary.Utilities;
+    using ODriveClientLibrary.Common;
+    using System.ComponentModel;
+    using LibUsbDotNet.Main;
+    using Polly;
 
-    public partial class Device : RemoteObject
+    public partial class Device : IDevice, IDisposable
     {
         private readonly BasicDeviceInfo deviceInfo;
-        private readonly Func<BasicDeviceInfo, bool> deviceIdentifyingPredicate;
 
         private UsbDevice usbDevice;
         private Connection deviceConnection;
+        private ManualResetEventSlim readyEvent = new ManualResetEventSlim();
+        private bool isDisposed = false;
 
-        // TODO: Assign the json definition CRC value to this property during generation
-        // and then check the device's CRC at runtime and error if they don't match.
-        public ushort GeneratedForCRC { get; private set; }
+        public bool IsConnected { get; private set; }
 
-        public Device(BasicDeviceInfo deviceInfo) : this()
+        public ushort? SchemaChecksum { get; private set; }
+
+        private Func<BasicDeviceInfo, bool> DeviceIdentifyingPredicate { get; set; }
+
+        public Device(BasicDeviceInfo deviceInfo, ushort? schemaChecksum = null)
         {
             this.deviceInfo = deviceInfo;
             usbDevice = deviceInfo.Device;
 
-            // Play nice with generated partial
-            device = this;
+            UsbDevice.UsbErrorEvent += UsbDevice_UsbErrorEvent;
 
-            // Open usb read and write endpoints
-            deviceConnection = new Connection(usbDevice);
+            SchemaChecksum = schemaChecksum;
+
 
             // If we get disconnected, we'll use this to find the device later
             // so we can reconnect to it.
-            deviceIdentifyingPredicate = PredicateBuilder.True<BasicDeviceInfo>()
+            DeviceIdentifyingPredicate = PredicateBuilder.True<BasicDeviceInfo>()
                     .And(inputDeviceInfo => inputDeviceInfo.VendorID == deviceInfo.VendorID)
                     .And(inputDeviceInfo => inputDeviceInfo.ProductID == deviceInfo.ProductID)
                     .And(inputDeviceInfo => inputDeviceInfo.SerialNumber == deviceInfo.SerialNumber)
                     .Compile();
 
-            // You can assign the CRC immediately and bypass the Schema fetch
-            // deviceConnection.JsonCRC = 9455;
-            deviceConnection.EndpointJSON = FetchSchemaSync();
+            // Create a listener on DeviceMonitor for this device so we can tell when it gets disconnected
 
-            ////if (deviceConnection.JsonCRC != GeneratedForCRC)
-            ////{
-            ////    throw new Exception("Device schema does not match the schema this library was generated against");
-            ////}
+
         }
 
-        public async Task<string> FetchSchema()
+        private void UsbDevice_UsbErrorEvent(object sender, UsbError e)
         {
-            byte[] schemaBytes = await deviceConnection.FetchEndpointBuffer();
-            string schema = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
-            return schema;
+            if (ReferenceEquals(sender, usbDevice)
+                || (sender is UsbEndpointBase
+                    && (ReferenceEquals(((UsbEndpointBase)sender).Device, usbDevice))
+                    )
+                )
+            {
+                try
+                {
+                    Disconnect();
+                }
+                catch { };
+            }
+
+            throw new UsbLibraryException($"Error {UsbDevice.LastErrorNumber} occurred in USB library: {UsbDevice.LastErrorString}.");
         }
 
-        public string FetchSchemaSync()
+        public async Task<T> GetProperty<T>(IReadablePropertyMember<T> readablePropertyMember)
         {
-            return Task.Run(async () => await FetchSchema()).Result;
+            return await readablePropertyMember.GetProperty(this);
         }
 
-        public async Task<T> FetchEndpoint<T>(ushort endpointID, T? newValue = null) where T : struct
+        public async Task SetProperty<T>(IWriteablePropertyMember<T> writeablePropertyMember, T newValue)
         {
-            return await deviceConnection.FetchEndpointScalar(endpointID, newValue);
+            await writeablePropertyMember.SetProperty(this, newValue);
         }
 
-        public T FetchEndpointSync<T>(ushort endpointID, T? newValue = null) where T : struct
+        public T GetExecutionDelegate<T>(IExecutableMember<T> executableMember)
         {
-            return Task.Run(async () => await deviceConnection.FetchEndpointScalar(endpointID, newValue)).Result;
+            return executableMember.GetExecutor(this);
+        }
+
+        public async Task<bool> Connect(ushort? schemaChecksum = null)
+        {
+            AssertNotDisposed();
+
+            if (readyEvent.IsSet)
+            {
+                readyEvent.Reset();
+            }
+
+            SchemaChecksum = schemaChecksum ?? SchemaChecksum;
+
+            var deviceOpenResult = usbDevice.IsOpen ? true : usbDevice.Open();
+            if (!deviceOpenResult)
+            {
+                throw new Exception("Failed to open USBDevice");
+            }
+
+            // Open usb read and write endpoints
+            deviceConnection = new Connection(usbDevice, SchemaChecksum);
+
+            bool connectSuccessful = false;
+            try
+            {
+                connectSuccessful = deviceConnection.Connect();
+            }
+            catch
+            {
+                try { deviceConnection.Disconnect(); } catch { }
+                try { Disconnect(); } catch { }
+                throw;
+            }
+
+            if (!connectSuccessful)
+            {
+                throw new UsbLibraryException("Failed to connect to USB Device.");
+            }
+
+            IsConnected = true;
+
+            if (SchemaChecksum.HasValue)
+            {
+                var retrievedChecksum = await deviceConnection.RequestSchemaChecksum();
+                if (SchemaChecksum.Value != retrievedChecksum)
+                {
+                    try
+                    {
+                        Disconnect();
+                    }
+                    catch { };
+
+                    throw new InvalidChecksumException($"Invalid checksum.  Device has {retrievedChecksum} but expected {SchemaChecksum.Value}");
+                }
+            }
+
+            return true;
+        }
+
+        public bool Disconnect()
+        {
+            AssertNotDisposed();
+
+            bool disconnectSuccessful = deviceConnection.Disconnect();
+
+            if (disconnectSuccessful || deviceConnection.IsConnected == false)
+            {
+                IsConnected = false;
+            }
+
+            return disconnectSuccessful;
+        }
+
+        public async Task<string> DownloadSchema(CancellationToken cancellationToken = default(CancellationToken), bool setSchemaChecksum = true)
+        {
+            AssertNotDisposed();
+            AssertConnected();
+
+            var schemaTimeoutPolicy = Policy.TimeoutAsync(timeout: TimeSpan.FromSeconds(30), timeoutStrategy: Polly.Timeout.TimeoutStrategy.Optimistic);
+
+            byte[] schemaBytes = await deviceConnection.RequestBuffer(cancellationToken, schemaTimeoutPolicy).ConfigureAwait(false);
+
+            if (setSchemaChecksum)
+            {
+                var schemaChecksum = SchemaChecksumCalculator.CalculateChecksum(schemaBytes);
+                SchemaChecksum = schemaChecksum;
+                deviceConnection.SchemaChecksum = schemaChecksum;
+            }
+
+            var schemaJson = System.Text.Encoding.UTF8.GetString(schemaBytes, 0, schemaBytes.Length);
+
+            return schemaJson;
+        }
+
+        public async Task InvokeEndpoint(ushort endpointID, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            AssertNotDisposed();
+            AssertConnected();
+
+            await deviceConnection.RequestInvoke(endpointID, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<T> RequestValue<T>(ushort endpointID, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
+        {
+            AssertNotDisposed();
+            AssertConnected();
+
+            return await deviceConnection.RequestResponse<T>(endpointID, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<T> PushValue<T>(ushort endpointID, T newValue, CancellationToken cancellationToken = default(CancellationToken)) where T : struct
+        {
+            AssertNotDisposed();
+            AssertConnected();
+
+            return await deviceConnection.RequestResponse(endpointID, newValue, cancellationToken).ConfigureAwait(false);
+        }
+
+        private void AssertConnected()
+        {
+            if (usbDevice.IsOpen == false)
+            {
+                throw new NotConnectedException("Not connected to device");
+            }
+        }
+
+        private void AssertNotDisposed()
+        {
+            if (isDisposed == true)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed == false)
+            {
+                if (disposing)
+                {
+                    Disconnect();
+                }
+
+                isDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

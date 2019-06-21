@@ -1,6 +1,6 @@
-﻿namespace ODrive.DeviceGenerator.CodeSchema
+﻿namespace ODriveClientLibrary.DeviceGenerator.CodeSchema
 {
-    using ODrive.DeviceGenerator.DeviceSchema;
+    using ODriveClientLibrary.DeviceGenerator.DeviceSchema;
 
     public class CodeArgument
     {
@@ -10,11 +10,12 @@
 
         public static CodeArgument CreateFrom(DeviceProperty deviceProperty)
         {
-            var codeArgument = new CodeArgument();
-
-            codeArgument.Name = Helpers.ToCamelCase(deviceProperty.Name);
-            codeArgument.Type = Helpers.DataTypeToString(deviceProperty.Type);
-            codeArgument.EndpointID = deviceProperty.ID;
+            var codeArgument = new CodeArgument
+            {
+                Name = Helpers.ToCamelCase(Helpers.ReplaceIllegals(deviceProperty.Name)),
+                Type = Helpers.DataTypeToString(deviceProperty.Type),
+                EndpointID = deviceProperty.ID
+            };
 
             return codeArgument;
         }

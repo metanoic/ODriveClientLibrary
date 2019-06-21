@@ -1,23 +1,23 @@
-﻿namespace ODrive.DeviceGenerator
+﻿namespace ODriveClientLibrary.DeviceGenerator
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using ODrive.DeviceGenerator.CodeSchema;
-    using ODrive.DeviceGenerator.DeviceSchema;
+    using ODriveClientLibrary.DeviceGenerator.CodeSchema;
+    using ODriveClientLibrary.DeviceGenerator.DeviceSchema;
 
     public static class SchemaParser
     {
-        public static void Test()
+        public static List<CodeClass> ParseFile(string filePath)
         {
-            var json = File.ReadAllText(@"H:\repos\ODriveClientLibrary\ODriveClientLibrary.DeviceGenerator\DeviceSchema\DefinitionArchive\3.5.json");
-            var x = Parse(json);
+            var json = File.ReadAllText(filePath);
+            return Parse(json);
         }
 
-        public static IEnumerable<CodeClass> Parse(string jsonInput)
+        public static List<CodeClass> Parse(string jsonInput)
         {
-            var rootDeviceObject = DeviceSchemaParser.Parse("Device", jsonInput);
+            var rootDeviceObject = DeviceSchemaParser.Parse("DeviceSchema", jsonInput);
 
             var deviceObjects = rootDeviceObject.Members
                 .Flatten(x => x is DeviceObject ? ((DeviceObject)x).Members : null)
@@ -28,8 +28,6 @@
             deviceObjects.Insert(0, rootDeviceObject);
 
             var codeClasses = deviceObjects.Select(deviceObject => CodeClass.CreateFrom(deviceObject)).ToList();
-
-            codeClasses.ForEach(codeClass => codeClass.Generate());
 
             return codeClasses;
         }

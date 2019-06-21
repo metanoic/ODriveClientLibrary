@@ -1,4 +1,4 @@
-﻿namespace ODrive.DeviceGenerator.DeviceSchema
+﻿namespace ODriveClientLibrary.DeviceGenerator.DeviceSchema
 {
     public interface IDeviceMember
     {

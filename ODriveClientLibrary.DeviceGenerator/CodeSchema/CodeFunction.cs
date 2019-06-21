@@ -1,11 +1,8 @@
-﻿namespace ODrive.DeviceGenerator.CodeSchema
+﻿namespace ODriveClientLibrary.DeviceGenerator.CodeSchema
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using ODrive.DeviceGenerator.DeviceSchema;
-    using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+    using ODriveClientLibrary.DeviceGenerator.DeviceSchema;
 
     public class CodeFunction
     {
@@ -16,10 +13,11 @@
 
         public static CodeFunction CreateFrom(DeviceFunction deviceFunction)
         {
-            var codeFunction = new CodeFunction();
-
-            codeFunction.Name = Helpers.ToPascalCase(deviceFunction.Name);
-            codeFunction.EndpointID = deviceFunction.ID.ToString();
+            var codeFunction = new CodeFunction
+            {
+                Name = Helpers.ToPascalCase(Helpers.ReplaceIllegals(deviceFunction.Name)),
+                EndpointID = deviceFunction.ID.ToString()
+            };
 
             var arguments = deviceFunction.Arguments.Concat(deviceFunction.Inputs).ToList();
 
@@ -31,45 +29,6 @@
             }
 
             return codeFunction;
-        }
-
-        public IEnumerable<MemberDeclarationSyntax> Generate()
-        {
-            var methodDeclaration = MethodDeclaration(IdentifierName(ReturnType ?? "void"), Name)
-                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
-
-            var methodStatements = new List<StatementSyntax>();
-
-            foreach (var argument in Arguments)
-            {
-                methodStatements.Add(ParseStatement(
-                    $"device.FetchEndpointSync<{argument.Type}>({argument.EndpointID}, {Helpers.ToCamelCase(argument.Name)});"
-                ));
-
-                methodDeclaration = methodDeclaration.AddParameterListParameters(
-                    Parameter(Identifier(Helpers.ToCamelCase(argument.Name))).WithType(ParseTypeName(argument.Type))
-                ).WithBody(Block());
-            }
-
-            if (ReturnType != null)
-            {
-                methodStatements.Add(ParseStatement(
-                    $"return device.FetchEndpointSync<{ReturnType}>({EndpointID});"
-                ));
-            }
-            else
-            {
-                methodStatements.Add(ParseStatement(
-                   $"device.FetchEndpointSync<byte>({EndpointID});"
-               ));
-            }
-
-            methodDeclaration = methodDeclaration.WithBody(Block(methodStatements));
-
-            return new List<MemberDeclarationSyntax>()
-            {
-                methodDeclaration
-            };
         }
     }
 }

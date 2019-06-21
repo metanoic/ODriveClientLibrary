@@ -1,4 +1,4 @@
-﻿namespace ODrive.DeviceGenerator.DeviceSchema
+﻿namespace ODriveClientLibrary.DeviceGenerator.DeviceSchema
 {
     using System;
     using System.ComponentModel;
@@ -46,6 +46,9 @@
         [Description("ulong")]
         [DevicePropertyType("uint64", typeof(ulong))]
         UInt64,
+        [Description("Common.Types.EndpointReference")]
+        [DevicePropertyType("endpoint_ref", typeof(Common.Types.EndpointReference))]
+        EndpointReference,
         [Description("DeviceFunction")]
         [DevicePropertyType("function", typeof(DeviceFunction))]
         Function,

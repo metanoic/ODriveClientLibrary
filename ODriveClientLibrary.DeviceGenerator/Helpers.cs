@@ -1,10 +1,10 @@
-﻿namespace ODrive.DeviceGenerator
+﻿namespace ODriveClientLibrary.DeviceGenerator
 {
     using System;
     using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
-    using ODrive.DeviceGenerator.DeviceSchema;
+    using ODriveClientLibrary.DeviceGenerator.DeviceSchema;
 
     internal static class Helpers
     {
@@ -15,6 +15,11 @@
                 {
                     return char.ToUpperInvariant(segment[0]) + segment.Substring(1, segment.Length - 1);
                 }).Aggregate(string.Empty, (segment1, segment2) => segment1 + segment2);
+        }
+
+        public static string ReplaceIllegals(string input)
+        {
+            return input.Replace(".", "_");
         }
 
         public static string ToPascalCase(string input)

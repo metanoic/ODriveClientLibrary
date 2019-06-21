@@ -2,39 +2,52 @@
 {
     using System;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
-    using ODrive;
-    using ODrive.Enums;
+    using ODriveClientLibrary.DeviceSchema;
+    using ODriveClientLibrary;
 
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
+        {
+            await MyAsyncFunc();
+        }
+
+        static async Task MyAsyncFunc()
         {
             var deviceMonitor = DeviceMonitor.Instance;
-            var oDrive = new Device(deviceMonitor.AvailableDevices.First());
+            var foundDevice = deviceMonitor.AvailableDevices.FirstOrDefault();
+            var schema = new DeviceSchema();
 
-            Console.WriteLine($"Firmware Version: {oDrive.FwVersionMajor}.{oDrive.FwVersionMinor}.{oDrive.FwVersionRevision}.{oDrive.FwVersionUnreleased}");
-            Console.WriteLine($"Hardware Version: {oDrive.HwVersionMajor}.{oDrive.HwVersionMinor}.{oDrive.HwVersionVariant}");
-            Console.WriteLine($"Serial Number: {(oDrive.SerialNumber.ToString("X2"))}");
-            Console.WriteLine($"Bus Voltage: {oDrive.VbusVoltage}V");
-
-            Console.WriteLine("Press any key to begin calibration...");
-            Console.ReadKey();
-
-            // Casting to byte is totally hackish.  Will improve when schema is improved or better partials with generated code.
-            oDrive.Axis1.RequestedState = (byte)AxisState.AXIS_STATE_FULL_CALIBRATION_SEQUENCE;
-
-            while (oDrive.Axis1.CurrentState != (byte)AxisState.AXIS_STATE_IDLE)
+            if (foundDevice == null)
             {
-                System.Threading.Thread.Sleep(500);
-                Application.DoEvents();
+                throw new Exception("Could not find any suitable devices to connect to");
             }
 
-            Console.WriteLine("Calibration complete");
-
-            while (!Console.KeyAvailable)
+            using (var oDrive = new Device(foundDevice, DeviceSchema.SchemaChecksum))
             {
-                Application.DoEvents();
+                bool connectSuccess = false;
+                try
+                {
+                    connectSuccess = await oDrive.Connect();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
+
+                // var download = await oDrive.DownloadSchema();
+
+                while (!Console.KeyAvailable)
+                {
+                    var x = await oDrive.GetProperty(schema.Config.Gpio1PwmMapping.Endpoint);
+                    Console.WriteLine($"{x.EndpointID}, {x.JsonCRC}");
+                    //await oDrive.SetProperty(schema.Motor0.Config.CalibrationCurrent, 1);
+                    //await oDrive.GetExecutionDelegate(schema.SaveConfiguration)();
+                    Application.DoEvents();
+                }
             }
         }
     }

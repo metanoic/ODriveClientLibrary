@@ -1,13 +1,14 @@
-﻿namespace ODrive
+﻿namespace ODriveClientLibrary
 {
     using System;
-    using ODrive.Utilities;
+    using ODriveClientLibrary.Utilities;
 
     internal class Response
     {
-        public ushort SequenceNumber { get; set; }
-        public int Length { get; set; }
-        public WireBuffer Body { get; set; } = new WireBuffer(0);
+        public ushort EncodedSequenceNumber { get; private set; }
+        public ushort SequenceNumber { get; private set; }
+        public int Length { get; private set; }
+        public WireBuffer Body { get; private set; } = new WireBuffer(0);
 
         public static ushort Reverse(ushort input)
         {
@@ -22,10 +23,8 @@
 
             var responseBuffer = new WireBuffer(packetBytes, Length);
 
-            // We AND 0x7fff in the Request, server OR's 0x8000 in BidirectionalPacketBasedChannel::process_packet
-            var sequenceNumberRaw = responseBuffer.Read<ushort>();
-            SequenceNumber = (ushort)((ushort)(sequenceNumberRaw & 0x7fff) | 0x80);
-            SequenceNumber = (ushort)(sequenceNumberRaw & 0x7fff);
+            EncodedSequenceNumber = responseBuffer.Read<ushort>();
+            SequenceNumber = (ushort)(EncodedSequenceNumber & 0x7fff);
 
             Body = new WireBuffer(responseBuffer.ReadArray<byte>((byte)(Length - 2)), Length - 2);
         }

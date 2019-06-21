@@ -7,7 +7,7 @@
     <ProjectGuid>{D12BC650-454A-478D-B53C-8B36F126BA1C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ODriveClientLibrary.DeviceGenerator</RootNamespace>
+    <RootNamespace>ODrive.DeviceGenerator</RootNamespace>
     <AssemblyName>ODriveClientLibrary.DeviceGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -20,6 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +41,8 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
@@ -57,6 +61,7 @@
     <Reference Include="System.Diagnostics.StackTrace, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.StackTrace.4.3.0\lib\net46\System.Diagnostics.StackTrace.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
     </Reference>
@@ -91,6 +96,8 @@
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -109,8 +116,11 @@
     <Reference Include="System.Xml.XPath.XDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeSchema\Temp.cs" />
+    <Compile Include="GenerationResult.cs" />
     <Compile Include="CodeSchema\CodeArgument.cs" />
     <Compile Include="CodeSchema\CodeClass.cs" />
     <Compile Include="CodeSchema\CodeFunction.cs" />
@@ -122,11 +132,28 @@
     <Compile Include="DeviceSchema\DevicePropertyTypeAttribute.cs" />
     <Compile Include="DeviceSchema\DeviceSchemaParser.cs" />
     <Compile Include="DeviceSchema\IDeviceMember.cs" />
+    <Compile Include="Generator.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Generators\CodeClassGenerator.cs">
+      <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Generators\FunctionClassGenerator.cs" />
+    <Compile Include="Generators\FunctionMemberGenerator.cs" />
+    <Compile Include="Generators\ObjectMemberGenerator.cs">
+      <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Generators\ScalarPropertyClassGenerator.cs" />
+    <Compile Include="Generators\ScalarMemberGenerator.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="SchemaParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ODriveClientLibrary.Common\ODriveClientLibrary.Common.csproj">
+      <Project>{380571C7-1E0F-4314-9122-02E16E0D9300}</Project>
+      <Name>ODriveClientLibrary.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ODriveClientLibrary\ODriveClientLibrary.csproj">
       <Project>{42aafb74-1f01-4d12-a8b6-35b4b9de7f24}</Project>
       <Name>ODriveClientLibrary</Name>
@@ -137,6 +164,7 @@
     <None Include="DeviceSchema\DefinitionArchive\3.4.json" />
     <None Include="DeviceSchema\DefinitionArchive\3.5.json" />
     <None Include="packages.config" />
+    <None Include="schemaArchive.json" />
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace ODrive.DeviceGenerator.DeviceSchema
+﻿namespace ODriveClientLibrary.DeviceGenerator.DeviceSchema
 {
     using System;
     using System.Collections.Generic;
@@ -23,11 +23,12 @@
 
         public static DeviceProperty CreateFrom(JObject inputNode)
         {
-            var deviceProperty = new DeviceProperty();
-
-            deviceProperty.ID = inputNode.Value<int>("id");
-            deviceProperty.Name = inputNode.Value<string>("name");
-            deviceProperty.Type = StringToDataTypeMap.Value[inputNode.Value<string>("type")];
+            var deviceProperty = new DeviceProperty
+            {
+                ID = inputNode.Value<int>("id"),
+                Name = inputNode.Value<string>("name"),
+                Type = StringToDataTypeMap.Value[inputNode.Value<string>("type")]
+            };
 
             string accessString = inputNode.Value<string>("access");
             deviceProperty.Access = AccessMode.None;

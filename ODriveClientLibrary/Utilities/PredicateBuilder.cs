@@ -1,4 +1,4 @@
-﻿namespace ODrive.Utilities
+﻿namespace ODriveClientLibrary.Utilities
 {
     using System;
     using System.Collections.Generic;
